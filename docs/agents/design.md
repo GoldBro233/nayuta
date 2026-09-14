@@ -256,6 +256,9 @@ Pages compose layouts, widgets, content data, and components:
 - `src/pages/posts/[slug].astro`: Individual post reader with table of contents
   and cover display.
 - `src/pages/[...slug].astro`: Dynamic page router delegating to templates.
+- `src/pages/404.astro`: Static error page showing only `404` in the main
+  content area, with the standard homepage sidebar, footer, and mobile drawer.
+  Emits `404.html` with a `noindex` robots directive.
 
 ### Configuration and Types
 
