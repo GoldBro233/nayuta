@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
+import { formatReadingTime } from '../../utils/reading-time';
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../components/Prose.astro';
 import ProfileCard from '../../widgets/ProfileCard.astro';
@@ -17,7 +18,10 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content, headings } = await render(post);
+const { Content, headings, remarkPluginFrontmatter } = await render(post);
+const readingTime = formatReadingTime(
+  remarkPluginFrontmatter.readingTimeMinutes,
+);
 
 const breadcrumbs = [
   { text: 'Home', href: '/' },
@@ -58,7 +62,7 @@ const breadcrumbs = [
     <h1 class="page-title">{post.data.title}</h1>
     <p style="color: var(--ny-color-text-subtle); margin-bottom: 20px;">
       Published: {post.data.publishDate} &nbsp;•&nbsp; Reading Time: {
-        post.data.readingTime
+        readingTime
       }
     </p>
 

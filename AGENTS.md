@@ -132,7 +132,10 @@ During implementation:
   - composed homepage/blog UI belongs in widget areas;
   - page structure and responsive region placement belong in layout areas;
   - design tokens, global styles, and themes belong in styling or token areas;
-  - content schemas, frontmatter conventions, and content helpers belong in content-focused areas.
+  - `src/content/` contains authored content and its colocated assets; do not put theme logic there;
+  - content schemas and collection loaders belong in `src/content.config.ts`;
+  - logic specific to a page, component, widget, or layout stays in that `.astro` file, including queries, sorting, and display preparation in its frontmatter;
+  - extract logic into `src/utils/` only when it is actually shared by multiple consumers. Do not extract local logic merely to create another module.
 - Widgets may include theme-specific homepage and blog UI such as user profile headers, identity summaries, navigation blocks, recent content, friend/link cards, site status, table of contents, and related links.
 - Prefer semantic tokens over hard-coded visual values.
 - Use the `design/` references to match visual direction, but avoid copying unrelated details blindly.

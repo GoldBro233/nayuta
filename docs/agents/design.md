@@ -75,6 +75,7 @@ src/templates/*
 src/styles/*
 src/content/*
 src/pages/*
+src/utils/*
 src/config.ts
 src/types/*
 ```
@@ -207,15 +208,43 @@ widgets.
 
 ### Content
 
-Content schemas, frontmatter conventions, collection loaders, and content query
-helpers belong in `src/content.config.ts` and `src/content/*`.
+`src/content/*` contains authored Markdown/MDX pages, posts, and their colocated
+assets. It is reserved for final content; theme TypeScript modules do not belong
+there. Content schemas and collection loaders belong in `src/content.config.ts`.
 
 Current content collections:
 
-- `posts`: Markdown/MDX blog posts with title, publishDate, readingTime, cover,
+- `posts`: Markdown/MDX blog posts with title, publishDate, cover,
   and description.
 - `pages`: Markdown/MDX standalone pages supporting customizable templates,
   breadcrumbs, widget slots, and structured friend metadata.
+
+### Shared Theme Utilities
+
+Keep logic specific to a page, component, widget, or layout in that `.astro`
+file. Its frontmatter should own its queries, sorting, and display preparation.
+Extract a module into `src/utils/*` only when multiple consumers actually share
+the logic. Do not split local logic into separate files just to add a layer.
+
+Post reading time is derived during Markdown/MDX compilation, not authored in
+frontmatter. `src/utils/reading-time.ts` contains the shared text extraction,
+counting, formatting, and remark plugin used by the post list and detail pages.
+Extraction and counting are private to this module. The plugin is registered through
+`markdown.processor` in `astro.config.mjs`; MDX inherits its remark plugins.
+Routes read numeric `readingTimeMinutes` from `render(entry)`'s
+`remarkPluginFrontmatter` and use the shared formatter for `1 min` / `4 mins`.
+Do not read reading time from `entry.data`, restore a manual field, or calculate
+it in browser code. Missing or invalid generated metadata is an integration
+error and must not silently fall back to a fixed estimate.
+
+Counting combines CJK characters at 400 per minute with other words at 200 per
+minute and rounds up to a minimum of one minute. It includes body text, headings,
+lists, tables, quotes, inline/fenced code, and static MDX children. Frontmatter,
+imports/exports, component attributes, expressions, comments, link destinations,
+image nodes, and raw HTML blocks are excluded. Images carry no extra weight;
+code uses text rates; dynamically generated component text is outside the
+estimate. The feature has no client runtime. Run `bun run test` for parser and
+formatter coverage, and `bun run build` to validate Astro integration.
 
 ### Pages
 
@@ -382,8 +411,10 @@ The boundary is based on responsibility and composition:
 - More complex sections composed from components, markup, and data are widgets.
 - Page structure and region placement are layouts.
 - Full-page presentations bound to content models are templates.
-- Content querying and frontmatter conventions belong to content helpers and
-  loaders.
+- Authored content and its assets belong in `src/content/*`; schemas and
+  collection loaders belong in `src/content.config.ts`.
+- Queries, sorting, and display preparation belong in the consuming `.astro`
+  file. Only logic actually shared by multiple consumers belongs in `src/utils/*`.
 - Global visual language and theme variables belong to styles and tokens.
 
 Guidelines:
@@ -473,9 +504,13 @@ When generating code or documentation for `nayuta`, preserve these boundaries:
 - Put page and region layout shells in `src/layouts/*`.
 - Put full-page content views in `src/templates/*`.
 - Put global styles, theme variables, and design tokens in `src/styles/*`.
-- Put content schemas, loaders, and conventions in `src/content.config.ts` and
-  `src/content/*`.
-- Keep page routes in `src/pages/*` focused on high-level composition.
+- Reserve `src/content/*` for authored content and its colocated assets.
+- Put content schemas and collection loaders in `src/content.config.ts`.
+- Keep each page's own queries, sorting, and display preparation directly in
+  its `.astro` frontmatter. Apply the same ownership rule to components,
+  widgets, and layouts.
+- Put actually shared theme logic in `src/utils/*`; avoid extracting local
+  logic into separate modules.
 - Keep side regions collapsible, reachable, and accessible.
 - Prefer static Astro output and progressive enhancement over unnecessary
   client-side rendering.

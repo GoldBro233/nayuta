@@ -8,7 +8,6 @@ const postsCollection = defineCollection({
       title: z.string(),
       publishDate: z.string(),
       views: z.string().optional(),
-      readingTime: z.string(),
       cover: z
         .union([z.string().regex(/^(?:\/|https?:\/\/)/i), image()])
         .optional(),
