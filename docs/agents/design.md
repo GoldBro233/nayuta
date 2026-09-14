@@ -107,8 +107,6 @@ Current implemented components:
   styling.
 - `TableContainer`: Horizontally scrollable wrapper for responsive tables.
 - `Tag`: Clickable or display tag chip.
-- `DynamicWidget`: Helper component that resolves widget names from frontmatter
-  or configuration to widget implementations.
 
 Planned / optional future components:
 
