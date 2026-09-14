@@ -19,8 +19,8 @@ const {
   href,
   favicon,
   faviconText = name ? name.trim().slice(0, 1).toUpperCase() : '?',
-  faviconBg = 'rgba(0, 153, 204, 0.15)',
-  faviconColor = 'var(--ny-color-outline)',
+  faviconBg,
+  faviconColor,
   tag,
   tags = tag ? [tag] : [],
 } = Astro.props;
@@ -37,6 +37,13 @@ if (!site && href) {
 }
 
 const desc = Astro.props.desc || '';
+
+const fallbackStyle = [
+  faviconBg ? `background-color: ${faviconBg};` : '',
+  faviconColor ? `color: ${faviconColor};` : '',
+]
+  .filter(Boolean)
+  .join(' ');
 ---
 
 <Card href={href} target="_blank" class="link-card">
@@ -48,7 +55,7 @@ const desc = Astro.props.desc || '';
         ) : (
           <div
             class="link-favicon link-favicon-fallback"
-            style={`background-color: ${faviconBg}; color: ${faviconColor};`}
+            style={fallbackStyle || undefined}
           >
             {faviconText}
           </div>
@@ -128,7 +135,7 @@ const desc = Astro.props.desc || '';
     background-color: var(--ny-color-surface-elevated);
     box-shadow:
       0 8px 24px var(--ny-color-shadow),
-      0 0 0 1px rgba(0, 191, 255, 0.15);
+      0 0 0 1px color-mix(in srgb, var(--ny-color-outline) 15%, transparent);
   }
 
   :global(.link-card:hover::before) {
@@ -171,6 +178,12 @@ const desc = Astro.props.desc || '';
     font-weight: 700;
     font-family: var(--ny-font-ui);
     user-select: none;
+    background-color: color-mix(
+      in srgb,
+      var(--ny-color-primary) 15%,
+      transparent
+    );
+    color: var(--ny-color-outline);
   }
 
   .link-info {
