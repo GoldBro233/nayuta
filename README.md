@@ -63,11 +63,12 @@ _Reading view with hierarchical Table of Contents, code blocks, and metadata wid
 
 - **📖 Reading-First Typography**: Monospace-centered typography stack (JetBrains Mono & Fira Code) with comfortable prose rhythm, code styling, and callouts.
 - **📐 Adaptive Three-Column Layout (`[left] [main] [right?]`)**:
-  - **Left Region**: Identity card (`ProfileCard`), recent post list (`RecentPosts`), site status (`WebsiteStatus`), and navigation links.
+  - **Left Region**: Identity card (`ProfileCard`), recent post list (`RecentPosts`), tag cloud (`TagCloud`, on post detail pages), site status (`WebsiteStatus`), and navigation links.
   - **Main Region**: Primary reading content, article stream, or custom page markdown.
   - **Right Region**: Contextual widgets (e.g., Table of Contents on articles, or custom widgets on pages).
 - **📱 Responsive Drawer Navigation**: On screens below 1120px/768px, sidebars collapse into a sticky top navigation bar with toggleable slide-out drawers powered by lightweight vanilla JS.
 - **⚡ Astro 6 Content Collections**: Type-safe frontmatter validation with Zod schemas and Astro `glob` loaders for both `posts` and `pages`.
+- **🏷️ Post Tags**: Multiple tags per article, linked at the end of each post, with static `/tag/<name>` archives and a content-driven tag cloud.
 - **🎨 Preset Theme Palettes**: Includes 5 pre-bundled CSS theme stylesheets (`nayuta`, `nayuta-aqua`, `midnight-blue`, `oled-dark`, `sakura-pink`) in `src/styles/themes/`, selected statically via `config.ts` and injected at build time.
 - **👥 Built-in Templates**:
   - `PageTemplate`: Default multi-column page template with slots for sidebar widgets and styled prose.
@@ -138,7 +139,7 @@ Visit `http://localhost:4321` in your browser.
 # Type check TypeScript files
 bun run check
 
-# Test reading-time calculation and Markdown/MDX integration
+# Test reading-time calculation and post tags, including Astro integration
 bun run test
 
 # Build static output
@@ -197,15 +198,31 @@ title: 'The Architecture of Reading-First Design'
 publishDate: '2026-09-09'
 description: 'A deep dive into balancing information density and typography.'
 cover: '/assets/images/banner.png'
+tags: ['Astro', '前端开发', 'CSS Grid']
 ---
 
 Article body in Markdown or MDX...
 ```
 
+`tags` is an optional array of strings with no fixed tag count. Omit it or use
+`tags: []` for an untagged post. Names are trimmed, must not be empty, and are
+deduplicated in their authored order. Matching is case-sensitive: `Astro` and
+`astro` are separate tags.
+
+Tags appear after the article body and link to `/tag/<name>`. Each archive lists
+all matching articles by publish date, newest first, with the same cover,
+description, and reading-time display as `/posts`. Chinese names and spaces are
+supported; links are URL-encoded (for example, `CSS Grid` links to
+`/tag/CSS%20Grid`). Archives are generated at build time for tags used in posts;
+unknown tags have no generated page.
+
+The `tag-cloud` sidebar widget derives its links from these post tags and hides
+itself when no posts have tags. Friend-card tags are separate display metadata.
+
 Reading time is calculated automatically from the article body during
 Markdown/MDX compilation and displayed consistently on the post list and detail
-pages. Do not add `readingTime` or `readingTimeMinutes` to frontmatter; manual
-values do not override the estimate.
+pages and tag archives. Do not add `readingTime` or `readingTimeMinutes` to
+frontmatter; manual values do not override the estimate.
 
 The estimate combines CJK characters (Chinese Han characters, Japanese kana,
 and Korean Hangul) at 400 characters per minute with other words at 200 words

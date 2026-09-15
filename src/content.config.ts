@@ -12,6 +12,10 @@ const postsCollection = defineCollection({
         .union([z.string().regex(/^(?:\/|https?:\/\/)/i), image()])
         .optional(),
       description: z.string().optional(),
+      tags: z
+        .array(z.string().trim().min(1, 'Tags must not be empty.'))
+        .default([])
+        .transform((tags) => [...new Set(tags)]),
     }),
 });
 

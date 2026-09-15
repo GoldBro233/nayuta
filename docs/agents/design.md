@@ -129,13 +129,18 @@ Current implemented widgets:
 
 - `ProfileCard`: Author identity, avatar, bio, and social/navigation link rows.
 - `RecentPosts`: Recent blog posts list with dates and reading time.
+- `PostList`: Shared post summaries for the post index and tag archives, with
+  descending publish-date sorting, covers, descriptions, and compiled reading
+  time. Both listing pages place this widget directly after the page title.
 - `FriendCard`: Friend link presentation card with avatar, name, description,
   and site logo.
 - `WebsiteStatus`: Site operational status, uptime since date, and dynamic site
   metrics.
 - `TableOfContents`: Article heading navigation hierarchy.
 - `Categories`: Category listing widget.
-- `TagCloud`: Aggregated tag cloud widget.
+- `TagCloud`: Links to distinct tags from the posts collection; hidden when
+  there are no post tags. Appears after `RecentPosts` in the left region on the
+  post reader; uses the left drawer on mobile.
 - `SearchWidget`: Site search trigger / input widget.
 - `Widget`: Base card container wrapper with title header and content slot.
 
@@ -213,9 +218,22 @@ there. Content schemas and collection loaders belong in `src/content.config.ts`.
 Current content collections:
 
 - `posts`: Markdown/MDX blog posts with title, publishDate, cover,
-  and description.
+  description, and optional tags.
 - `pages`: Markdown/MDX standalone pages supporting customizable templates,
   breadcrumbs, widget slots, and structured friend metadata.
+
+Post `tags` is a string array defaulting to `[]`. The schema trims names, rejects
+blank values, and removes duplicates while retaining author order. Names remain
+case-sensitive. The post reader renders tag links after the body, outside prose
+styling, and omits the tag bar when empty. `/tag/<name>` statically lists every
+matching post, using `PostList` for shared sorting and presentation. Tag-cloud
+queries and archive grouping remain in their consuming `.astro` frontmatter.
+URLs encode tag names, including Chinese text and spaces; display labels retain
+their original text. Friend-card tags do not participate in post archives.
+
+`bun run test` covers tag validation and generated article, archive, and tag-cloud
+HTML using temporary content in an isolated copy of the site. Test fixtures do
+not modify authored content or `design/`.
 
 ### Shared Theme Utilities
 
@@ -229,8 +247,9 @@ frontmatter. `src/utils/reading-time.ts` contains the shared text extraction,
 counting, formatting, and remark plugin used by the post list and detail pages.
 Extraction and counting are private to this module. The plugin is registered through
 `markdown.processor` in `astro.config.mjs`; MDX inherits its remark plugins.
-Routes read numeric `readingTimeMinutes` from `render(entry)`'s
-`remarkPluginFrontmatter` and use the shared formatter for `1 min` / `4 mins`.
+The post reader and `PostList` read numeric `readingTimeMinutes` from
+`render(entry)`'s `remarkPluginFrontmatter` and use the shared formatter for
+`1 min` / `4 mins`.
 Do not read reading time from `entry.data`, restore a manual field, or calculate
 it in browser code. Missing or invalid generated metadata is an integration
 error and must not silently fall back to a fixed estimate.
@@ -254,7 +273,9 @@ Pages compose layouts, widgets, content data, and components:
   status, and introductory bio.
 - `src/pages/posts/index.astro`: Post listing and archives.
 - `src/pages/posts/[slug].astro`: Individual post reader with table of contents
-  and cover display.
+  and cover display, followed by tag links.
+- `src/pages/tag/[name].astro`: Static tag archives showing all matching posts
+  in descending publish-date order.
 - `src/pages/[...slug].astro`: Dynamic page router delegating to templates.
 - `src/pages/404.astro`: Static error page showing only `404` in the main
   content area, with the standard homepage sidebar, footer, and mobile drawer.

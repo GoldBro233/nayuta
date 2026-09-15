@@ -1,0 +1,132 @@
+---
+import { Image } from 'astro:assets';
+import { render, type CollectionEntry } from 'astro:content';
+import { formatReadingTime } from '../utils/reading-time';
+
+interface Props {
+  posts: CollectionEntry<'posts'>[];
+}
+
+const { posts } = Astro.props;
+const sortedPosts = [...posts].sort(
+  (a, b) =>
+    new Date(b.data.publishDate).getTime() -
+    new Date(a.data.publishDate).getTime(),
+);
+const postsWithReadingTime = await Promise.all(
+  sortedPosts.map(async (post) => {
+    const { remarkPluginFrontmatter } = await render(post);
+    return {
+      post,
+      readingTime: formatReadingTime(
+        remarkPluginFrontmatter.readingTimeMinutes,
+      ),
+    };
+  }),
+);
+---
+
+<div class="post-list">
+  {
+    postsWithReadingTime.map(({ post, readingTime }) => (
+      <article class="post-summary">
+        <h2 class="post-title">
+          <a href={`/posts/${post.id}`}>{post.data.title}</a>
+        </h2>
+        <div class="post-meta">
+          <span>Published: {post.data.publishDate}</span>
+          <span>Reading: {readingTime}</span>
+        </div>
+        {post.data.cover && (
+          <div class="post-cover-container">
+            {typeof post.data.cover === 'string' ? (
+              <img
+                class="post-cover"
+                src={post.data.cover}
+                alt={post.data.title}
+              />
+            ) : (
+              <Image
+                class="post-cover"
+                src={post.data.cover}
+                alt={post.data.title}
+              />
+            )}
+          </div>
+        )}
+        {post.data.description && (
+          <p class="post-description">{post.data.description}</p>
+        )}
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--ny-space-4));
+    margin-top: var(--ny-space-6);
+  }
+
+  .post-summary {
+    border-bottom: 1px solid var(--ny-color-border);
+    padding-bottom: var(--ny-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--ny-space-3) / 2);
+  }
+
+  .post-list .post-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: var(--ny-space-1);
+  }
+
+  .post-list .post-title a {
+    color: var(--ny-color-text);
+    text-decoration: none;
+  }
+
+  .post-list .post-title a:hover {
+    color: var(--ny-color-outline);
+    text-decoration: underline;
+  }
+
+  .post-meta {
+    font-size: 11px;
+    color: var(--ny-color-text-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ny-space-1) var(--ny-space-4);
+  }
+
+  .post-cover-container {
+    width: 100%;
+    border-radius: var(--ny-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--ny-color-border);
+    aspect-ratio: 16 / 9;
+    margin-top: var(--ny-space-2);
+    background-color: var(--ny-color-surface-container);
+  }
+
+  .post-cover-container .post-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    border: none;
+    border-radius: 0;
+  }
+
+  .post-list .post-description {
+    color: var(--ny-color-text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: var(--ny-space-2);
+    margin-bottom: 0;
+  }
+</style>

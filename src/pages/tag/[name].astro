@@ -1,0 +1,43 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { getCollection } from 'astro:content';
+import Frame from '../../layouts/frame.astro';
+import Prose from '../../components/Prose.astro';
+import PostList from '../../widgets/PostList.astro';
+import ProfileCard from '../../widgets/ProfileCard.astro';
+import RecentPosts from '../../widgets/RecentPosts.astro';
+import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('posts');
+  const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+
+  return tags.map((tag) => ({
+    params: { name: tag },
+    props: {
+      tag,
+      posts: posts.filter((post) => post.data.tags.includes(tag)),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { tag, posts } = Astro.props;
+const breadcrumbs = [
+  { text: 'Home', href: '/' },
+  { text: 'Posts', href: '/posts' },
+  { text: `Tag: ${tag}`, href: `/tag/${encodeURIComponent(tag)}` },
+];
+---
+
+<Frame title={`Tag: ${tag}`} breadcrumbs={breadcrumbs}>
+  <ProfileCard slot="left-header" />
+  <RecentPosts slot="left" />
+  <WebsiteStatus slot="left" />
+
+  <Prose>
+    <h1 class="page-title">Tag: {tag}</h1>
+
+    <PostList posts={posts} />
+  </Prose>
+</Frame>

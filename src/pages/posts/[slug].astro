@@ -4,8 +4,10 @@ import { getCollection, render } from 'astro:content';
 import { formatReadingTime } from '../../utils/reading-time';
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../components/Prose.astro';
+import Tag from '../../components/Tag.astro';
 import ProfileCard from '../../widgets/ProfileCard.astro';
 import RecentPosts from '../../widgets/RecentPosts.astro';
+import TagCloud from '../../widgets/TagCloud.astro';
 import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
 import TableOfContents from '../../widgets/TableOfContents.astro';
 
@@ -36,6 +38,7 @@ const breadcrumbs = [
 >
   <ProfileCard slot="left-header" />
   <RecentPosts slot="left" />
+  <TagCloud slot="left" />
   <WebsiteStatus slot="left" />
 
   <Prose>
@@ -69,8 +72,44 @@ const breadcrumbs = [
     <Content />
   </Prose>
 
+  {
+    post.data.tags.length > 0 && (
+      <nav class="post-tags" aria-label="Post tags">
+        <ul>
+          {post.data.tags.map((tag) => (
+            <li>
+              <Tag href={`/tag/${encodeURIComponent(tag)}`} rel="tag">
+                {tag}
+              </Tag>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+
   <TableOfContents slot="right" headings={headings} />
 </Frame>
+
+<style>
+  .post-tags {
+    margin-top: var(--ny-space-6);
+    padding-top: var(--ny-space-4);
+    border-top: 1px solid var(--ny-color-border);
+  }
+
+  .post-tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ny-space-2);
+    list-style: none;
+  }
+
+  .post-tags li {
+    min-width: 0;
+    max-width: 100%;
+  }
+</style>
 
 <style is:global>
   /* Premium post-specific cover styles */

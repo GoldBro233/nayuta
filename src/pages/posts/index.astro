@@ -1,32 +1,14 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection, render } from 'astro:content';
-import { formatReadingTime } from '../../utils/reading-time';
+import { getCollection } from 'astro:content';
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../components/Prose.astro';
 import ProfileCard from '../../widgets/ProfileCard.astro';
+import PostList from '../../widgets/PostList.astro';
 import RecentPosts from '../../widgets/RecentPosts.astro';
 import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
 import Widget from '../../widgets/Widget.astro';
 
 const posts = await getCollection('posts');
-const sortedPosts = [...posts].sort((a, b) => {
-  return (
-    new Date(b.data.publishDate).getTime() -
-    new Date(a.data.publishDate).getTime()
-  );
-});
-const postsWithReadingTime = await Promise.all(
-  sortedPosts.map(async (post) => {
-    const { remarkPluginFrontmatter } = await render(post);
-    return {
-      post,
-      readingTime: formatReadingTime(
-        remarkPluginFrontmatter.readingTimeMinutes,
-      ),
-    };
-  }),
-);
 
 const breadcrumbs = [
   { text: 'Home', href: '/' },
@@ -42,50 +24,7 @@ const breadcrumbs = [
   <Prose>
     <h1 class="page-title">Essays & Manuscript Logs</h1>
 
-    <div
-      style="display: flex; flex-direction: column; gap: 32px; margin-top: 24px;"
-    >
-      {
-        postsWithReadingTime.map(({ post, readingTime }) => (
-          <article style="border-bottom: 1px solid var(--ny-color-border); padding-bottom: 24px; display: flex; flex-direction: column; gap: 6px;">
-            <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">
-              <a
-                href={`/posts/${post.id}`}
-                style="color: var(--ny-color-text); text-decoration: none;"
-              >
-                {post.data.title}
-              </a>
-            </h2>
-            <div style="font-size: 11px; color: var(--ny-color-text-subtle); display: flex; gap: 16px;">
-              <span>Published: {post.data.publishDate}</span>
-              <span>Reading: {readingTime}</span>
-            </div>
-            {post.data.cover && (
-              <div style="width: 100%; border-radius: var(--ny-radius-md); overflow: hidden; border: 1px solid var(--ny-color-border); aspect-ratio: 16 / 9; margin-top: 8px; background-color: var(--ny-color-surface-container);">
-                {typeof post.data.cover === 'string' ? (
-                  <img
-                    src={post.data.cover}
-                    alt={post.data.title}
-                    style="width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; border: none; border-radius: 0;"
-                  />
-                ) : (
-                  <Image
-                    src={post.data.cover}
-                    alt={post.data.title}
-                    style="width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; border: none; border-radius: 0;"
-                  />
-                )}
-              </div>
-            )}
-            {post.data.description && (
-              <p style="color: var(--ny-color-text-muted); font-size: 13px; line-height: 1.6; margin-top: 8px; margin-bottom: 0;">
-                {post.data.description}
-              </p>
-            )}
-          </article>
-        ))
-      }
-    </div>
+    <PostList posts={posts} />
   </Prose>
 
   <Widget slot="right" title="Series Bulletin">
