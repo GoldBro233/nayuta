@@ -290,32 +290,14 @@ const {
     gap: 28px;
     position: sticky;
     top: var(--ny-layout-outer-padding-block);
+    height: calc(100vh - 2 * var(--ny-layout-outer-padding-block));
     max-height: calc(100vh - 2 * var(--ny-layout-outer-padding-block));
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--ny-color-border) transparent;
-    padding-right: 6px;
-  }
-
-  :global(.left-region::-webkit-scrollbar) {
-    width: 4px;
-  }
-
-  :global(.left-region::-webkit-scrollbar-track) {
-    background: transparent;
-  }
-
-  :global(.left-region::-webkit-scrollbar-thumb) {
-    background: var(--ny-color-border);
-    border-radius: var(--ny-radius-xs);
-  }
-
-  :global(.left-region::-webkit-scrollbar-thumb:hover) {
-    background: var(--ny-color-outline);
+    overflow: hidden;
   }
 
   :global(.left-footer) {
     margin-top: auto;
+    flex-shrink: 0;
     font-size: 10px;
     color: var(--ny-color-text-subtle);
     line-height: 1.6;
@@ -507,6 +489,7 @@ const {
 
     :global(.left-region) {
       top: calc(48px + 20px);
+      height: calc(100vh - 48px - 40px);
       max-height: calc(100vh - 48px - 40px);
     }
 
@@ -587,8 +570,9 @@ const {
     :global(.left-region) {
       position: static;
       top: auto;
+      height: auto;
       max-height: none;
-      overflow-y: visible;
+      overflow: visible;
       padding-right: 0;
       gap: 0;
     }

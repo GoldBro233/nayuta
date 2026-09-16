@@ -2,6 +2,7 @@
 import Frame from '../layouts/frame.astro';
 import ProfileCard from '../widgets/ProfileCard.astro';
 import RecentPosts from '../widgets/RecentPosts.astro';
+import TagCloud from '../widgets/TagCloud.astro';
 import WebsiteStatus from '../widgets/WebsiteStatus.astro';
 import DynamicWidget from '../widgets/DynamicWidget.astro';
 import LinkCard from '../components/LinkCard.astro';
@@ -80,6 +81,7 @@ const mySiteLogo = mySite ? mySite.avatar : null;
 >
   <ProfileCard slot="left-header" />
   <RecentPosts slot="left" />
+  <TagCloud slot="left" />
   <WebsiteStatus slot="left" />
 
   <div class="friend-page">

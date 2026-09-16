@@ -88,12 +88,54 @@ const { class: className = '' } = Astro.props;
 
   .prose :global(blockquote) {
     border-left: 3px solid var(--ny-color-primary);
-    padding-left: var(--ny-space-3);
+    border-radius: 0 var(--ny-radius-sm) var(--ny-radius-sm) 0;
+    padding: var(--ny-space-3) var(--ny-space-4);
+    margin: 20px 0;
     color: var(--ny-color-text-muted);
     font-style: italic;
-    margin: var(--ny-space-4) 0;
-    background-color: rgba(0, 153, 204, 0.02);
-    padding-block: 4px;
+    background-color: color-mix(
+      in srgb,
+      var(--ny-color-primary) 3%,
+      transparent
+    );
+  }
+
+  .prose :global(blockquote > :first-child) {
+    margin-top: 0 !important;
+  }
+
+  .prose :global(blockquote > :last-child) {
+    margin-bottom: 0 !important;
+  }
+
+  .prose :global(blockquote > p) {
+    margin-bottom: 12px;
+  }
+
+  .prose :global(blockquote blockquote) {
+    margin: 12px 0;
+    padding: 10px 14px;
+    border-left-width: 2px;
+    border-left-color: var(--ny-color-outline);
+    background-color: color-mix(
+      in srgb,
+      var(--ny-color-outline) 4%,
+      transparent
+    );
+  }
+
+  .prose :global(blockquote cite) {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    font-style: normal;
+    color: var(--ny-color-text-subtle);
+  }
+
+  .prose :global(q) {
+    quotes: '"' '"' "'" "'";
+    color: var(--ny-color-text-muted);
+    font-style: italic;
   }
 
   .prose :global(ul),

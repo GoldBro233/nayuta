@@ -4,6 +4,7 @@ import Frame from '../layouts/frame.astro';
 import Prose from '../components/Prose.astro';
 import ProfileCard from '../widgets/ProfileCard.astro';
 import RecentPosts from '../widgets/RecentPosts.astro';
+import TagCloud from '../widgets/TagCloud.astro';
 import WebsiteStatus from '../widgets/WebsiteStatus.astro';
 ---
 
@@ -14,6 +15,7 @@ import WebsiteStatus from '../widgets/WebsiteStatus.astro';
 >
   <ProfileCard slot="left-header" />
   <RecentPosts slot="left" />
+  <TagCloud slot="left" />
   <WebsiteStatus slot="left" />
 
   <Prose>
