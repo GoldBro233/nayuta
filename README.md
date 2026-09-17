@@ -27,6 +27,9 @@ It implements an adaptive multi-column layout structure that keeps prose readabl
 
 > **Nayuta** takes its name from **Kani Nayuta** (_可児 那由多_), the eccentric, uninhibited genius novelist from Yomi Hirasaka's _A Sister's All You Need_ (_妹さえいればいい。_).
 
+> [!IMPORTANT]
+> The template is still under rapid development. Breaking changes may occur.
+
 ---
 
 ## 📸 Visual Showcase
