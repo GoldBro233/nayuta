@@ -10,7 +10,7 @@
 **A responsive, reading-first Astro theme for personal homepages and blogs, with reading-first layouts, reusable UI components, composed profile/blog widgets, semantic tokens, and accessible responsive surfaces.**
 
 [![Astro](https://img.shields.io/badge/Astro-7.x-FF5D01?style=flat-square&logo=astro&logoColor=white)](https://astro.build)
-[![TypeScript](https://img.shields.io/badge/TypeScript-7.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Bun](https://img.shields.io/badge/Bun-1.x-FBF0DF?style=flat-square&logo=bun&logoColor=black)](https://bun.sh)
 
 [Visual Showcase](#-visual-showcase) • [Key Features](#-key-features) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Configuration](#-configuration)
@@ -152,7 +152,7 @@ Visit `http://localhost:4321` in your browser.
 ### Production Build
 
 ```bash
-# Type check TypeScript files
+# Type check Astro templates and TypeScript files
 bun run check
 
 # Test reading-time calculation and post tags, including Astro integration
@@ -166,6 +166,12 @@ bun run preview
 ```
 
 Static output will be generated in `dist/`.
+
+The project uses TypeScript 6 because the official `@astrojs/check` currently
+supports TypeScript 5/6, not TypeScript 7. `bun run check` runs both `astro check`
+and `tsc` so template errors, including invalid HTML attribute types, are caught
+alongside ordinary TypeScript errors. Building or formatting alone does not
+validate Astro template types.
 
 ---
 
@@ -300,7 +306,7 @@ Page content goes here...
 - **Content Engine**: [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
 - **Authoring Format**: Markdown & [MDX](https://mdxjs.com)
 - **Icons**: Font Awesome 6
-- **Code Quality**: TypeScript, Prettier, `prettier-plugin-astro`
+- **Code Quality**: TypeScript 6, `@astrojs/check`, Prettier, `prettier-plugin-astro`
 
 ---
 

@@ -551,14 +551,13 @@ Expected behavior:
 
 ## Agent Guidance
 
-`bun run check` currently runs the TypeScript compiler for ordinary TypeScript
-files; it does not validate `.astro` templates. Use Astro template diagnostics
-when changing component props or HTML attributes. A successful build or
-Prettier check does not establish template type correctness. The current
-`@astrojs/check` 0.9.10 supports TypeScript 5/6, while this project uses
-TypeScript 7. When validating with an isolated compatible checker, report that
-toolchain separately and verify that it actually checked project files. Do not
-silently downgrade the project's TypeScript version to run the checker.
+`bun run check` runs `astro check` for Astro template diagnostics followed by
+`tsc` for ordinary TypeScript files. Run it when changing component props or
+HTML attributes; a successful build or Prettier check does not establish
+template type correctness. The project uses TypeScript 6 because
+`@astrojs/check` 0.9.10 supports TypeScript 5/6, not TypeScript 7. Keep both
+checks in the script and verify checker compatibility before upgrading the
+TypeScript major version.
 
 When generating code or documentation for `nayuta`, preserve these boundaries:
 
