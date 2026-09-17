@@ -7,10 +7,10 @@
 
 # Nayuta
 
-**A responsive, reading-first Astro theme for personal homepages, blogs, and digital gardens.**
+**A responsive, reading-first Astro theme for personal homepages and blogs, with reading-first layouts, reusable UI components, composed profile/blog widgets, semantic tokens, and accessible responsive surfaces.**
 
-[![Astro](https://img.shields.io/badge/Astro-6.x-FF5D01?style=flat-square&logo=astro&logoColor=white)](https://astro.build)
-[![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Astro](https://img.shields.io/badge/Astro-7.x-FF5D01?style=flat-square&logo=astro&logoColor=white)](https://astro.build)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Bun](https://img.shields.io/badge/Bun-1.x-FBF0DF?style=flat-square&logo=bun&logoColor=black)](https://bun.sh)
 
 [Visual Showcase](#-visual-showcase) • [Key Features](#-key-features) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Configuration](#-configuration)
@@ -67,7 +67,7 @@ _Reading view with hierarchical Table of Contents, code blocks, and metadata wid
   - **Main Region**: Primary reading content, article stream, or custom page markdown.
   - **Right Region**: Contextual widgets (e.g., Table of Contents on articles, or custom widgets on pages).
 - **📱 Responsive Drawer Navigation**: On screens below 1120px/768px, sidebars collapse into a sticky top navigation bar with toggleable slide-out drawers powered by lightweight vanilla JS.
-- **⚡ Astro 6 Content Collections**: Type-safe frontmatter validation with Zod schemas and Astro `glob` loaders for both `posts` and `pages`.
+- **⚡ Astro 7 Content Collections**: Type-safe frontmatter validation with Zod schemas and Astro `glob` loaders for both `posts` and `pages`.
 - **🏷️ Post Tags**: Multiple tags per article, linked at the end of each post, with static `/tag/<name>` archives and a content-driven tag cloud.
 - **🎨 Preset Theme Palettes**: Includes 5 pre-bundled CSS theme stylesheets (`nayuta`, `nayuta-aqua`, `midnight-blue`, `oled-dark`, `sakura-pink`) in `src/styles/themes/`, selected statically via `config.ts` and injected at build time.
 - **👥 Built-in Templates**:
@@ -157,7 +157,7 @@ Static output will be generated in `dist/`.
 
 ### 1. Site Configuration (`src/config.ts`)
 
-Site title, author bio, static theme preset, and navigation links are configured in [`src/config.ts`](file:///home/leo/Documents/Development/Personal/yuanzui-cf/nayuta/src/config.ts):
+Site title, author bio, static theme preset, and navigation links are configured in [`src/config.ts`](./src/config.ts):
 
 ```typescript
 import type { Config } from './types/config';
@@ -279,7 +279,7 @@ Page content goes here...
 
 ## 🛠 Tech Stack
 
-- **Core Framework**: [Astro 6](https://astro.build)
+- **Core Framework**: [Astro 7](https://astro.build)
 - **Runtime / Package Manager**: [Bun](https://bun.sh)
 - **Content Engine**: [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
 - **Authoring Format**: Markdown & [MDX](https://mdxjs.com)
