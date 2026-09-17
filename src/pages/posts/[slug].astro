@@ -28,6 +28,7 @@ const readingTime = formatReadingTime(
 const breadcrumbs = [
   { text: 'Home', href: '/' },
   { text: 'Posts', href: '/posts' },
+  { text: post.data.title, href: `/posts/${post.id}` },
 ];
 ---
 
