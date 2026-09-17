@@ -103,6 +103,8 @@ Current implemented components:
 - `Icon`: Polymorphic icon renderer supporting SVG, image, and Font Awesome
   icons.
 - `Input`: Single-line text input control.
+  Its `type` prop uses `HTMLAttributes<'input'>['type']` from `astro/types`
+  so callers and the template share Astro's native input-type definition.
 - `Prose`: Typography container providing comfortable reading flow and Markdown
   styling.
 - `TableContainer`: Horizontally scrollable wrapper for responsive tables.
@@ -208,6 +210,37 @@ belong in `src/styles/*`.
 
 The theme prefers semantic variables over hard-coded values in components and
 widgets.
+
+Typography sizes are defined in `global.css` using `rem`, so browser font-size
+preferences scale the theme. Choose tokens by role:
+
+- Reading text uses `--ny-font-size-prose` (16px at the default root size) and
+  `--ny-line-height-prose` (1.75). This includes paragraphs, lists, quotes,
+  callout bodies, post descriptions, and page prose on desktop and mobile.
+- Tables, code blocks, keyboard hints, captions, callout labels, and compact
+  card descriptions use `--ny-font-size-prose-small` (14px), usually with
+  `--ny-line-height-compact` (1.6).
+- Dates, reading time, profile counts, card URLs, and content tags use
+  `--ny-font-size-meta` (13px).
+- Page titles, section headings, and subheadings use `--ny-font-size-title`
+  (28px, reduced to 24px at viewport widths <= 768px), `--ny-font-size-heading`
+  (22px), and `--ny-font-size-subheading` (18px). Prose H4–H6 stay at the 16px
+  reading size; weight, color, spacing, and casing distinguish them. The
+  optional editorial display heading uses `--ny-font-size-display` (40px).
+- Sidebars and navigation retain their compact UI scale: `--ny-font-size-ui`
+  (13px), `--ny-font-size-ui-small` (12px), `--ny-font-size-ui-meta` (11px),
+  and `--ny-font-size-ui-micro` (10px). The profile name uses
+  `--ny-font-size-ui-title` (20px); icon glyphs use `--ny-font-size-icon` (14px).
+  These UI roles must not be used to size reading text.
+- `Tag` defaults to the compact UI size. A content container may set
+  `--ny-tag-font-size` to the metadata token, as the post reader's tag bar does,
+  without changing sidebar tags.
+
+Use the existing `/posts/typography-test` page to inspect headings, prose,
+lists, nested quotes, tables, code, media, and callouts at desktop and mobile
+widths. Also check post summaries and the friends template when adjusting the
+shared typography scale. Prose tables and code blocks scroll horizontally
+within the reading region when their contents are wider than the viewport.
 
 ### Content
 
@@ -517,6 +550,15 @@ Expected behavior:
   `<header>`, `<footer>`).
 
 ## Agent Guidance
+
+`bun run check` currently runs the TypeScript compiler for ordinary TypeScript
+files; it does not validate `.astro` templates. Use Astro template diagnostics
+when changing component props or HTML attributes. A successful build or
+Prettier check does not establish template type correctness. The current
+`@astrojs/check` 0.9.10 supports TypeScript 5/6, while this project uses
+TypeScript 7. When validating with an isolated compatible checker, report that
+toolchain separately and verify that it actually checked project files. Do not
+silently downgrade the project's TypeScript version to run the checker.
 
 When generating code or documentation for `nayuta`, preserve these boundaries:
 

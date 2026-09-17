@@ -29,7 +29,9 @@ const displayTitle = title || defaultTitles[type] || type.toUpperCase();
     border-radius: 0 var(--ny-radius-md) var(--ny-radius-md) 0;
     margin: 20px 0;
     border-left: 4px solid var(--ny-color-border);
-    font-size: 12px;
+    font-family: var(--ny-font-prose);
+    font-size: var(--ny-font-size-prose);
+    line-height: var(--ny-line-height-prose);
   }
 
   .callout-title {
@@ -39,7 +41,8 @@ const displayTitle = title || defaultTitles[type] || type.toUpperCase();
     align-items: center;
     gap: 6px;
     text-transform: uppercase;
-    font-size: 10px;
+    font-size: var(--ny-font-size-prose-small);
+    line-height: var(--ny-line-height-compact);
   }
 
   .callout :global(> :first-child) {

@@ -14,22 +14,26 @@ const { class: className = '' } = Astro.props;
   .prose {
     font-family: var(--ny-font-prose);
     color: var(--ny-color-text);
-    font-size: 13px;
-    line-height: 1.7;
+    font-size: var(--ny-font-size-prose);
+    line-height: var(--ny-line-height-prose);
     overflow-wrap: break-word;
     word-wrap: break-word;
   }
 
-  .prose :global(h1.page-title) {
-    font-size: 26px;
+  .prose :global(h1) {
+    font-size: var(--ny-font-size-title);
     font-weight: 700;
     color: var(--ny-color-text);
     margin-bottom: 24px;
-    line-height: 1.2;
+    line-height: var(--ny-line-height-title);
+  }
+
+  .prose :global(:is(h2, h3, h4, h5, h6)) {
+    line-height: var(--ny-line-height-heading);
   }
 
   .prose :global(p) {
-    margin-bottom: 18px;
+    margin-bottom: 1.125em;
   }
 
   .prose :global(a) {
@@ -44,7 +48,7 @@ const { class: className = '' } = Astro.props;
   }
 
   .prose :global(h2) {
-    font-size: 18px;
+    font-size: var(--ny-font-size-heading);
     font-weight: 700;
     color: var(--ny-color-text);
     margin-top: 32px;
@@ -54,7 +58,7 @@ const { class: className = '' } = Astro.props;
   }
 
   .prose :global(h3) {
-    font-size: 15px;
+    font-size: var(--ny-font-size-subheading);
     font-weight: 600;
     color: var(--ny-color-text);
     margin-top: 24px;
@@ -62,7 +66,7 @@ const { class: className = '' } = Astro.props;
   }
 
   .prose :global(h4) {
-    font-size: 13px;
+    font-size: var(--ny-font-size-prose);
     font-weight: 600;
     color: var(--ny-color-text);
     margin-top: 18px;
@@ -70,7 +74,7 @@ const { class: className = '' } = Astro.props;
   }
 
   .prose :global(h5) {
-    font-size: 12px;
+    font-size: var(--ny-font-size-prose);
     font-weight: 600;
     color: var(--ny-color-text-muted);
     margin-top: 16px;
@@ -78,7 +82,7 @@ const { class: className = '' } = Astro.props;
   }
 
   .prose :global(h6) {
-    font-size: 11px;
+    font-size: var(--ny-font-size-prose);
     font-weight: 600;
     color: var(--ny-color-text-subtle);
     margin-top: 16px;
@@ -127,7 +131,7 @@ const { class: className = '' } = Astro.props;
   .prose :global(blockquote cite) {
     display: block;
     margin-top: 8px;
-    font-size: 11px;
+    font-size: var(--ny-font-size-prose-small);
     font-style: normal;
     color: var(--ny-color-text-subtle);
   }
@@ -246,17 +250,22 @@ const { class: className = '' } = Astro.props;
   }
 
   .prose :global(figcaption) {
-    font-size: 11px;
+    font-size: var(--ny-font-size-prose-small);
+    line-height: var(--ny-line-height-compact);
     color: var(--ny-color-text-subtle);
     text-align: center;
     font-style: italic;
   }
 
   .prose :global(table) {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
     width: 100%;
     border-collapse: collapse;
     margin: 0;
-    font-size: 12px;
+    font-size: var(--ny-font-size-prose-small);
+    line-height: var(--ny-line-height-compact);
   }
 
   .prose :global(th),
@@ -292,8 +301,8 @@ const { class: className = '' } = Astro.props;
       inset 0 0 0 1px rgba(255, 255, 255, 0.05);
     color: var(--ny-color-text);
     display: inline-block;
-    font-size: 11px;
-    line-height: 1.4;
+    font-size: var(--ny-font-size-prose-small);
+    line-height: var(--ny-line-height-heading);
     margin: 0 0.1em;
     padding: 0.15em 0.6em;
     white-space: nowrap;
@@ -325,8 +334,8 @@ const { class: className = '' } = Astro.props;
     width: 100%;
     margin: var(--ny-space-4) 0;
     font-family: var(--ny-font-code);
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: var(--ny-font-size-prose-small);
+    line-height: var(--ny-line-height-compact);
     -webkit-overflow-scrolling: touch;
   }
 
@@ -352,7 +361,7 @@ const { class: className = '' } = Astro.props;
   }
 
   .prose :global(.post-heading-huge) {
-    font-size: 40px;
+    font-size: var(--ny-font-size-display);
     font-weight: 900;
     line-height: 1.1;
     text-transform: uppercase;

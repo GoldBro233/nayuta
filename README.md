@@ -37,8 +37,8 @@ It implements an adaptive multi-column layout structure that keeps prose readabl
 
 _Three-column desktop layout featuring the identity card, reading stream, and responsive mobile adaptation._
 
-| Desktop Experience (1920×1080) | Responsive Mobile (440×956) |
-| :----------------------------: | :-------------------------: |
+|                                 Desktop Experience (1920×1080)                                  |                                 Responsive Mobile (440×956)                                 |
+| :---------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
 | <img src="./docs/assets/01-home-desktop-1920x1080.png" alt="Nayuta Home Desktop" width="700" /> | <img src="./docs/assets/05-home-mobile-440x956.png" alt="Nayuta Home Mobile" width="180" /> |
 
 <br />
@@ -47,8 +47,8 @@ _Three-column desktop layout featuring the identity card, reading stream, and re
 
 _Paginated timeline stream with tag filtering, reading time indicators, and collapsed drawer navigation._
 
-| Desktop Experience (1920×1080) | Responsive Mobile (440×956) |
-| :----------------------------: | :-------------------------: |
+|                                  Desktop Experience (1920×1080)                                   |                                  Responsive Mobile (440×956)                                  |
+| :-----------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
 | <img src="./docs/assets/02-posts-desktop-1920x1080.png" alt="Nayuta Posts Desktop" width="700" /> | <img src="./docs/assets/06-posts-mobile-440x956.png" alt="Nayuta Posts Mobile" width="180" /> |
 
 <br />
@@ -57,8 +57,8 @@ _Paginated timeline stream with tag filtering, reading time indicators, and coll
 
 _Reading view with hierarchical Table of Contents, code blocks, callouts, and clean mobile reading flow._
 
-| Desktop Experience (1920×1080) | Responsive Mobile (440×956) |
-| :----------------------------: | :-------------------------: |
+|                                    Desktop Experience (1920×1080)                                     |                                    Responsive Mobile (440×956)                                    |
+| :---------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------: |
 | <img src="./docs/assets/03-article-desktop-1920x1080.png" alt="Nayuta Article Desktop" width="700" /> | <img src="./docs/assets/07-article-mobile-440x956.png" alt="Nayuta Article Mobile" width="180" /> |
 
 <br />
@@ -67,8 +67,8 @@ _Reading view with hierarchical Table of Contents, code blocks, callouts, and cl
 
 _Interactive friend links wall with connection cards, exchange guidelines, and responsive single-column layout._
 
-| Desktop Experience (1920×1080) | Responsive Mobile (440×956) |
-| :----------------------------: | :-------------------------: |
+|                                    Desktop Experience (1920×1080)                                     |                                    Responsive Mobile (440×956)                                    |
+| :---------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------: |
 | <img src="./docs/assets/04-friends-desktop-1920x1080.png" alt="Nayuta Friends Desktop" width="700" /> | <img src="./docs/assets/08-friends-mobile-440x956.png" alt="Nayuta Friends Mobile" width="180" /> |
 
 </div>

@@ -79,7 +79,8 @@ const postsWithReadingTime = await Promise.all(
   }
 
   .post-list .post-title {
-    font-size: 18px;
+    font-size: var(--ny-font-size-heading);
+    line-height: var(--ny-line-height-heading);
     font-weight: 700;
     margin-top: 0px !important;
     margin-bottom: var(--ny-space-1);
@@ -96,7 +97,8 @@ const postsWithReadingTime = await Promise.all(
   }
 
   .post-meta {
-    font-size: 11px;
+    font-size: var(--ny-font-size-meta);
+    line-height: var(--ny-line-height-compact);
     color: var(--ny-color-text-subtle);
     display: flex;
     flex-wrap: wrap;
@@ -125,8 +127,8 @@ const postsWithReadingTime = await Promise.all(
 
   .post-list .post-description {
     color: var(--ny-color-text-muted);
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: var(--ny-font-size-prose);
+    line-height: var(--ny-line-height-prose);
     margin-top: var(--ny-space-2);
     margin-bottom: 0;
   }
