@@ -7,7 +7,7 @@ interface Props {
 
 const { className = '' } = Astro.props;
 const currentYear = new Date().getFullYear();
-const configuredSince = config.since ?? config.site_start_date;
+const configuredSince = config.since;
 const sinceYear = configuredSince
   ? new Date(configuredSince).getFullYear()
   : undefined;

@@ -23,7 +23,6 @@ export interface Config {
   site_url?: string;
   // Website start/launch date for running time calculation (e.g. '2024-01-01')
   since?: string | Date;
-  site_start_date?: string | Date;
 
   // Theme name in src/styles/themes/ without .css extension (e.g. 'nayuta-aqua')
   theme?: string;
