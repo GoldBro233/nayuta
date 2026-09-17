@@ -6,6 +6,7 @@ import Prose from '../../components/Prose.astro';
 import PostList from '../../widgets/PostList.astro';
 import ProfileCard from '../../widgets/ProfileCard.astro';
 import RecentPosts from '../../widgets/RecentPosts.astro';
+import TagCloud from '../../widgets/TagCloud.astro';
 import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
 
 export const getStaticPaths = (async () => {
@@ -33,6 +34,7 @@ const breadcrumbs = [
 <Frame title={`Tag: ${tag}`} breadcrumbs={breadcrumbs}>
   <ProfileCard slot="left-header" />
   <RecentPosts slot="left" />
+  <TagCloud slot="left" />
   <WebsiteStatus slot="left" />
 
   <Prose>
