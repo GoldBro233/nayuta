@@ -30,13 +30,6 @@ const postsWithReadingTime = await Promise.all(
   {
     postsWithReadingTime.map(({ post, readingTime }) => (
       <article class="post-summary">
-        <h2 class="post-title">
-          <a href={`/posts/${post.id}`}>{post.data.title}</a>
-        </h2>
-        <div class="post-meta">
-          <span>Published: {post.data.publishDate}</span>
-          <span>Reading: {readingTime}</span>
-        </div>
         {post.data.cover && (
           <div class="post-cover-container">
             {typeof post.data.cover === 'string' ? (
@@ -54,6 +47,13 @@ const postsWithReadingTime = await Promise.all(
             )}
           </div>
         )}
+        <h2 class="post-title">
+          <a href={`/posts/${post.id}`}>{post.data.title}</a>
+        </h2>
+        <div class="post-meta">
+          <span>Published: {post.data.publishDate}</span>
+          <span>Reading: {readingTime}</span>
+        </div>
         {post.data.description && (
           <p class="post-description">{post.data.description}</p>
         )}
@@ -79,9 +79,11 @@ const postsWithReadingTime = await Promise.all(
   }
 
   .post-list .post-title {
-    font-size: 18px;
+    font-size: var(--ny-font-size-heading);
+    line-height: var(--ny-line-height-heading);
     font-weight: 700;
-    margin-top: 0px !important;
+    border-bottom: 0 !important;
+    margin-top: 0 !important;
     margin-bottom: var(--ny-space-1);
   }
 
@@ -96,7 +98,8 @@ const postsWithReadingTime = await Promise.all(
   }
 
   .post-meta {
-    font-size: 11px;
+    font-size: var(--ny-font-size-meta);
+    line-height: var(--ny-line-height-compact);
     color: var(--ny-color-text-subtle);
     display: flex;
     flex-wrap: wrap;
@@ -109,7 +112,7 @@ const postsWithReadingTime = await Promise.all(
     overflow: hidden;
     border: 1px solid var(--ny-color-border);
     aspect-ratio: 16 / 9;
-    margin-top: var(--ny-space-2);
+    margin-bottom: var(--ny-space-3);
     background-color: var(--ny-color-surface-container);
   }
 
@@ -125,8 +128,8 @@ const postsWithReadingTime = await Promise.all(
 
   .post-list .post-description {
     color: var(--ny-color-text-muted);
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: var(--ny-font-size-prose);
+    line-height: var(--ny-line-height-prose);
     margin-top: var(--ny-space-2);
     margin-bottom: 0;
   }

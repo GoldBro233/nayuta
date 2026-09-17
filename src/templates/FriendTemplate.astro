@@ -186,6 +186,9 @@ const mySiteLogo = mySite ? mySite.avatar : null;
 
 <style>
   .friend-page {
+    font-size: var(--ny-font-size-prose);
+    line-height: var(--ny-line-height-prose);
+    overflow-wrap: anywhere;
     display: flex;
     flex-direction: column;
     gap: 36px;
@@ -197,10 +200,10 @@ const mySiteLogo = mySite ? mySite.avatar : null;
   }
 
   .page-title {
-    font-size: 26px;
+    font-size: var(--ny-font-size-title);
     font-weight: 700;
     color: var(--ny-color-text);
-    line-height: 1.2;
+    line-height: var(--ny-line-height-title);
     margin: 0;
   }
 
@@ -216,6 +219,8 @@ const mySiteLogo = mySite ? mySite.avatar : null;
 
   .section-header {
     display: flex;
+    flex-wrap: wrap;
+    gap: var(--ny-space-2) var(--ny-space-4);
     align-items: baseline;
     justify-content: space-between;
     border-bottom: 1px solid var(--ny-color-border);
@@ -223,7 +228,8 @@ const mySiteLogo = mySite ? mySite.avatar : null;
   }
 
   .section-title {
-    font-size: 15px;
+    font-size: var(--ny-font-size-heading);
+    line-height: var(--ny-line-height-heading);
     font-weight: 700;
     color: var(--ny-color-text);
     display: flex;
@@ -238,7 +244,8 @@ const mySiteLogo = mySite ? mySite.avatar : null;
   }
 
   .section-count {
-    font-size: 11px;
+    font-size: var(--ny-font-size-meta);
+    line-height: var(--ny-line-height-compact);
     color: var(--ny-color-text-subtle);
     font-family: var(--ny-font-code);
   }
@@ -266,14 +273,14 @@ const mySiteLogo = mySite ? mySite.avatar : null;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    font-size: 13px;
+    font-size: var(--ny-font-size-prose);
   }
 
   .info-row {
     display: flex;
     align-items: baseline;
     gap: 14px;
-    line-height: 1.6;
+    line-height: var(--ny-line-height-prose);
   }
 
   .info-label {
@@ -282,7 +289,7 @@ const mySiteLogo = mySite ? mySite.avatar : null;
     font-weight: 600;
     color: var(--ny-color-text-muted);
     font-family: var(--ny-font-code);
-    font-size: 12px;
+    font-size: var(--ny-font-size-prose-small);
   }
 
   .info-value {

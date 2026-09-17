@@ -1,6 +1,8 @@
 ---
+import type { HTMLAttributes } from 'astro/types';
+
 interface Props {
-  type?: string;
+  type?: HTMLAttributes<'input'>['type'];
   class?: string;
   placeholder?: string;
   value?: string;
@@ -22,7 +24,7 @@ const { type = 'text', class: className = '', ...props } = Astro.props;
     border-radius: var(--ny-radius-sm);
     color: var(--ny-color-text);
     font-family: var(--ny-font-ui);
-    font-size: 11px;
+    font-size: var(--ny-font-size-ui-meta);
     padding: 0 8px;
     outline: none;
   }

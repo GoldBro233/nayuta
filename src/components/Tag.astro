@@ -22,7 +22,7 @@ const Element = href ? 'a' : 'span';
     display: inline-block;
     max-width: 100%;
     overflow-wrap: anywhere;
-    font-size: 10px;
+    font-size: var(--ny-tag-font-size, var(--ny-font-size-ui-micro));
     background-color: var(--ny-color-surface-container);
     border: 1px solid var(--ny-color-border);
     color: var(--ny-color-text-muted);

@@ -9,6 +9,28 @@
   --ny-font-code: var(--ny-font-ui);
   --ny-letter-spacing-ui: -0.01em;
 
+  /* Compact UI: preserve the sidebar's existing density. */
+  --ny-font-size-ui: 0.8125rem;
+  --ny-font-size-ui-small: 0.75rem;
+  --ny-font-size-ui-meta: 0.6875rem;
+  --ny-font-size-ui-micro: 0.625rem;
+  --ny-font-size-ui-title: 1.25rem;
+  --ny-font-size-icon: 0.875rem;
+
+  /* Reading content: shared across prose, summaries, and page templates. */
+  --ny-font-size-prose: 1rem;
+  --ny-font-size-prose-small: 0.875rem;
+  --ny-font-size-meta: 0.8125rem;
+  --ny-font-size-title: 1.75rem;
+  --ny-font-size-heading: 1.375rem;
+  --ny-font-size-subheading: 1.125rem;
+  --ny-font-size-display: 2.5rem;
+  --ny-line-height-ui: 1.5;
+  --ny-line-height-prose: 1.75;
+  --ny-line-height-compact: 1.6;
+  --ny-line-height-heading: 1.4;
+  --ny-line-height-title: 1.2;
+
   /* Border Radius */
   --ny-radius-xs: 2px;
   --ny-radius-sm: 4px;
@@ -38,6 +60,12 @@
   --ny-color-header-bg: color-mix(in srgb, var(--ny-color-bg) 85%, transparent);
 }
 
+@media (max-width: 768px) {
+  :root {
+    --ny-font-size-title: 1.5rem;
+  }
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -48,8 +76,8 @@ body {
   background-color: var(--ny-color-bg);
   color: var(--ny-color-text);
   font-family: var(--ny-font-ui);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--ny-font-size-ui);
+  line-height: var(--ny-line-height-ui);
   letter-spacing: var(--ny-letter-spacing-ui);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

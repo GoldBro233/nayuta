@@ -174,7 +174,7 @@ const fallbackStyle = [
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: var(--ny-font-size-prose);
     font-weight: 700;
     font-family: var(--ny-font-ui);
     user-select: none;
@@ -202,7 +202,8 @@ const fallbackStyle = [
   }
 
   .link-name {
-    font-size: 14px;
+    font-size: var(--ny-font-size-prose);
+    line-height: var(--ny-line-height-heading);
     font-weight: 700;
     color: var(--ny-color-text);
     white-space: nowrap;
@@ -230,7 +231,8 @@ const fallbackStyle = [
   }
 
   .link-site {
-    font-size: 11px;
+    font-size: var(--ny-font-size-meta);
+    line-height: var(--ny-line-height-compact);
     color: var(--ny-color-text-subtle);
     font-family: var(--ny-font-code);
     white-space: nowrap;
@@ -239,16 +241,16 @@ const fallbackStyle = [
   }
 
   .link-desc {
-    font-size: 12px;
+    font-size: var(--ny-font-size-prose-small);
     color: var(--ny-color-text-muted);
-    line-height: 1.55;
+    line-height: var(--ny-line-height-compact);
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 37px;
+    min-height: 2lh;
   }
 
   .link-tags {
@@ -260,7 +262,8 @@ const fallbackStyle = [
   }
 
   .link-tag {
-    font-size: 10px;
+    font-size: var(--ny-font-size-meta);
+    line-height: var(--ny-line-height-compact);
     font-family: var(--ny-font-code);
     color: var(--ny-color-text-subtle);
     background-color: var(--ny-color-surface-container);

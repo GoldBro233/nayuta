@@ -27,7 +27,7 @@ const { title, moreHref, moreText = 'More >' } = Astro.props;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font-size: 12px;
+    font-size: var(--ny-font-size-ui-small);
     font-weight: 600;
     color: var(--ny-color-text-subtle);
     text-transform: capitalize;
@@ -37,7 +37,7 @@ const { title, moreHref, moreText = 'More >' } = Astro.props;
   }
 
   .widget-header a {
-    font-size: 11px;
+    font-size: var(--ny-font-size-ui-meta);
     color: var(--ny-color-text-subtle);
     text-decoration: none;
   }
