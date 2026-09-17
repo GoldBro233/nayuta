@@ -78,6 +78,10 @@ const postsWithReadingTime = await Promise.all(
     gap: calc(var(--ny-space-3) / 2);
   }
 
+  .post-summary:last-child {
+    border-bottom: 0;
+  }
+
   .post-list .post-title {
     font-size: var(--ny-font-size-heading);
     line-height: var(--ny-line-height-heading);
