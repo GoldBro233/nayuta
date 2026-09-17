@@ -7,7 +7,6 @@ import PostList from '../../widgets/PostList.astro';
 import RecentPosts from '../../widgets/RecentPosts.astro';
 import TagCloud from '../../widgets/TagCloud.astro';
 import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
-import Widget from '../../widgets/Widget.astro';
 
 const posts = await getCollection('posts');
 
@@ -28,15 +27,6 @@ const breadcrumbs = [
 
     <PostList posts={posts} />
   </Prose>
-
-  <Widget slot="right" title="Series Bulletin">
-    <div class="widget-content-simple">
-      <div><strong>Current Work:</strong> The Pale Landscape</div>
-      <div><strong>Label:</strong> GF Bunko</div>
-      <div><strong>Editor:</strong> Kenjirou Toki</div>
-      <div><strong>Status:</strong> Naked writing mode ✍️</div>
-    </div>
-  </Widget>
 
   <style>
     .widget-content-simple {
