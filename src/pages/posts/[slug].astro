@@ -1,7 +1,9 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import { formatReadingTime } from '../../utils/reading-time';
+import { getPosts } from '../../utils/posts';
+import Badge from '../../components/Badge.astro';
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../components/Prose.astro';
 import Tag from '../../components/Tag.astro';
@@ -12,7 +14,7 @@ import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
 import TableOfContents from '../../widgets/TableOfContents.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
+  const posts = await getPosts();
   return posts.map((post) => ({
     params: { slug: post.id },
     props: { post },
@@ -63,7 +65,10 @@ const breadcrumbs = [
       )
     }
 
-    <h1 class="page-title">{post.data.title}</h1>
+    <h1 class="page-title">
+      {post.data.draft && <Badge variant="draft">Draft</Badge>}
+      {post.data.title}
+    </h1>
     <p class="post-meta">
       Published: {post.data.publishDate} &nbsp;•&nbsp; Reading Time: {
         readingTime
@@ -74,9 +79,14 @@ const breadcrumbs = [
   </Prose>
 
   {
-    post.data.tags.length > 0 && (
+    (post.data.tags.length > 0 || post.data.draft) && (
       <nav class="post-tags" aria-label="Post tags">
         <ul>
+          {post.data.draft && (
+            <li>
+              <Badge variant="draft">Draft</Badge>
+            </li>
+          )}
           {post.data.tags.map((tag) => (
             <li>
               <Tag href={`/tag/${encodeURIComponent(tag)}`} rel="tag">
@@ -93,6 +103,13 @@ const breadcrumbs = [
 </Frame>
 
 <style>
+  :global(.prose) .page-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ny-space-2);
+  }
+
   :global(.prose) .post-meta {
     color: var(--ny-color-text-subtle);
     font-size: var(--ny-font-size-meta);

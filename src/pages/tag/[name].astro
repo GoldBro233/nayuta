@@ -1,6 +1,6 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
-import { getCollection } from 'astro:content';
+import { getPosts } from '../../utils/posts';
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../components/Prose.astro';
 import PostList from '../../widgets/PostList.astro';
@@ -10,7 +10,7 @@ import TagCloud from '../../widgets/TagCloud.astro';
 import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
 
 export const getStaticPaths = (async () => {
-  const posts = await getCollection('posts');
+  const posts = await getPosts();
   const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
 
   return tags.map((tag) => ({

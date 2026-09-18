@@ -1,9 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
+import { getPosts } from '../utils/posts';
 import Tag from '../components/Tag.astro';
 import Widget from './Widget.astro';
 
-const posts = await getCollection('posts');
+const posts = await getPosts();
 const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
 ---
 

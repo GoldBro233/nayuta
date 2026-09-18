@@ -1,242 +1,119 @@
-# Nayuta Astro Theme Paradigm
+# Design
 
-This document describes the intended UI and architecture paradigm for `nayuta`.
-It is written as guidance for future agents working on the project.
+This document is an agent's guide to the Nayuta theme. It describes how the
+design tokens, layout, typography, components, and content fit together so new
+features remain consistent with existing styles.
 
-This document describes architecture, boundaries, component categories, and
-expected behavior.
+## System Design
 
-## Positioning
+### Design Tokens
 
-`nayuta` is an Astro personal homepage and blog theme.
+All colors, sizing, spacing, borders, shadows, transitions, and z-indices are
+defined in `src/styles/themes/nayuta.css` under the `--ny-*` namespace.
 
-The theme provides a polished, responsive, reading-first foundation for
-personal homepages, blogs, notes, and adjacent content pages. It combines Astro
-pages and layouts, reusable components, composed widgets, templates, content
-styling, design tokens, and theme support into a coherent site experience.
+Token rules:
 
-Short description:
+- Do not hard-code hex colors, pixel values, box shadows, or transition timings
+  in component styles when a token exists.
+- The base tokens in `nayuta.css` define the fallback design contract. Theme
+  stylesheets (`nayuta-aqua.css`, `midnight-blue.css`, `sakura-pink.css`,
+  `oled-dark.css`) override color variables without changing the token names.
+- When introducing a new component or style, reuse existing tokens:
+  - Text colors: `--ny-color-text`, `--ny-color-text-muted`, `--ny-color-text-subtle`
+  - Backgrounds: `--ny-color-bg`, `--ny-color-surface`, `--ny-color-surface-container`, `--ny-color-surface-elevated`
+  - Primary / accent: `--ny-color-primary`, `--ny-color-primary-hover`, `--ny-color-primary-active`, `--ny-color-outline`
+  - Borders: `--ny-color-border`
+  - Spacing: `--ny-space-1` through `--ny-space-10`
+  - Border radius: `--ny-radius-sm`, `--ny-radius-md`, `--ny-radius-lg`
+  - Shadows: `--ny-shadow-sm`, `--ny-shadow-md`, `--ny-shadow-lg`
+  - Transitions: `--ny-transition-fast`, `--ny-transition-normal`
+  - Typography: `--ny-font-family-base`, `--ny-font-family-heading`, `--ny-font-family-code`, `--ny-font-size-*`, `--ny-line-height-*`
 
-> `nayuta` is a responsive Astro theme for personal homepages and blogs, with
-> reading-first layouts, reusable UI components, composed profile/blog widgets,
-> semantic tokens, and accessible responsive surfaces.
+### Layout Architecture
 
-## Source of Truth for Visual Design and Tokens
+The site uses a responsive two-column grid (`frame.astro`) that adapts across
+four responsive stages:
 
-The visual foundation and design token system are defined in:
+1. **Desktop with TOC / right sidebar** (`> 1200px`):
+   - Left region (fixed width: `--ny-width-left-sidebar`, default `300px`): profile card, widgets, footer.
+   - Main region (flex-grow): breadcrumbs, article/page content.
+   - Right region (fixed width: `--ny-width-right-sidebar`, default `260px`): table of contents or context widgets.
+2. **Standard desktop** (`901px - 1200px`):
+   - Left region: visible.
+   - Main region: visible.
+   - Right region: hidden from grid, accessible via floating action button (FAB) + off-canvas drawer.
+3. **Tablet** (`641px - 900px`):
+   - Single-column layout.
+   - Left sidebar content moves to an off-canvas drawer opened via mobile sticky header.
+   - Main region takes full container width.
+4. **Mobile** (`<= 640px`):
+   - Single column with compact spacing and padding.
+   - Fixed sticky top header provides quick navigation and sidebar drawer toggle.
+   - Profile card collapses to compact horizontal layout.
+   - Left-sidebar footer moves below main content into a `.mobile-footer`.
 
-- `src/styles/global.css`: Typography, spacing rhythm, border radii, and layout
-  geometry.
-- `src/styles/themes/*.css`: Modular color schemes providing semantic color
-  tokens.
-- Existing components in `src/components/*`, widgets in `src/widgets/*`, and
-  layouts in `src/layouts/*`: Reference implementations for UI density,
-  interactive states, and responsive behavior.
+Layout rules:
 
-Agents should use these styling and component definitions to understand:
+- All pages must be wrapped in `frame.astro`.
+- Content in the main region must use `Prose.astro` or have `.prose` class
+  to inherit typography styles.
+- Avoid introducing independent sidebar drawer containers or fixed headers in
+  individual page templates. The canonical drawers (`#widgets-drawer`,
+  `#context-drawer`) and sticky header live in `frame.astro`.
+- Responsive breakpoint variables `--ny-breakpoint-tablet` (`900px`) and
+  `--ny-breakpoint-mobile` (`640px`) guide media queries.
 
-- Visual density and rhythm.
-- Typography direction: Monospace aesthetic centered on JetBrains Mono and Fira
-  Code.
-- Layout behavior across desktop, narrow, and mobile viewports.
-- Control, card, callout, prose, drawer, sidebar, and widget appearance.
+### Component Design Principles
 
-Concrete CSS values, colors, spacing, and breakpoints should use semantic
-tokens (`--ny-*`) rather than arbitrary ad-hoc inline styles.
+- **No CSS framework dependencies**: Components are built with vanilla CSS
+  scoped inside Astro `<style>` blocks. Do not add Tailwind, UnoCSS, or other
+  utility frameworks.
+- **Progressive Enhancement**: All content must be readable without JavaScript.
+  Drawer toggles, theme switching, running counters, and copy buttons enhance
+  the experience but must not break layout or hide content when scripts fail.
+- **Accessible markup**: Use semantic elements (`<nav>`, `<aside>`, `<main>`,
+  `<header>`, `<footer>`, `<article>`). Ensure buttons have descriptive
+  `aria-label`s and interactive elements have appropriate ARIA attributes.
+- **Theme-switch compatibility**: All components must look correct under both
+  light and dark variants of any theme stylesheet. Always use `--ny-color-*`
+  tokens rather than assumption-based colors.
 
-## Design Goals
+### Icons
 
-- Build an Astro-first personal homepage and blog theme.
-- Prioritize reading and content consumption over dashboard density.
-- Keep the homepage, blog, notes, and adjacent content pages cohesive.
-- Preserve a clear separation between components, widgets, layouts, templates,
-  styles, and content helpers.
-- Provide reusable base components for controls, surfaces, media, metadata, and
-  rich prose.
-- Provide composed widgets for profile, navigation, recent content, links,
-  status, table of contents, and related content.
-- Provide layouts for adaptive pages with optional side regions.
-- Support light and dark color schemes through semantic tokens and theme
-  variables.
-- Keep side information accessible on narrow screens through drawer-like,
-  collapsible, or relocated surfaces.
-- Prefer static Astro output and progressive enhancement for interactions that
-  need client-side behavior.
+- The theme bundles Font Awesome 6 via CDN in `head-base.astro`.
+- For component icons, use SVG with `fill="currentColor"` or Font Awesome
+  classes (`<i class="fa-solid fa-..."></i>`).
+- Profile / friend links support both icon strings and raw SVG paths in their
+  config data.
 
-## Architecture Layers
+### Typography
 
-`nayuta` organizes repository code by responsibility:
+Reading text across posts and pages scales with the viewport through the prose
+tokens in `src/styles/themes/nayuta.css`. The scale keeps a stable hierarchy:
 
-```text
-src/components/*
-src/widgets/*
-src/layouts/*
-src/templates/*
-src/styles/*
-src/content/*
-src/pages/*
-src/utils/*
-src/config.ts
-src/types/*
-```
+- Large article title: `--ny-font-size-title` (`2rem` - `2.375rem`), tight line
+  height `--ny-line-height-heading`.
+- Section headings:
+  - `h1`: `--ny-font-size-h1` (`1.625rem` - `1.875rem`)
+  - `h2`: `--ny-font-size-h2` (`1.375rem` - `1.5rem`)
+  - `h3`: `--ny-font-size-h3` (`1.125rem` - `1.2rem`)
+  - `h4`: `--ny-font-size-h4` (`1rem` - `1.0625rem`)
+  - `h5` / `h6`: `--ny-font-size-prose` with uppercase / muted treatment.
+- Body paragraphs and lists: `--ny-font-size-prose` (`1.0625rem` - `1.125rem`)
+  with comfortable line height `--ny-line-height-prose` (`1.85`).
+- Secondary UI, metadata, and breadcrumbs: `--ny-font-size-ui` (`0.875rem`),
+  `--ny-font-size-meta` (`0.8125rem`), and `--ny-font-size-ui-micro` (`0.6875rem`).
+- Code blocks and inline code: `--ny-font-size-code` (`0.875rem`),
+  `--ny-font-family-code`, line height `--ny-line-height-code` (`1.65`).
 
-Additional helper modules may exist when needed, but they should not blur these
-boundaries.
+When modifying `src/components/Prose.astro` or markdown rules, preserve body
+readability. Avoid loose line heights below `1.7` on long-form paragraphs, and
+keep section headings clearly separated with `margin-top: 1.8em` and a small
+gap below them. Inline elements (`a`, `strong`, `code`, `mark`) inherit the
+surrounding font-size; only specialized blocks (blockquotes, tables, figure
+captions) may introduce subtle sizing variations.
 
-### Components
-
-Components are small, reusable UI pieces.
-
-A component should be simple enough that it does not need to own a whole page or
-content model. Components define shape, styling, accessibility behavior, slots,
-simple local state, token usage, and progressive enhancement hooks when needed.
-
-Current implemented components:
-
-- `Avatar`: User avatar display with consistent border and aspect ratio.
-- `Badge`: Small inline badge/pill for metadata.
-- `Button`: Versatile button supporting both `<button>` and `<a>` elements, with
-  icon-only support.
-- `Callout`: Styled admonition box supporting `note`, `tip`, `important`,
-  `warning`, and `caution`.
-- `Card`: Baseline card surface wrapper.
-- `Icon`: Polymorphic icon renderer supporting SVG, image, and Font Awesome
-  icons.
-- `Input`: Single-line text input control.
-  Its `type` prop uses `HTMLAttributes<'input'>['type']` from `astro/types`
-  so callers and the template share Astro's native input-type definition.
-- `Prose`: Typography container providing comfortable reading flow and Markdown
-  styling.
-- `TableContainer`: Horizontally scrollable wrapper for responsive tables.
-- `Tag`: Clickable or display tag chip.
-
-Planned / optional future components:
-
-- `Collapse`
-- `Mask`
-- `Textarea`
-- `CodeBlock`
-- `Media`
-
-### Widgets
-
-Widgets are composed UI sections built from components, Astro components, HTML,
-and data.
-
-A widget carries homepage or blog theme semantics. Widgets can combine multiple
-components, consume site configuration or content data, manage local
-interaction, and expose a higher-level interface for pages and layouts.
-
-Current implemented widgets:
-
-- `ProfileCard`: Author identity, avatar, bio, and social/navigation link rows.
-- `RecentPosts`: Recent blog posts list with dates and reading time.
-- `PostList`: Shared post summaries for the post index and tag archives, with
-  descending publish-date sorting, covers, descriptions, and compiled reading
-  time. Both listing pages place this widget directly after the page title.
-- `FriendCard`: Friend link presentation card with avatar, name, description,
-  and site logo.
-- `WebsiteStatus`: Site operational status, uptime since date, and dynamic site
-  metrics.
-- `TableOfContents`: Article heading navigation hierarchy.
-- `Categories`: Category listing widget.
-- `TagCloud`: Links to distinct tags from the posts collection; hidden when
-  there are no post tags. Appears after `RecentPosts` in the left region on the
-  post reader; uses the left drawer on mobile.
-- `SearchWidget`: Site search trigger / input widget.
-- `Widget`: Base card container wrapper with title header and content slot.
-
-Planned / optional interactive widgets:
-
-- `Dialog`
-- `Toast`
-- `Popover`
-- `Drawer`
-- `Menu`
-- `Tabs`
-- `Tooltip`
-- `RelatedLinks`
-
-`FriendCard` is a widget-level pattern, built using card, avatar, badge, and
-tag primitives.
-
-### Layouts
-
-Layouts control page structure and responsive placement.
-
-Layout code belongs in `src/layouts/*`, not in `src/components/*` or
-`src/widgets/*`.
-
-Current layout modules:
-
-- `frame.astro`: Root HTML shell providing document structure, responsive
-  three-column grid, narrow-viewport sticky header, mobile drawer surfaces, and
-  progressive enhancement drawer scripts.
-- `left-sidebar.astro`: Structural container for the left region dividing
-  content into `header`, `widgets`, and `footer`.
-- `right-sidebar.astro`: Structural container for the right contextual region.
-- `head-base.astro`: Shared `<head>` element including SEO meta tags, title
-  formatting, and theme CSS injection.
-
-### Templates
-
-Templates provide full-page content presentations driven by content collections
-and frontmatter metadata.
-
-Template code belongs in `src/templates/*`.
-
-Current implemented templates:
-
-- `PageTemplate.astro`: Default template wrapping general prose pages within
-  the standard layout frame.
-- `FriendTemplate.astro`: Specialized page template organizing friend links
-  into structured categories, personal site showcase, and call-to-action
-  sections.
-
-Pages such as `src/pages/[...slug].astro` dynamically select and render
-templates according to the `template` attribute defined in the content
-collection entry.
-
-### Styles and Tokens
-
-Global styles, reset rules, prose defaults, design tokens, and theme variables
-belong in `src/styles/*`.
-
-- `src/styles/global.css`: Base resets, font declarations, typography tokens,
-  and structural layout measurements.
-- `src/styles/themes/*.css`: Modular theme stylesheets exposing `--ny-color-*`
-  tokens (e.g. `nayuta`, `nayuta-aqua`, `midnight-blue`, `oled-dark`,
-  `sakura-pink`).
-
-The theme prefers semantic variables over hard-coded values in components and
-widgets.
-
-Typography sizes are defined in `global.css` using `rem`, so browser font-size
-preferences scale the theme. Choose tokens by role:
-
-- Reading text uses `--ny-font-size-prose` (16px at the default root size) and
-  `--ny-line-height-prose` (1.75). This includes paragraphs, lists, quotes,
-  callout bodies, post descriptions, and page prose on desktop and mobile.
-- Tables, code blocks, keyboard hints, captions, callout labels, and compact
-  card descriptions use `--ny-font-size-prose-small` (14px), usually with
-  `--ny-line-height-compact` (1.6).
-- Dates, reading time, profile counts, card URLs, and content tags use
-  `--ny-font-size-meta` (13px).
-- Page titles, section headings, and subheadings use `--ny-font-size-title`
-  (28px, reduced to 24px at viewport widths <= 768px), `--ny-font-size-heading`
-  (22px), and `--ny-font-size-subheading` (18px). Prose H4–H6 stay at the 16px
-  reading size; weight, color, spacing, and casing distinguish them. The
-  optional editorial display heading uses `--ny-font-size-display` (40px).
-- Sidebars and navigation retain their compact UI scale: `--ny-font-size-ui`
-  (13px), `--ny-font-size-ui-small` (12px), `--ny-font-size-ui-meta` (11px),
-  and `--ny-font-size-ui-micro` (10px). The profile name uses
-  `--ny-font-size-ui-title` (20px); icon glyphs use `--ny-font-size-icon` (14px).
-  These UI roles must not be used to size reading text.
-- `Tag` defaults to the compact UI size. A content container may set
-  `--ny-tag-font-size` to the metadata token, as the post reader's tag bar does,
-  without changing sidebar tags.
-
-Use the existing `/posts/typography-test` page to inspect headings, prose,
+Verify typography against `src/content/posts/typography-test.mdx`, which exercises
 lists, nested quotes, tables, code, media, and callouts at desktop and mobile
 widths. Also check post summaries and the friends template when adjusting the
 shared typography scale. Prose tables and code blocks scroll horizontally
@@ -251,9 +128,16 @@ there. Content schemas and collection loaders belong in `src/content.config.ts`.
 Current content collections:
 
 - `posts`: Markdown/MDX blog posts with title, publishDate, cover,
-  description, and optional tags.
+  description, draft flag, and optional tags.
 - `pages`: Markdown/MDX standalone pages supporting customizable templates,
   breadcrumbs, widget slots, and structured friend metadata.
+
+Post `draft` is a boolean defaulting to `false`. Draft posts (`draft: true`) are
+completely excluded during production builds (`astro build` / `import.meta.env.PROD`),
+emitting no static HTML files or routes, and omitting draft-only tags and metadata from
+listings, widgets, and status counters. In development mode (`astro dev`), drafts
+remain accessible for author preview, decorated with a `Draft` badge (`Badge` variant `"draft"`).
+Centralized querying is provided by `getPosts()` in `src/utils/posts.ts`.
 
 Post `tags` is a string array defaulting to `[]`. The schema trims names, rejects
 blank values, and removes duplicates while retaining author order. Names remain
@@ -264,318 +148,51 @@ queries and archive grouping remain in their consuming `.astro` frontmatter.
 URLs encode tag names, including Chinese text and spaces; display labels retain
 their original text. Friend-card tags do not participate in post archives.
 
-`bun run test` covers tag validation and generated article, archive, and tag-cloud
-HTML using temporary content in an isolated copy of the site. Test fixtures do
-not modify authored content or `design/`.
+`bun run test` covers tag validation, draft handling, and generated article,
+archive, and tag-cloud HTML using temporary content in an isolated copy of the
+site. Test fixtures do not modify authored content or `design/`.
 
 ### Shared Theme Utilities
 
 Keep logic specific to a page, component, widget, or layout in that `.astro`
 file. Its frontmatter should own its queries, sorting, and display preparation.
 Extract a module into `src/utils/*` only when multiple consumers actually share
-the logic. Do not split local logic into separate files just to add a layer.
+identical calculation or data normalization.
 
-Post reading time is derived during Markdown/MDX compilation, not authored in
-frontmatter. `src/utils/reading-time.ts` contains the shared text extraction,
-counting, formatting, and remark plugin used by the post list and detail pages.
-Extraction and counting are private to this module. The plugin is registered through
-`markdown.processor` in `astro.config.mjs`; MDX inherits its remark plugins.
-The post reader and `PostList` read numeric `readingTimeMinutes` from
-`render(entry)`'s `remarkPluginFrontmatter` and use the shared formatter for
-`1 min` / `4 mins`.
-Do not read reading time from `entry.data`, restore a manual field, or calculate
-it in browser code. Missing or invalid generated metadata is an integration
-error and must not silently fall back to a fixed estimate.
+Current shared utilities:
 
-Counting combines CJK characters at 400 per minute with other words at 200 per
-minute and rounds up to a minimum of one minute. It includes body text, headings,
-lists, tables, quotes, inline/fenced code, and static MDX children. Frontmatter,
-imports/exports, component attributes, expressions, comments, link destinations,
-image nodes, and raw HTML blocks are excluded. Images carry no extra weight;
-code uses text rates; dynamically generated component text is outside the
-estimate. The feature has no client runtime. Run `bun run test` for parser and
-formatter coverage, and `bun run build` to validate Astro integration.
+- `src/utils/reading-time.ts`:
+  - `remarkReadingTime`: unified plugin for the Markdown/MDX processor pipeline.
+    Walks AST nodes, strips syntax, and counts words: CJK characters count
+    individually (at 400 chars/min), and Latin/non-CJK whitespace-separated
+    words count at 200 words/min. Injects `readingTimeMinutes` (positive integer)
+    into file frontmatter.
+  - `formatReadingTime`: standardizes the display string (e.g. `'1 min'`,
+    `'5 mins'`). Always use this helper instead of formatting reading time
+    ad-hoc in page or component templates.
+- `src/utils/posts.ts`:
+  - `isVisiblePost`: determines if a post is visible based on environment (`import.meta.env.PROD` vs dev mode) and `draft` status.
+  - `getPosts`: queries all posts from `astro:content` and applies visibility filtering so production builds do not compile draft posts.
 
-### Pages
+---
 
-Astro routes belong in `src/pages/*`.
+## Technical Debt & Ongoing Issues
 
-Pages compose layouts, widgets, content data, and components:
+### Astro 5 Content Layer & MDX Directive Warnings
 
-- `src/pages/index.astro`: Homepage showing author profile, recent posts, site
-  status, and introductory bio.
-- `src/pages/posts/index.astro`: Post listing and archives.
-- `src/pages/posts/[slug].astro`: Individual post reader with table of contents
-  and cover display, followed by tag links.
-- `src/pages/tag/[name].astro`: Static tag archives showing all matching posts
-  in descending publish-date order.
-- `src/pages/[...slug].astro`: Dynamic page router delegating to templates.
-- `src/pages/404.astro`: Static error page showing only `404` in the main
-  content area, with the standard homepage sidebar, footer, and mobile drawer.
-  Emits `404.html` with a `noindex` robots directive.
+During `astro build`, Vite emits `MODULE_LEVEL_DIRECTIVE` warnings:
 
-### Configuration and Types
+> The semantics of the module level directive "use astro:head-inject" in "src/content/.../file.mdx?astroPropagatedAssets" may not be preserved when bundling.
 
-Site-wide settings and TypeScript models:
+This is an upstream issue in `@astrojs/mdx` when used with Vite's bundling pipeline in Astro 5. It does not affect build correctness or output HTML. No action needed unless upstream provides a fix.
 
-- `src/config.ts`: Central site configuration instance defining site title,
-  author, description, avatar, theme preset, and external links.
-- `src/types/*`: TypeScript type definitions (e.g. `config.ts`, `icon.ts`).
+---
 
-## Core Layout Model
+## Common Pitfalls & Agent Rules
 
-The main page model is:
-
-```text
-[left] [main] [right?]
-```
-
-`main` is required. `left` and `right` are optional layout regions around it.
-
-The layout is reading-first. The center region preserves readable prose, stable
-spacing, predictable heading hierarchy, usable code blocks, responsive tables,
-and comfortable content rhythm. Side regions support the reading experience
-without overpowering the primary content surface.
-
-The left region holds site-level identity, navigation, and supporting widgets.
-The right region holds page-local contextual content such as a table of
-contents, metadata, related links, or reading tools.
-
-## Left Region Structure
-
-The left region has three structural subregions:
-
-```text
-left
-├── header
-├── widgets
-└── footer
-```
-
-These are layout roles, not fixed components:
-
-- `left.header`: Leading structural area holding user profile header, identity
-  summary, or introductory content.
-- `left.widgets`: Middle area for supporting widgets (navigation, recent posts,
-  website status, tags, search).
-- `left.footer`: Trailing structural area holding copyright, build metadata,
-  and footer credits.
-
-On mobile or narrow viewports, the layout preserves role separation:
-
-- Leading identity/header content remains near the start of the page.
-- Main content remains the primary reading flow.
-- Footer content moves to the end of the mobile document flow.
-- Supporting widgets move into a slide-out drawer accessible via the sticky
-  header.
-
-## Main Region
-
-`main` is the primary content region.
-
-It is usable for homepage content, articles, notes, listing pages, documentation
-pages, prose pages, forms, or other content surfaces.
-
-Expected properties:
-
-- Stable readable flow.
-- Good default prose behavior.
-- Support for long headings, code blocks, tables, figures, media, and embedded
-  components.
-- Compatibility with Astro pages, layouts, slots, Markdown, and MDX.
-- Clear content hierarchy and keyboard-readable structure.
-
-## Right Region
-
-The right region is optional and page-contextual.
-
-Typical uses:
-
-- Table of contents.
-- Page metadata.
-- Related links.
-- Reading tools.
-- Contextual actions.
-
-On medium/tablet viewports (<= 1120px), the right region collapses before the
-left region to preserve comfortable reading space.
-
-## Narrow Viewport Header
-
-A sticky header is enabled on narrower viewports (<= 1120px) to keep navigation
-and collapsed-region entry points reachable.
-
-This header contains:
-
-- Breadcrumbs for current page navigation.
-- A trigger button (`#open-widgets-btn`) to open the left widgets drawer (on
-  mobile <= 768px).
-- A trigger button (`#open-context-btn`) to open the right context drawer (on
-  screens <= 1120px when right sidebar is present).
-
-## Responsive Pattern
-
-Desktop behavior (> 1120px):
-
-```text
-┌────────────┬──────────────────────┬────────────┐
-│ left       │ main                 │ right?     │
-│ header     │ reading content      │ widgets    │
-│ widgets    │                      │            │
-│ footer     │                      │            │
-└────────────┴──────────────────────┴────────────┘
-```
-
-Narrow / Tablet behavior (769px - 1120px):
-
-```text
-┌───────────────────────────────────┬────────────┐
-│ sticky layout header (context btn)│ (drawer)   │
-├───────────────────────────────────┴────────────┤
-│ left                              │ main       │
-│ (header + widgets + footer)       │ content    │
-└───────────────────────────────────┴────────────┘
-```
-
-Mobile behavior (<= 768px):
-
-```text
-┌─────────────────────────┐
-│ sticky layout header    │
-├─────────────────────────┤
-│ left.header (profile)   │
-├─────────────────────────┤
-│ main                    │
-│ reading content         │
-├─────────────────────────┤
-│ mobile footer           │
-└─────────────────────────┘
-
-left.widgets  -> slide-out left drawer
-right.widgets -> slide-out right drawer
-```
-
-Drawer content is fed directly from the layout slots without requiring duplicate
-markup from page consumers.
-
-## Component and Widget Boundary
-
-The boundary is based on responsibility and composition:
-
-- Small reusable UI pieces are components.
-- More complex sections composed from components, markup, and data are widgets.
-- Page structure and region placement are layouts.
-- Full-page presentations bound to content models are templates.
-- Authored content and its assets belong in `src/content/*`; schemas and
-  collection loaders belong in `src/content.config.ts`.
-- Queries, sorting, and display preparation belong in the consuming `.astro`
-  file. Only logic actually shared by multiple consumers belongs in `src/utils/*`.
-- Global visual language and theme variables belong to styles and tokens.
-
-Guidelines:
-
-- An avatar is a component; a user profile header is a widget.
-- A button is a component; a group of site actions is a widget or page
-  composition.
-- A card is a component; a friend link card list is a widget.
-- A table container is a component; an entire friends directory page is a
-  template.
-
-## Theme and Tokens
-
-`nayuta` exposes semantic tokens and allows project-level customization.
-
-The public styling surface is semantic first:
-
-- Background and surface colors (`--ny-color-bg`, `--ny-color-surface`,
-  `--ny-color-surface-container`, `--ny-color-surface-elevated`).
-- Text colors (`--ny-color-text`, `--ny-color-text-muted`,
-  `--ny-color-text-subtle`).
-- Primary and accent colors (`--ny-color-primary`, `--ny-color-primary-hover`,
-  `--ny-color-outline`).
-- Border and shadow colors (`--ny-color-border`, `--ny-color-shadow`).
-- Radius scale (`--ny-radius-xs` to `--ny-radius-xl`).
-- Spacing rhythm (`--ny-space-1` to `--ny-space-6`).
-- Layout dimensions (`--ny-layout-*`).
-- Typography families (`--ny-font-ui`, `--ny-font-prose`, `--ny-font-code`).
-
-### Theme Selection
-
-The active theme is configured in `src/config.ts` via the `theme` property.
-`src/layouts/head-base.astro` statically loads and inlines the corresponding CSS
-from `src/styles/themes/` at build time, ensuring zero runtime layout shifts.
-
-Runtime theme switching can be added as a progressive enhancement where needed.
-
-## Rendering and Enhancement
-
-`nayuta` is built around Astro's static-first model.
-
-### Static Astro Output
-
-The default path renders complete HTML at build time:
-
-- Pages, layouts, and templates render complete document structure.
-- Markdown and MDX content renders to readable HTML.
-- Static supporting regions render without requiring client JavaScript.
-- Theme tokens are emitted and applied before content renders.
-- The initial page is visually complete before any client enhancement.
-
-### Progressive Enhancement
-
-Client-side JavaScript is used only where it improves interaction:
-
-- Drawer open/close state transitions and backdrop dismissals.
-- Keyboard shortcuts (e.g. closing drawers via Escape key).
-- Local search filtering and dynamic statistics calculation.
-- Future dialog, popover, menu, tabs, tooltip, and toast interactions.
-
-Static content does not require hydration to be readable.
-
-## Accessibility Expectations
-
-Interactive components, widgets, and layout surfaces must be accessible.
-
-Expected behavior:
-
-- Triggers are real buttons or valid links.
-- Icon-only controls preserve accessible names (`aria-label`).
-- Drawers, dialogs, and popovers expose appropriate accessible roles and
-  labels.
-- Escape closes open drawers and overlays.
-- Keyboard users can reach collapsed left and right region content.
-- Reduced motion preferences are respected.
-- Color contrast meets readability standards across all bundled themes.
-- Page structure uses semantic landmarks (`<aside>`, `<main>`, `<nav>`,
-  `<header>`, `<footer>`).
-
-## Agent Guidance
-
-`bun run check` runs `astro check` for Astro template diagnostics followed by
-`tsc` for ordinary TypeScript files. Run it when changing component props or
-HTML attributes; a successful build or Prettier check does not establish
-template type correctness. The project uses TypeScript 6 because
-`@astrojs/check` 0.9.10 supports TypeScript 5/6, not TypeScript 7. Keep both
-checks in the script and verify checker compatibility before upgrading the
-TypeScript major version.
-
-When generating code or documentation for `nayuta`, preserve these boundaries:
-
-- Treat `nayuta` as an Astro personal homepage and blog theme.
-- Put small reusable UI pieces in `src/components/*`.
-- Put composed homepage and blog sections in `src/widgets/*`.
-- Put page and region layout shells in `src/layouts/*`.
-- Put full-page content views in `src/templates/*`.
-- Put global styles, theme variables, and design tokens in `src/styles/*`.
-- Reserve `src/content/*` for authored content and its colocated assets.
-- Put content schemas and collection loaders in `src/content.config.ts`.
-- Keep each page's own queries, sorting, and display preparation directly in
-  its `.astro` frontmatter. Apply the same ownership rule to components,
-  widgets, and layouts.
-- Put actually shared theme logic in `src/utils/*`; avoid extracting local
-  logic into separate modules.
-- Keep side regions collapsible, reachable, and accessible.
-- Prefer static Astro output and progressive enhancement over unnecessary
-  client-side rendering.
-- Use repository-defined Prettier scripts for formatting.
-- Prefer semantic tokens over hard-coded styles.
+- **Strict Protocol Requirement**: All conversational responses MUST start with the prefix:
+  `NYT-AGENT / Working <Step>` (e.g., `NYT-AGENT / Working Plan`, `NYT-AGENT / Working Verify`, `NYT-AGENT / Working Done`).
+- **Do not introduce heavy JS frameworks**: Nayuta is an Astro-native theme. Do not add React, Vue, or Svelte components unless explicitly requested by the user.
+- **Preserve semantic markup & CSS variables**: Every custom element or layout modification must use `--ny-*` variables for colors, fonts, and dimensions.
+- **Check mobile/responsive layouts**: Whenever a layout component is added or modified, verify how it looks on mobile screens (`<= 640px`) and tablet screens (`<= 900px`).
+- **Follow lint and type checks**: Always run `bun run check` and `bun run build` before considering a task complete.
