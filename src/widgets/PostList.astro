@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
+import Badge from '../components/Badge.astro';
 import { formatReadingTime } from '../utils/reading-time';
 
 interface Props {
@@ -48,6 +49,7 @@ const postsWithReadingTime = await Promise.all(
           </div>
         )}
         <h2 class="post-title">
+          {post.data.draft && <Badge variant="draft">Draft</Badge>}
           <a href={`/posts/${post.id}`}>{post.data.title}</a>
         </h2>
         <div class="post-meta">
@@ -78,7 +80,17 @@ const postsWithReadingTime = await Promise.all(
     gap: calc(var(--ny-space-3) / 2);
   }
 
+  .post-summary:last-child {
+    border-bottom: 0;
+  }
+
   .post-list .post-title {
+    --ny-badge-font-size: var(--ny-font-size-ui-small);
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ny-space-2);
     font-size: var(--ny-font-size-heading);
     line-height: var(--ny-line-height-heading);
     font-weight: 700;

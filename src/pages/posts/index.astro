@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getPosts } from '../../utils/posts';
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../components/Prose.astro';
 import ProfileCard from '../../widgets/ProfileCard.astro';
@@ -8,7 +8,7 @@ import RecentPosts from '../../widgets/RecentPosts.astro';
 import TagCloud from '../../widgets/TagCloud.astro';
 import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
 
-const posts = await getCollection('posts');
+const posts = await getPosts();
 
 const breadcrumbs = [
   { text: 'Home', href: '/' },

@@ -1,8 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
+import { getPosts } from '../utils/posts';
+import Badge from '../components/Badge.astro';
 import Widget from './Widget.astro';
 
-const posts = await getCollection('posts');
+const posts = await getPosts();
 
 // Sort by publishDate descending and take the first 3 posts
 const recentPosts = [...posts]
@@ -19,7 +20,10 @@ const recentPosts = [...posts]
     {
       recentPosts.map((post) => (
         <a href={`/posts/${post.id}`} class="post-item">
-          <span class="post-title">{post.data.title}</span>
+          <span class="post-title">
+            {post.data.draft && <Badge variant="draft">Draft</Badge>}
+            {post.data.title}
+          </span>
           <div class="post-meta">
             <span>{post.data.publishDate}</span>
           </div>
@@ -44,6 +48,12 @@ const recentPosts = [...posts]
   }
 
   .post-title {
+    --ny-badge-font-size: var(--ny-font-size-ui-micro);
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ny-space-1);
     color: var(--ny-color-text);
     font-size: var(--ny-font-size-ui);
     font-weight: 500;

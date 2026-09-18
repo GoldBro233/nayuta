@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getPosts } from '../utils/posts';
 import Widget from './Widget.astro';
 import config from '../config';
 
@@ -49,7 +49,7 @@ const {
   customRows = [],
 } = Astro.props;
 
-const posts = await getCollection('posts');
+const posts = await getPosts();
 const finalPostCount = postsCount !== undefined ? postsCount : posts.length;
 
 // Sort by date descending to find latest post
