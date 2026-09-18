@@ -79,14 +79,9 @@ const breadcrumbs = [
   </Prose>
 
   {
-    (post.data.tags.length > 0 || post.data.draft) && (
+    post.data.tags.length > 0 && (
       <nav class="post-tags" aria-label="Post tags">
         <ul>
-          {post.data.draft && (
-            <li>
-              <Badge variant="draft">Draft</Badge>
-            </li>
-          )}
           {post.data.tags.map((tag) => (
             <li>
               <Tag href={`/tag/${encodeURIComponent(tag)}`} rel="tag">
@@ -104,6 +99,8 @@ const breadcrumbs = [
 
 <style>
   :global(.prose) .page-title {
+    --ny-badge-font-size: var(--ny-font-size-meta);
+
     display: flex;
     align-items: center;
     flex-wrap: wrap;
