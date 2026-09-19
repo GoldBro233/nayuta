@@ -63,6 +63,12 @@ beforeAll(async () => {
     join(fixtureRoot, 'node_modules'),
     'dir',
   );
+  const configPath = join(fixtureRoot, 'src/config.ts');
+  await cp(configPath, join(fixtureRoot, 'src/fixture-config.ts'));
+  await Bun.write(
+    configPath,
+    "import config from './fixture-config';\nexport default { ...config, postsPerPage: 10 };\n",
+  );
   // Isolated test content
   await rm(join(fixtureRoot, 'src/content'), { recursive: true });
   await writePost('published-one.md', {

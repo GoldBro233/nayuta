@@ -27,6 +27,9 @@ export interface Config {
   // Theme name in src/styles/themes/ without .css extension (e.g. 'nayuta-aqua')
   theme?: string;
 
+  // Positive integer; shared by post and tag archives (defaults to 10).
+  postsPerPage?: number;
+
   // Profile Card links
   links?: Link[];
 }

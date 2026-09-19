@@ -142,15 +142,72 @@ Centralized querying is provided by `getPosts()` in `src/utils/posts.ts`.
 Post `tags` is a string array defaulting to `[]`. The schema trims names, rejects
 blank values, and removes duplicates while retaining author order. Names remain
 case-sensitive. The post reader renders tag links after the body, outside prose
-styling, and omits the tag bar when empty. `/tag/<name>` statically lists every
-matching post, using `PostList` for shared sorting and presentation. Tag-cloud
+styling, and omits the tag bar when empty. `/tag/<name>` statically paginates
+matching posts, using `PostList` for shared presentation. Tag-cloud
 queries and archive grouping remain in their consuming `.astro` frontmatter.
 URLs encode tag names, including Chinese text and spaces; display labels retain
 their original text. Friend-card tags do not participate in post archives.
 
+Post and tag archives use `[...page].astro` routes and `paginateList()` around
+Astro's native `paginate()`. Page one keeps `/posts` or `/tag/<name>`; later pages
+use `/posts/page/2` and `/tag/<name>/page/2`. `config.postsPerPage` is a positive
+integer; omitting it defaults to 10. Apply visibility filtering and
+`sortPosts()` before pagination, never after slicing; equal dates are ordered
+by content ID.
+Tag archives group the sorted posts in one pass before paginating each group.
+
+`PostList` takes `page: Page<CollectionEntry<'posts'>>` and renders only `page.data`,
+including reading-time preparation. It includes the reusable `Pagination`
+component, whose styling uses global tokens and whose links follow the shared
+archive-root and `/page/<number>` convention. Other list types can reuse
+`paginateList()` and `Pagination` without post-specific presentation.
+Pagination emits at most five page numbers plus gaps and previous/next controls.
+Use the same plain-text bracket styling as the draft badge and drawer close
+control: `[prev] 1 [2] 3 4 5 [next]`. The current page is bracketed and bold;
+other numbers and previous/next links use regular weight. Omit previous on the
+first page and next on the last page. Keep the controls compact and inline,
+using theme text colors, with no filled backgrounds or decorative borders.
+Align the whole selector to the left. A native `ResizeObserver` checks the
+selector's available width and hides the middle page-number group when it
+does not fit, retaining the available previous/next links. Recheck after fonts
+load and restore numbers when space returns. Without JavaScript, keep all
+links usable with wrapping as the fallback.
+Single-page/empty lists hide the selector, and an empty post list shows
+`No posts yet.`. Out-of-range page numbers have no generated route. Keep
+browser payloads bounded to the current page; never ship
+the entire collection for client-side hiding. Total static build cost still
+depends on the number of posts and archive pages.
+
+The `<nayuta-pagination>` custom element is a lifecycle boundary for the
+optional width adaptation. `connectedCallback()` creates the observer for that
+instance, and `disconnectedCallback()` releases it when the element is removed.
+This keeps multiple selectors independent and makes setup and cleanup follow
+DOM insertion/removal without a document-wide initialization registry. Ordinary
+scripts could implement the same behavior; the custom element packages that
+lifecycle locally and is not required by Astro's pagination API.
+
+Measure the selector's actual content and available width because sidebar
+layouts, font metrics, and the number of digits can change whether it fits at
+the same viewport size. When hiding the numbered links, move keyboard focus to
+an available previous/next link if needed. The custom element uses the light
+DOM: Astro still generates the semantic navigation, links, and current-page
+markup at build time. There is no Shadow DOM, framework hydration, or additional
+dependency. Theme tokens and scoped Astro styles continue to apply normally,
+and native link navigation remains usable when the enhancement cannot run.
+
+Static route pagination keeps each response limited to the requested page and
+makes the URL authoritative through normal browser navigation. This avoids
+shipping the full collection to implement display-only pagination. The shared
+`paginateList()` data contract allows reuse across archives, while each route
+still owns its query and static path generation.
+
 `bun run test` covers tag validation, draft handling, and generated article,
 archive, and tag-cloud HTML using temporary content in an isolated copy of the
 site. Test fixtures do not modify authored content or `design/`.
+Pagination coverage includes page boundaries, stable ordering, tag URL encoding,
+empty/single-page archives, draft exclusion, and selected pages from 100,000
+numeric entries. The last check exercises slicing and bounded controls; it is
+not a benchmark for building 100,000 authored posts.
 
 ### Shared Theme Utilities
 
@@ -173,6 +230,10 @@ Current shared utilities:
 - `src/utils/posts.ts`:
   - `isVisiblePost`: determines if a post is visible based on environment (`import.meta.env.PROD` vs dev mode) and `draft` status.
   - `getPosts`: queries all posts from `astro:content` and applies visibility filtering so production builds do not compile draft posts.
+  - `sortPosts`: sorts posts by descending publish date, breaking ties by content ID.
+- `src/utils/pagination.ts`:
+  - `paginateList`: adapts Astro pagination for `[...page].astro` routes while retaining the archive's first URL and adding `/page/<number>` for later pages.
+  - `getPageUrl`: shares the pagination URL convention between route generation and numbered navigation links.
 
 ---
 

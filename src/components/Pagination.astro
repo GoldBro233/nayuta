@@ -1,0 +1,202 @@
+---
+import type { Page } from 'astro';
+import { getPageUrl } from '../utils/pagination';
+
+interface Props {
+  page: Pick<Page, 'currentPage' | 'lastPage' | 'url'>;
+  ariaLabel?: string;
+}
+
+const { page, ariaLabel = 'Pagination' } = Astro.props;
+const { currentPage, lastPage, url } = page;
+const firstPageUrl = url.first ?? url.current;
+
+// At most five page numbers and two gaps, even for very large archives.
+const nearbyStart = Math.max(2, Math.min(currentPage - 1, lastPage - 3));
+const numbers = new Set([1, lastPage]);
+for (
+  let number = nearbyStart;
+  number <= Math.min(lastPage - 1, nearbyStart + 2);
+  number++
+) {
+  numbers.add(number);
+}
+const visiblePages = [...numbers].sort((a, b) => a - b);
+---
+
+{
+  lastPage > 1 && (
+    <nayuta-pagination>
+      <nav class="pagination" aria-label={ariaLabel}>
+        {url.prev && (
+          <a
+            class="pagination-control"
+            href={url.prev}
+            rel="prev"
+            aria-label="Previous page"
+          >
+            [prev]
+          </a>
+        )}
+
+        <div class="pagination-pages">
+          {visiblePages.map((number, index) => (
+            <>
+              {index > 0 && number - visiblePages[index - 1] > 1 && (
+                <span class="pagination-gap" aria-hidden="true">
+                  …
+                </span>
+              )}
+              {number === currentPage ? (
+                <span
+                  class="pagination-control"
+                  aria-current="page"
+                  aria-label={`Page ${number}, current page`}
+                >
+                  [{number}]
+                </span>
+              ) : (
+                <a
+                  class="pagination-control"
+                  href={getPageUrl(firstPageUrl, number)}
+                  aria-label={`Page ${number}`}
+                >
+                  {number}
+                </a>
+              )}
+            </>
+          ))}
+        </div>
+
+        {url.next && (
+          <a
+            class="pagination-control"
+            href={url.next}
+            rel="next"
+            aria-label="Next page"
+          >
+            [next]
+          </a>
+        )}
+      </nav>
+    </nayuta-pagination>
+  )
+}
+
+<script>
+  class NayutaPagination extends HTMLElement {
+    private observer?: ResizeObserver;
+
+    connectedCallback() {
+      const navigation = this.querySelector<HTMLElement>('.pagination');
+      const numbers = this.querySelector<HTMLElement>('.pagination-pages');
+      if (!navigation || !numbers) return;
+
+      const fit = () => {
+        const numbersHadFocus = numbers.contains(document.activeElement);
+        numbers.hidden = false;
+        const children = Array.from(navigation.children);
+        const gap = parseFloat(getComputedStyle(navigation).columnGap) || 0;
+        const neededWidth = children.reduce(
+          (width, child) => width + child.getBoundingClientRect().width,
+          gap * (children.length - 1),
+        );
+        numbers.hidden = neededWidth > navigation.getBoundingClientRect().width;
+        if (numbers.hidden && numbersHadFocus) {
+          navigation
+            .querySelector<HTMLAnchorElement>('a[rel]')
+            ?.focus({ preventScroll: true });
+        }
+      };
+
+      this.observer = new ResizeObserver(fit);
+      navigation.dataset.fit = '';
+      this.observer.observe(navigation);
+      fit();
+      void document.fonts.ready.then(() => {
+        if (this.isConnected) fit();
+      });
+    }
+
+    disconnectedCallback() {
+      this.observer?.disconnect();
+    }
+  }
+
+  if (!customElements.get('nayuta-pagination')) {
+    customElements.define('nayuta-pagination', NayutaPagination);
+  }
+</script>
+
+<style>
+  nayuta-pagination {
+    display: block;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: var(--ny-space-1) var(--ny-space-2);
+    margin-block: var(--ny-space-6);
+    font-family: var(--ny-font-ui);
+    font-size: var(--ny-font-size-meta);
+    font-weight: 400;
+    line-height: var(--ny-line-height-ui);
+  }
+
+  .pagination-pages {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ny-space-2);
+  }
+
+  .pagination[data-fit],
+  .pagination[data-fit] .pagination-pages {
+    flex-wrap: nowrap;
+  }
+
+  .pagination[data-fit] .pagination-pages {
+    flex-shrink: 0;
+  }
+
+  .pagination-pages[hidden] {
+    display: none;
+  }
+
+  .pagination .pagination-control {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--ny-space-6);
+    min-height: var(--ny-space-6);
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--ny-color-text-muted);
+    font-weight: 400;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .pagination a.pagination-control:hover {
+    color: var(--ny-color-outline);
+  }
+
+  .pagination a.pagination-control:focus-visible {
+    outline: calc(var(--ny-space-1) / 2) solid var(--ny-color-outline);
+    outline-offset: var(--ny-space-1);
+  }
+
+  .pagination .pagination-control[aria-current='page'] {
+    color: var(--ny-color-text);
+    font-weight: 700;
+  }
+
+  .pagination-gap {
+    color: var(--ny-color-text-muted);
+  }
+</style>

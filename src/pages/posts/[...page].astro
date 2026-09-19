@@ -1,45 +1,47 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
-import { getPosts } from '../../utils/posts';
+import config from '../../config';
+import { getPosts, sortPosts } from '../../utils/posts';
+import { paginateList } from '../../utils/pagination';
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../components/Prose.astro';
-import PostList from '../../widgets/PostList.astro';
 import ProfileCard from '../../widgets/ProfileCard.astro';
+import PostList from '../../widgets/PostList.astro';
 import RecentPosts from '../../widgets/RecentPosts.astro';
 import TagCloud from '../../widgets/TagCloud.astro';
 import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
 
-export const getStaticPaths = (async () => {
-  const posts = await getPosts();
-  const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
-
-  return tags.map((tag) => ({
-    params: { name: tag },
-    props: {
-      tag,
-      posts: posts.filter((post) => post.data.tags.includes(tag)),
-    },
-  }));
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = sortPosts(await getPosts());
+  return paginateList(paginate, posts, { pageSize: config.postsPerPage });
 }) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
-const { tag, posts } = Astro.props;
+const { page } = Astro.props;
+const title =
+  page.currentPage === 1 ? 'Posts' : `Posts — Page ${page.currentPage}`;
+
 const breadcrumbs = [
   { text: 'Home', href: '/' },
   { text: 'Posts', href: '/posts' },
-  { text: `Tag: ${tag}`, href: `/tag/${encodeURIComponent(tag)}` },
 ];
+if (page.currentPage > 1) {
+  breadcrumbs.push({
+    text: `Page ${page.currentPage}`,
+    href: page.url.current,
+  });
+}
 ---
 
-<Frame title={`Tag: ${tag}`} breadcrumbs={breadcrumbs}>
+<Frame title={title} breadcrumbs={breadcrumbs}>
   <ProfileCard slot="left-header" />
   <RecentPosts slot="left" />
   <TagCloud slot="left" />
   <WebsiteStatus slot="left" />
 
   <Prose>
-    <h1 class="page-title">Tag: {tag}</h1>
+    <h1 class="page-title">Posts</h1>
 
-    <PostList posts={posts} />
+    <PostList page={page} />
   </Prose>
 </Frame>

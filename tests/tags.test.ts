@@ -59,6 +59,12 @@ beforeAll(async () => {
     join(fixtureRoot, 'node_modules'),
     'dir',
   );
+  const configPath = join(fixtureRoot, 'src/config.ts');
+  await cp(configPath, join(fixtureRoot, 'src/fixture-config.ts'));
+  await Bun.write(
+    configPath,
+    "import config from './fixture-config';\nexport default { ...config, postsPerPage: 10 };\n",
+  );
   // Only the isolated fixture contains test content; authored posts stay untouched.
   await rm(join(fixtureRoot, 'src/content'), { recursive: true });
   await writePost('older.md', {
