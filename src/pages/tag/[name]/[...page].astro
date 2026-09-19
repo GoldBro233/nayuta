@@ -7,7 +7,6 @@ import { paginateList } from '../../../utils/pagination';
 import Frame from '../../../layouts/frame.astro';
 import Prose from '../../../components/Prose.astro';
 import PostList from '../../../layouts/widgets/postlist/PostList.astro';
-import ProfileCard from '../../../widgets/ProfileCard.astro';
 import RecentPosts from '../../../widgets/RecentPosts.astro';
 import TagCloud from '../../../widgets/TagCloud.astro';
 import WebsiteStatus from '../../../widgets/WebsiteStatus.astro';
@@ -51,7 +50,6 @@ if (page.currentPage > 1) {
 ---
 
 <Frame title={title} breadcrumbs={breadcrumbs}>
-  <ProfileCard slot="left-header" />
   <RecentPosts slot="left" />
   <TagCloud slot="left" />
   <WebsiteStatus slot="left" />

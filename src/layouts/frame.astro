@@ -9,6 +9,7 @@ interface Props {
   title?: string;
   isHome?: boolean;
   withLeftSidebar?: boolean;
+  withProfileCard?: boolean;
   withRightSidebar?: boolean;
   breadcrumbs?: { text: string; href: string }[];
 }
@@ -17,6 +18,7 @@ const {
   title,
   isHome = false,
   withLeftSidebar = true,
+  withProfileCard = true,
   withRightSidebar = false,
   breadcrumbs = [{ text: 'Home', href: '/' }],
 } = Astro.props;
@@ -73,8 +75,13 @@ const {
     >
       {
         withLeftSidebar && (
-          <LeftSidebar>
-            <slot name="left-header" slot="header" />
+          <LeftSidebar
+            withProfileCard={withProfileCard}
+            withHeader={withProfileCard || Astro.slots.has('left-header')}
+          >
+            {Astro.slots.has('left-header') && (
+              <slot name="left-header" slot="header" />
+            )}
             <slot name="left" />
           </LeftSidebar>
         )

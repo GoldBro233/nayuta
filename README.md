@@ -104,9 +104,10 @@ Nayuta organizes its code into distinct layers of responsibility:
 nayuta/
 ├── src/
 │   ├── components/         # Reusable atomic UI components (Avatar, Button, Card, Prose, Callout, etc.)
-│   ├── widgets/            # Composed domain cards (ProfileCard, TableOfContents, RecentPosts, WebsiteStatus)
+│   ├── widgets/            # Sidebar widgets (TableOfContents, RecentPosts, WebsiteStatus)
 │   ├── layouts/            # Page structural shells (frame.astro, left-sidebar.astro, right-sidebar.astro)
 │   │   └── widgets/
+│   │       ├── ProfileCard.astro # Shared profile card, shown by Frame by default
 │   │       └── postlist/   # Shared post archive and dynamic result presentation
 │   │           ├── PostList.astro
 │   │           └── PostListItem.astro

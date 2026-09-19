@@ -5,7 +5,6 @@ import { getPosts, sortPosts } from '../../utils/posts';
 import { paginateList } from '../../utils/pagination';
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../components/Prose.astro';
-import ProfileCard from '../../widgets/ProfileCard.astro';
 import PostList from '../../layouts/widgets/postlist/PostList.astro';
 import RecentPosts from '../../widgets/RecentPosts.astro';
 import TagCloud from '../../widgets/TagCloud.astro';
@@ -34,7 +33,6 @@ if (page.currentPage > 1) {
 ---
 
 <Frame title={title} breadcrumbs={breadcrumbs}>
-  <ProfileCard slot="left-header" />
   <RecentPosts slot="left" />
   <TagCloud slot="left" />
   <WebsiteStatus slot="left" />

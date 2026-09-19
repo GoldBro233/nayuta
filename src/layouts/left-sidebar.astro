@@ -1,11 +1,27 @@
 ---
 import SidebarFooter from './sidebar-footer.astro';
+import ProfileCard from './widgets/ProfileCard.astro';
+
+interface Props {
+  withProfileCard?: boolean;
+  withHeader?: boolean;
+}
+
+const {
+  withProfileCard = true,
+  withHeader = withProfileCard || Astro.slots.has('header'),
+} = Astro.props;
 ---
 
 <aside class="left-region" id="left-sidebar">
-  <header class="left-header">
-    <slot name="header" />
-  </header>
+  {
+    withHeader && (
+      <header class="left-header">
+        {withProfileCard && <ProfileCard />}
+        <slot name="header" />
+      </header>
+    )
+  }
 
   <div class="left-sidebar-content">
     <slot />
