@@ -1,21 +1,18 @@
 ---
+import type { Page } from 'astro';
 import { Image } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
 import Badge from '../components/Badge.astro';
+import Pagination from '../components/Pagination.astro';
 import { formatReadingTime } from '../utils/reading-time';
 
 interface Props {
-  posts: CollectionEntry<'posts'>[];
+  page: Page<CollectionEntry<'posts'>>;
 }
 
-const { posts } = Astro.props;
-const sortedPosts = [...posts].sort(
-  (a, b) =>
-    new Date(b.data.publishDate).getTime() -
-    new Date(a.data.publishDate).getTime(),
-);
+const { page } = Astro.props;
 const postsWithReadingTime = await Promise.all(
-  sortedPosts.map(async (post) => {
+  page.data.map(async (post) => {
     const { remarkPluginFrontmatter } = await render(post);
     return {
       post,
@@ -28,6 +25,7 @@ const postsWithReadingTime = await Promise.all(
 ---
 
 <div class="post-list">
+  {page.total === 0 && <p>No posts yet.</p>}
   {
     postsWithReadingTime.map(({ post, readingTime }) => (
       <article class="post-summary">
@@ -63,6 +61,8 @@ const postsWithReadingTime = await Promise.all(
     ))
   }
 </div>
+
+<Pagination page={page} />
 
 <style>
   .post-list {

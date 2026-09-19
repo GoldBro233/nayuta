@@ -17,3 +17,12 @@ export function isVisiblePost(post: CollectionEntry<'posts'>): boolean {
 export async function getPosts(): Promise<CollectionEntry<'posts'>[]> {
   return getCollection('posts', isVisiblePost);
 }
+
+/** Sort before pagination, with stable content IDs breaking date ties. */
+export function sortPosts(posts: readonly CollectionEntry<'posts'>[]) {
+  return [...posts].sort(
+    (a, b) =>
+      new Date(b.data.publishDate).getTime() -
+        new Date(a.data.publishDate).getTime() || a.id.localeCompare(b.id),
+  );
+}

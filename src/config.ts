@@ -9,6 +9,7 @@ const config: Config = {
   site_url: 'https://nayuta.kani.dev',
   theme: 'nayuta',
   since: '2024-01-01',
+  postsPerPage: 10,
   links: [
     {
       text: 'Posts',
