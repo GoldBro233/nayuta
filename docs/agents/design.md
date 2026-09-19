@@ -63,6 +63,16 @@ Layout rules:
 - Responsive breakpoint variables `--ny-breakpoint-tablet` (`900px`) and
   `--ny-breakpoint-mobile` (`640px`) guide media queries.
 
+### Widget Directory Boundaries
+
+- `src/layouts/widgets/` contains the page's own composed parts, such as post
+  lists and their items. Group related parts by feature, as with `PostList.astro`
+  and `PostListItem.astro` in `src/layouts/widgets/postlist/`.
+- `src/widgets/` is reserved for widgets usable in the left or right sidebar,
+  such as `ProfileCard`, `RecentPosts`, `TagCloud`, `WebsiteStatus`, and
+  `TableOfContents`, along with their shared containers and composition helpers.
+  They retain this role when responsive layouts place sidebar content in drawers.
+
 ### Component Design Principles
 
 - **No CSS framework dependencies**: Components are built with vanilla CSS
@@ -156,6 +166,8 @@ integer; omitting it defaults to 10. Apply visibility filtering and
 by content ID.
 Tag archives group the sorted posts in one pass before paginating each group.
 
+`PostList.astro` and `PostListItem.astro` live in `src/layouts/widgets/postlist/`.
+Consumers can import `PostList` from `~/layouts/widgets/postlist/PostList.astro`.
 `PostList` renders a light-DOM `<nayuta-post-list>` custom element with two modes.
 The default static mode takes `page: Page<CollectionEntry<'posts'>>` and renders
 only `page.data`, including reading-time preparation. Its complete HTML and

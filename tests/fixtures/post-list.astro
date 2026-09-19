@@ -4,7 +4,7 @@ import { getImage } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
 import Frame from '~/layouts/frame.astro';
 import Prose from '~/components/Prose.astro';
-import PostList from '~/widgets/PostList.astro';
+import PostList from '~/layouts/widgets/postlist/PostList.astro';
 import { getPosts, sortPosts } from '~/utils/posts';
 
 const posts = sortPosts(await getPosts()).slice(0, 2);

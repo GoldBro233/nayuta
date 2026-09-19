@@ -106,6 +106,10 @@ nayuta/
 │   ├── components/         # Reusable atomic UI components (Avatar, Button, Card, Prose, Callout, etc.)
 │   ├── widgets/            # Composed domain cards (ProfileCard, TableOfContents, RecentPosts, WebsiteStatus)
 │   ├── layouts/            # Page structural shells (frame.astro, left-sidebar.astro, right-sidebar.astro)
+│   │   └── widgets/
+│   │       └── postlist/   # Shared post archive and dynamic result presentation
+│   │           ├── PostList.astro
+│   │           └── PostListItem.astro
 │   ├── templates/          # Pre-assembled page layouts (PageTemplate.astro, FriendTemplate.astro)
 │   ├── pages/              # Astro routes & dynamic slug handlers ([...slug].astro, posts/)
 │   ├── content/            # Markdown & MDX content collections
