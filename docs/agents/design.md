@@ -63,6 +63,16 @@ Layout rules:
 - Responsive breakpoint variables `--ny-breakpoint-tablet` (`900px`) and
   `--ny-breakpoint-mobile` (`640px`) guide media queries.
 
+### Widget Directory Boundaries
+
+- `src/layouts/widgets/` contains the page's own composed parts, such as post
+  lists and their items. Group related parts by feature, as with `PostList.astro`
+  and `PostListItem.astro` in `src/layouts/widgets/postlist/`.
+- `src/widgets/` is reserved for widgets usable in the left or right sidebar,
+  such as `ProfileCard`, `RecentPosts`, `TagCloud`, `WebsiteStatus`, and
+  `TableOfContents`, along with their shared containers and composition helpers.
+  They retain this role when responsive layouts place sidebar content in drawers.
+
 ### Component Design Principles
 
 - **No CSS framework dependencies**: Components are built with vanilla CSS
@@ -156,11 +166,24 @@ integer; omitting it defaults to 10. Apply visibility filtering and
 by content ID.
 Tag archives group the sorted posts in one pass before paginating each group.
 
-`PostList` takes `page: Page<CollectionEntry<'posts'>>` and renders only `page.data`,
-including reading-time preparation. It includes the reusable `Pagination`
-component, whose styling uses global tokens and whose links follow the shared
-archive-root and `/page/<number>` convention. Other list types can reuse
-`paginateList()` and `Pagination` without post-specific presentation.
+`PostList.astro` and `PostListItem.astro` live in `src/layouts/widgets/postlist/`.
+Consumers can import `PostList` from `~/layouts/widgets/postlist/PostList.astro`.
+`PostList` renders a light-DOM `<nayuta-post-list>` custom element with two modes.
+The default static mode takes `page: Page<CollectionEntry<'posts'>>` and renders
+only `page.data`, including reading-time preparation. Its complete HTML and
+ordinary links work without JavaScript. Dynamic mode uses
+`<PostList mode="dynamic" id="search-results" pageSize={10} />`; `pageSize`
+defaults to `config.postsPerPage`, then 10. The host owns its state, event
+listeners, status messages and DOM updates. `PostListItem.astro` supplies the
+same summary markup and scoped CSS for static articles and one inert dynamic
+`<template>`. Clones retain Astro's scope attributes, including the draft badge.
+Keep only the current page's summaries in the rendered list.
+
+Both modes include the reusable `Pagination` component. Static links follow
+the shared archive-root and `/page/<number>` convention. Dynamic links update
+`?page=<number>` while retaining search terms, other parameters and fragments.
+Other list types can reuse `paginateList()` and `Pagination` without
+post-specific presentation.
 Pagination emits at most five page numbers plus gaps and previous/next controls.
 Use the same plain-text bracket styling as the draft badge and drawer close
 control: `[prev] 1 [2] 3 4 5 [next]`. The current page is bracketed and bold;
@@ -178,8 +201,8 @@ browser payloads bounded to the current page; never ship
 the entire collection for client-side hiding. Total static build cost still
 depends on the number of posts and archive pages.
 
-The `<nayuta-pagination>` custom element is a lifecycle boundary for the
-optional width adaptation. `connectedCallback()` creates the observer for that
+The `<nayuta-pagination>` custom element owns width adaptation and, in dynamic
+mode, the selector's state and rendering. `connectedCallback()` creates the observer for that
 instance, and `disconnectedCallback()` releases it when the element is removed.
 This keeps multiple selectors independent and makes setup and cleanup follow
 DOM insertion/removal without a document-wide initialization registry. Ordinary
@@ -190,9 +213,11 @@ Measure the selector's actual content and available width because sidebar
 layouts, font metrics, and the number of digits can change whether it fits at
 the same viewport size. When hiding the numbered links, move keyboard focus to
 an available previous/next link if needed. The custom element uses the light
-DOM: Astro still generates the semantic navigation, links, and current-page
-markup at build time. There is no Shadow DOM, framework hydration, or additional
-dependency. Theme tokens and scoped Astro styles continue to apply normally,
+DOM: Astro generates static navigation at build time, while dynamic navigation
+clones scoped control templates. Dynamic `setPage()` merges a partial
+`{ currentPage, lastPage, firstPageUrl }` update and recalculates width even when
+the container itself did not resize. There is no Shadow DOM, framework
+hydration, or additional dependency. Theme tokens and scoped Astro styles continue to apply normally,
 and native link navigation remains usable when the enhancement cannot run.
 
 Static route pagination keeps each response limited to the requested page and
@@ -208,6 +233,73 @@ Pagination coverage includes page boundaries, stable ordering, tag URL encoding,
 empty/single-page archives, draft exclusion, and selected pages from 100,000
 numeric entries. The last check exercises slicing and bounded controls; it is
 not a benchmark for building 100,000 authored posts.
+
+### Dynamic PostList API
+
+Wait for `customElements.whenDefined('nayuta-post-list')` before calling instance
+methods. `src/types/post-list.ts` defines the browser data contract and typed
+custom-element/event maps. `setPage(update: Partial<PostListPage>)` merges only
+provided values; omitted or `undefined` fields retain their values. Its fields
+are `items`, `total`, `currentPage`, and `pageSize`. Initially these are `[]`, `0`,
+`1`, and the configured page size. `total` must be a non-negative safe integer;
+`pageSize` must be a positive safe integer. Invalid page numbers normalize to 1,
+and numbers beyond the known total clamp to the last page (at least 1).
+Initialize the result total before requesting another page.
+
+```ts
+await customElements.whenDefined('nayuta-post-list');
+const list = document.querySelector('nayuta-post-list');
+
+// Initial result: pass the current page's summaries and pagination metadata.
+list?.setPage({ items: firstPageItems, total: 42, pageSize: 10 });
+
+// Retain total, pageSize and article nodes; request page two and show loading.
+list?.setPage({ currentPage: 2 });
+
+// Complete the request without resending pagination metadata.
+list?.setPage({ items: secondPageItems });
+
+// Explicitly clear results; an omitted items field never clears the list.
+list?.setPage({ total: 0, items: [] });
+```
+
+A page-number/page-size change without `items` dispatches a bubbling
+`page-request` event with `{ currentPage, pageSize, href }` and sets `aria-busy`
+on the retained results. Normal dynamic pagination clicks call the same method.
+Modified clicks keep native link behavior. An update containing `items` is a
+result delivery: it replaces the summary nodes, ends loading, clears errors,
+and does not emit another request. Metadata-only changes preserve the item DOM;
+`{}` is a no-op except refreshing links if the surrounding URL has changed.
+`setLoading(boolean)` and `setError(message)` support the page's async workflow;
+`setError()` clears an error. Loading, failures and empty results are visible,
+while successful counts are announced without changing the summary layout.
+Keyboard pagination focuses the result after delivery. Listeners and resize
+observers are cleaned up on disconnection and restored on reconnection.
+
+The consuming search page owns the search index/query, slicing, URL history,
+initial query parsing and `popstate`. Listen for `page-request`, update the URL,
+obtain that page's results, and call `setPage({ items })`. For a new search or
+history navigation, supply `items`, the result `total` and `currentPage`
+together; this avoids request loops. The caller must cancel or ignore stale
+async results when requests overlap. The component does not fetch data or
+cache all pages. A static search shell must include the rendered no-JavaScript
+message and archive link; authored articles remain available as static pages.
+
+Each item has `href`, `title`, `publishDate`, `readingTimeMinutes`, optional
+`description`/`draft`, and optional `cover: { src, width?, height?, srcset?, sizes? }`.
+Use `getPosts()` to filter production drafts before publishing any search data.
+Prepare reading time with the existing remark pipeline. For local covers,
+prepare deployable image URLs/attributes using `astro:assets` at build time;
+the browser does not call `render()` or resolve collection image metadata.
+Dynamic summaries use text nodes for text fields and HTTP(S)/relative URLs for
+links and image sources. Static summaries retain Astro's `Image` handling.
+
+`tests/post-list.test.ts` builds its fixtures outside the repository and runs
+real-browser checks using an installed Chromium/Chrome (or `CHROME_BIN`). Browser
+checks explicitly skip if no browser is available; build and utility checks
+still run. Coverage includes partial updates, DOM preservation, query URLs,
+multiple instances, reconnects, focus, error/empty states, browser history, and
+static/dynamic style parity at mobile, tablet and desktop widths in both themes.
 
 ### Shared Theme Utilities
 
@@ -234,6 +326,8 @@ Current shared utilities:
 - `src/utils/pagination.ts`:
   - `paginateList`: adapts Astro pagination for `[...page].astro` routes while retaining the archive's first URL and adding `/page/<number>` for later pages.
   - `getPageUrl`: shares the pagination URL convention between route generation and numbered navigation links.
+  - `getQueryPageUrl`: updates query pagination while preserving the rest of the URL.
+  - `getVisiblePages` / `normalizePageNumber`: shared bounded controls and page normalization for build-time and browser consumers.
 
 ---
 

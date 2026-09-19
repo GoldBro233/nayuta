@@ -1,5 +1,40 @@
 import type { PaginateFunction } from 'astro';
 
+/** Normalize URL/input page numbers and clamp against the available pages. */
+export function normalizePageNumber(number: number, lastPage: number): number {
+  return Number.isSafeInteger(number) && number > 0
+    ? Math.min(number, Math.max(1, lastPage))
+    : 1;
+}
+
+/** At most five numbered controls, regardless of the collection size. */
+export function getVisiblePages(
+  currentPage: number,
+  lastPage: number,
+): number[] {
+  if (lastPage < 1) return [];
+  const nearbyStart = Math.max(2, Math.min(currentPage - 1, lastPage - 3));
+  const numbers = new Set([1, lastPage]);
+  for (
+    let number = nearbyStart;
+    number <= Math.min(lastPage - 1, nearbyStart + 2);
+    number++
+  ) {
+    numbers.add(number);
+  }
+  return [...numbers].sort((a, b) => a - b);
+}
+
+/** Keep the search terms, other query parameters and hash when changing pages. */
+export function getQueryPageUrl(
+  currentUrl: string,
+  pageNumber: number,
+): string {
+  const url = new URL(currentUrl, 'https://pagination.invalid');
+  url.searchParams.set('page', String(pageNumber));
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
 /** Keep page one at the archive URL and subsequent pages under /page/<number>. */
 export function getPageUrl(firstPageUrl: string, pageNumber: number): string {
   if (pageNumber === 1) return firstPageUrl;

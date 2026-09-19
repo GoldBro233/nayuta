@@ -100,7 +100,7 @@ const { page } = Astro.props;
   await Bun.write(
     join(fixtureRoot, 'src/pages/empty/[...page].astro'),
     `---
-import PostList from '../../widgets/PostList.astro';
+import PostList from '../../layouts/widgets/postlist/PostList.astro';
 import { paginateList } from '../../utils/pagination';
 export function getStaticPaths({ paginate }) {
   return paginateList(paginate, []);
