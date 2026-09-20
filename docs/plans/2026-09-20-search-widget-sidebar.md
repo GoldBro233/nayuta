@@ -26,9 +26,9 @@
 ## Progress
 
 - [x] Read repository guidance; confirmed clean `main` and created the requested worktree/branch.
-- [ ] Commit this plan alone.
-- [ ] Implement the widget and placement.
+- [x] Committed this plan alone as `c2958c3`.
+- [x] Implemented the labeled, editable placeholder and inserted it before both left widget slots.
 - [ ] Run commands and inspect browser views.
 - [ ] Push and prepare Draft PR for user acceptance.
 
-Next action: commit the plan alone, then edit the widget and frame in the feature worktree.
+Next action: commit the widget and frame changes, push the branch, then run checks and inspect browser views.
