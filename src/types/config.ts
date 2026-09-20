@@ -24,7 +24,7 @@ export interface Config {
   // Website start/launch date for running time calculation (e.g. '2024-01-01')
   since?: string | Date;
 
-  // Theme name in src/styles/themes/ without .css extension (e.g. 'nayuta-aqua')
+  // Theme name in src/assets/styles/themes/ without .css extension (e.g. 'nayuta-aqua')
   theme?: string;
 
   // Positive integer; shared by post and tag archives (defaults to 10).

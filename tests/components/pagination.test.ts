@@ -2,9 +2,9 @@ import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { cp, mkdtemp, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { paginateList } from '../src/utils/pagination';
+import { paginateList } from '../../src/utils/pagination';
 
-const repositoryRoot = join(import.meta.dir, '..');
+const repositoryRoot = join(import.meta.dir, '../..');
 let fixtureRoot: string;
 
 async function readPage(path: string) {
@@ -28,7 +28,7 @@ async function attributes(html: string, selector: string, attribute: string) {
 beforeAll(async () => {
   fixtureRoot = await mkdtemp(join(tmpdir(), 'nayuta-pagination-'));
   await Promise.all(
-    ['src', 'astro.config.mjs', 'package.json', 'tsconfig.json'].map((path) =>
+    ['src', 'astro.config.ts', 'package.json', 'tsconfig.json'].map((path) =>
       cp(join(repositoryRoot, path), join(fixtureRoot, path), {
         recursive: true,
       }),
@@ -76,9 +76,9 @@ beforeAll(async () => {
   await Bun.write(
     join(fixtureRoot, 'src/pages/large/[...page].astro'),
     `---
-import Frame from '../../layouts/frame.astro';
-import Prose from '../../components/Prose.astro';
-import Pagination from '../../components/Pagination.astro';
+import Frame from '../../layout/frame.astro';
+import Prose from '../../layout/components/Prose.astro';
+import Pagination from '../../layout/components/Pagination.astro';
 import { paginateList } from '../../utils/pagination';
 export function getStaticPaths({ paginate }) {
   const entries = Array.from({ length: 100_000 }, (_, index) => index + 1);
@@ -100,7 +100,7 @@ const { page } = Astro.props;
   await Bun.write(
     join(fixtureRoot, 'src/pages/empty/[...page].astro'),
     `---
-import PostList from '../../layouts/widgets/postlist/PostList.astro';
+import PostList from '../../layout/post-list/PostList.astro';
 import { paginateList } from '../../utils/pagination';
 export function getStaticPaths({ paginate }) {
   return paginateList(paginate, []);

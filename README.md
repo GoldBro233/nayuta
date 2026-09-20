@@ -88,7 +88,7 @@ _Interactive friend links wall with connection cards, exchange guidelines, and r
 - **📱 Responsive Drawer Navigation**: On screens below 1120px/768px, sidebars collapse into a sticky top navigation bar with toggleable slide-out drawers powered by lightweight vanilla JS.
 - **⚡ Astro 7 Content Collections**: Type-safe frontmatter validation with Zod schemas and Astro `glob` loaders for both `posts` and `pages`.
 - **🏷️ Post Tags**: Multiple tags per article, linked at the end of each post, with static `/tag/<name>` archives and a content-driven tag cloud.
-- **🎨 Preset Theme Palettes**: Includes 5 pre-bundled CSS theme stylesheets (`nayuta`, `nayuta-aqua`, `midnight-blue`, `oled-dark`, `sakura-pink`) in `src/styles/themes/`, selected statically via `config.ts` and injected at build time.
+- **🎨 Preset Theme Palettes**: Includes 5 pre-bundled CSS theme stylesheets (`nayuta`, `nayuta-aqua`, `midnight-blue`, `oled-dark`, `sakura-pink`) in `src/assets/styles/themes/`, selected statically via `config.ts` and injected at build time.
 - **👥 Built-in Templates**:
   - `PageTemplate`: Default multi-column page template with slots for sidebar widgets and styled prose.
   - `FriendTemplate`: Categorized friend links wall with custom connection cards and link exchange information card.
@@ -103,25 +103,24 @@ Nayuta organizes its code into distinct layers of responsibility:
 ```text
 nayuta/
 ├── src/
-│   ├── components/         # Reusable atomic UI components (Avatar, Button, Card, Prose, Callout, etc.)
-│   ├── widgets/            # Sidebar widgets (TableOfContents, RecentPosts, WebsiteStatus)
-│   ├── layouts/            # Page structural shells (frame.astro, left-sidebar.astro, right-sidebar.astro)
-│   │   └── widgets/
-│   │       ├── ProfileCard.astro # Shared profile card, shown by Frame by default
-│   │       └── postlist/   # Shared post archive and dynamic result presentation
-│   │           ├── PostList.astro
-│   │           └── PostListItem.astro
+│   ├── layout/             # Page structure and directly embedded UI
+│   │   ├── components/     # Internal UI pieces (Prose, Pagination, ProfileCard, etc.)
+│   │   └── post-list/      # Shared archive and dynamic result presentation
+│   ├── widgets/            # User-facing components
+│   │   ├── sidebar/        # RecentPosts, TableOfContents, WebsiteStatus, etc.
+│   │   └── article/        # MDX components such as Callout and TableContainer
 │   ├── templates/          # Pre-assembled page layouts (PageTemplate.astro, FriendTemplate.astro)
 │   ├── pages/              # Astro routes & dynamic slug handlers ([...slug].astro, posts/)
 │   ├── content/            # Markdown & MDX content collections
 │   │   ├── posts/          # Blog articles and notes
 │   │   └── pages/          # Standalone pages (e.g. friend.mdx)
-│   ├── utils/              # Theme logic shared by multiple consumers
-│   ├── styles/             # Global CSS variables and theme presets (themes/*.css)
+│   ├── assets/styles/      # Global CSS variables and theme presets (themes/*.css)
+│   ├── utils/              # Logic shared by build-time and browser consumers
 │   ├── content.config.ts   # Content collection schemas (Zod) and glob loaders
 │   └── config.ts           # Site configuration (author, theme, navigation links)
 ├── docs/                   # Agent specifications and preview assets
-└── public/                 # Static public files (images, avatars, banners)
+├── public/                 # Static public files (images, avatars, banners)
+└── tests/                  # components/, content/, layout/, fixtures/
 ```
 
 ---
@@ -233,6 +232,10 @@ tags: ['Astro', '前端开发', 'CSS Grid']
 
 Article body in Markdown or MDX...
 ```
+
+MDX components intended for article authors live in `src/widgets/article/`.
+For example, a post under `src/content/posts/` can import `Callout` from
+`../../widgets/article/Callout.astro`.
 
 `tags` is an optional array of strings with no fixed tag count. Omit it or use
 `tags: []` for an untagged post. Names are trimmed, must not be empty, and are

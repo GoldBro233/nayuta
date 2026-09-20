@@ -2,9 +2,9 @@ import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { cp, mkdtemp, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { openChromium } from './fixtures/chromium';
+import { openChromium } from '../fixtures/chromium';
 
-const repositoryRoot = join(import.meta.dir, '..');
+const repositoryRoot = join(import.meta.dir, '../..');
 const chrome =
   process.env.CHROME_BIN ??
   Bun.which('chromium') ??
@@ -23,7 +23,7 @@ let server: ReturnType<typeof Bun.serve>;
 beforeAll(async () => {
   fixtureRoot = await mkdtemp(join(tmpdir(), 'nayuta-frame-'));
   await Promise.all(
-    ['src', 'public', 'astro.config.mjs', 'package.json', 'tsconfig.json'].map(
+    ['src', 'public', 'astro.config.ts', 'package.json', 'tsconfig.json'].map(
       (path) =>
         cp(join(repositoryRoot, path), join(fixtureRoot, path), {
           recursive: true,
@@ -38,7 +38,7 @@ beforeAll(async () => {
   await Bun.write(
     join(fixtureRoot, 'src/pages/frame-opt-out.astro'),
     `---
-import Frame from '../layouts/frame.astro';
+import Frame from '../layout/frame.astro';
 ---
 <Frame title="No profile" withProfileCard={false}>
   <p slot="left">Sidebar remains</p>
@@ -49,13 +49,27 @@ import Frame from '../layouts/frame.astro';
   await Bun.write(
     join(fixtureRoot, 'src/pages/frame-custom-header.astro'),
     `---
-import Frame from '../layouts/frame.astro';
+import Frame from '../layout/frame.astro';
 ---
 <Frame title="Custom header" withProfileCard={false}>
   <p slot="left-header">Custom identity</p>
   <p>Page content</p>
 </Frame>
 `,
+  );
+
+  const globalPath = join(fixtureRoot, 'src/assets/styles/global.css');
+  await Bun.write(
+    globalPath,
+    (await Bun.file(globalPath).text()).replace(/^@import url\([^\n]+;$/gm, ''),
+  );
+  const headPath = join(fixtureRoot, 'src/layout/head-base.astro');
+  await Bun.write(
+    headPath,
+    (await Bun.file(headPath).text()).replace(
+      /<link\s[^>]*href="https:[\s\S]*?\/>/g,
+      '',
+    ),
   );
 
   const build = Bun.spawn(['bun', 'run', 'build'], {

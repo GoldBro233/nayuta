@@ -3,12 +3,12 @@ import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import config from '../../config';
 import { getPosts, sortPosts } from '../../utils/posts';
 import { paginateList } from '../../utils/pagination';
-import Frame from '../../layouts/frame.astro';
-import Prose from '../../components/Prose.astro';
-import PostList from '../../layouts/widgets/postlist/PostList.astro';
-import RecentPosts from '../../widgets/RecentPosts.astro';
-import TagCloud from '../../widgets/TagCloud.astro';
-import WebsiteStatus from '../../widgets/WebsiteStatus.astro';
+import Frame from '../../layout/frame.astro';
+import Prose from '../../layout/components/Prose.astro';
+import PostList from '../../layout/post-list/PostList.astro';
+import RecentPosts from '../../widgets/sidebar/RecentPosts.astro';
+import TagCloud from '../../widgets/sidebar/TagCloud.astro';
+import WebsiteStatus from '../../widgets/sidebar/WebsiteStatus.astro';
 
 export const getStaticPaths = (async ({ paginate }) => {
   const posts = sortPosts(await getPosts());

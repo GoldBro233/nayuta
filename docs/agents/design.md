@@ -9,7 +9,7 @@ features remain consistent with existing styles.
 ### Design Tokens
 
 All colors, sizing, spacing, borders, shadows, transitions, and z-indices are
-defined in `src/styles/themes/nayuta.css` under the `--ny-*` namespace.
+defined in `src/assets/styles/themes/nayuta.css` under the `--ny-*` namespace.
 
 Token rules:
 
@@ -66,16 +66,22 @@ Layout rules:
 - Responsive breakpoint variables `--ny-breakpoint-tablet` (`900px`) and
   `--ny-breakpoint-mobile` (`640px`) guide media queries.
 
-### Widget Directory Boundaries
+### Layout and Widget Boundaries
 
-- `src/layouts/widgets/` contains composed parts owned by the page layout,
-  including the shared `ProfileCard` and post lists and their items. Group
-  related parts by feature, as with `PostList.astro` and `PostListItem.astro`
-  in `src/layouts/widgets/postlist/`.
-- `src/widgets/` is reserved for widgets usable in the left or right sidebar,
-  such as `RecentPosts`, `TagCloud`, `WebsiteStatus`, and
-  `TableOfContents`, along with their shared containers and composition helpers.
-  They retain this role when responsive layouts place sidebar content in drawers.
+- `src/layout/` owns page structure and UI embedded directly by routes and
+  templates. Small internal pieces such as `Prose`, `Pagination`, and
+  `ProfileCard` live in `src/layout/components/`; shared post lists live in
+  `src/layout/post-list/`.
+- `src/widgets/sidebar/` contains widgets usable in the left or right sidebar,
+  including `RecentPosts`, `TagCloud`, `WebsiteStatus`, `TableOfContents`, and
+  their composition helpers. They retain this role when responsive layouts
+  place sidebar content in drawers.
+- `src/widgets/article/` contains components authored into MDX, including
+  `Callout` and `TableContainer`. Keep article-specific public imports here.
+- `src/assets/styles/` contains global CSS and themes. Keep local client
+  enhancements in their owning `.astro` files; extract scripts into
+  `src/assets/scripts/` only when multiple consumers need them. Shared
+  build-time/browser logic remains in `src/utils/`.
 
 ### Component Design Principles
 
@@ -103,7 +109,7 @@ Layout rules:
 ### Typography
 
 Reading text across posts and pages scales with the viewport through the prose
-tokens in `src/styles/themes/nayuta.css`. The scale keeps a stable hierarchy:
+tokens in `src/assets/styles/themes/nayuta.css`. The scale keeps a stable hierarchy:
 
 - Large article title: `--ny-font-size-title` (`2rem` - `2.375rem`), tight line
   height `--ny-line-height-heading`.
@@ -120,7 +126,7 @@ tokens in `src/styles/themes/nayuta.css`. The scale keeps a stable hierarchy:
 - Code blocks and inline code: `--ny-font-size-code` (`0.875rem`),
   `--ny-font-family-code`, line height `--ny-line-height-code` (`1.65`).
 
-When modifying `src/components/Prose.astro` or markdown rules, preserve body
+When modifying `src/layout/components/Prose.astro` or markdown rules, preserve body
 readability. Avoid loose line heights below `1.7` on long-form paragraphs, and
 keep section headings clearly separated with `margin-top: 1.8em` and a small
 gap below them. Inline elements (`a`, `strong`, `code`, `mark`) inherit the
@@ -170,8 +176,8 @@ integer; omitting it defaults to 10. Apply visibility filtering and
 by content ID.
 Tag archives group the sorted posts in one pass before paginating each group.
 
-`PostList.astro` and `PostListItem.astro` live in `src/layouts/widgets/postlist/`.
-Consumers can import `PostList` from `~/layouts/widgets/postlist/PostList.astro`.
+`PostList.astro` and `PostListItem.astro` live in `src/layout/post-list/`.
+Consumers can import `PostList` from `~/layout/post-list/PostList.astro`.
 `PostList` renders a light-DOM `<nayuta-post-list>` custom element with two modes.
 The default static mode takes `page: Page<CollectionEntry<'posts'>>` and renders
 only `page.data`, including reading-time preparation. Its complete HTML and
@@ -298,7 +304,7 @@ the browser does not call `render()` or resolve collection image metadata.
 Dynamic summaries use text nodes for text fields and HTTP(S)/relative URLs for
 links and image sources. Static summaries retain Astro's `Image` handling.
 
-`tests/post-list.test.ts` builds its fixtures outside the repository and runs
+`tests/components/post-list.test.ts` builds its fixtures outside the repository and runs
 real-browser checks using an installed Chromium/Chrome (or `CHROME_BIN`). Browser
 checks explicitly skip if no browser is available; build and utility checks
 still run. Coverage includes partial updates, DOM preservation, query URLs,

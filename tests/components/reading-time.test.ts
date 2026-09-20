@@ -5,7 +5,7 @@ import {
   type RemarkPlugin,
 } from '@astrojs/markdown-remark';
 import { compile } from '@mdx-js/mdx';
-import config from '../astro.config.ts';
+import config from '../../astro.config.ts';
 
 const processor = config.markdown?.processor ?? unified();
 if (!isUnifiedProcessor(processor)) {
