@@ -108,3 +108,7 @@ Sidebar visibility falls back to normal document flow when JavaScript is absent.
   `--ignore-lock` to prevent the agent-aware CLI from detaching its server.
 - Visually inspected phone/light and desktop/dark screenshots: custom layout,
   typography and sidebar controls fit their viewports without overflow.
+
+- Refreshing the entire Vite server fixed Astro discovery but detached the content
+  loader's file watchers. Refined the hook to invalidate development module graphs
+  and send full reloads while retaining the server and collection watchers.

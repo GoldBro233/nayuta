@@ -36,7 +36,7 @@ function contentEntryUpdates(): AstroIntegration {
       'astro:config:done': ({ config }) => {
         contentDirectory = fileURLToPath(new URL('content/', config.srcDir));
       },
-      'astro:server:setup': ({ server, logger }) => {
+      'astro:server:setup': ({ server }) => {
         let pending: ReturnType<typeof setTimeout> | undefined;
         const refresh = (file: string) => {
           const path = relative(contentDirectory, file).replaceAll('\\', '/');
@@ -55,9 +55,10 @@ function contentEntryUpdates(): AstroIntegration {
           if (!sidebar && !page) return;
           clearTimeout(pending);
           pending = setTimeout(() => {
-            void server
-              .restart()
-              .catch((error: Error) => logger.error(error.message));
+            for (const environment of Object.values(server.environments)) {
+              environment.moduleGraph.invalidateAll();
+              environment.hot.send({ type: 'full-reload' });
+            }
           }, 50);
         };
         server.watcher.on('add', refresh);
