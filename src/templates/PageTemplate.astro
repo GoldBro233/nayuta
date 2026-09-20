@@ -1,5 +1,8 @@
 ---
 import Frame from '@layouts/frame.astro';
+import type { MarkdownHeading } from 'astro';
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import type { PageEntry } from '@assets/utils/pages';
 import RecentPosts from '@widgets/sidebar/RecentPosts.astro';
 import TagCloud from '@widgets/sidebar/TagCloud.astro';
 import WebsiteStatus from '@widgets/sidebar/WebsiteStatus.astro';
@@ -7,19 +10,21 @@ import Prose from '@layouts/components/Prose.astro';
 import DynamicWidget from '@widgets/sidebar/DynamicWidget.astro';
 
 interface Props {
-  entry: any;
-  Content?: any;
+  entry: PageEntry;
+  Content?: AstroComponentFactory;
+  headings?: MarkdownHeading[];
+  isHome?: boolean;
 }
 
-const { entry, Content } = Astro.props;
+const { entry, Content, isHome = false } = Astro.props;
 const data = entry.data;
 
 const breadcrumbs = data.breadcrumbs || [
   { text: 'Home', href: '/' },
-  { text: data.title, href: `/${entry.id}` },
+  { text: data.title, href: Astro.url.pathname },
 ];
 
-const rightWidgets: string[] = data.rightWidgets || [];
+const rightWidgets: string[] = [];
 const showRightSidebar =
   typeof data.withRightSidebar === 'boolean'
     ? data.withRightSidebar
@@ -28,6 +33,7 @@ const showRightSidebar =
 
 <Frame
   title={data.title}
+  isHome={isHome}
   breadcrumbs={breadcrumbs}
   withRightSidebar={showRightSidebar}
 >

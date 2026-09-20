@@ -71,10 +71,14 @@ or client framework. Preserve existing article/page URLs and responsive layouts.
 
 - [x] Repository and toolchain inspected; design validated in disposable fixtures.
 - [x] User approved the revised plan; isolated branch and worktree created.
-- [ ] Content entries and routing implemented.
+- [x] Content entries and routing implemented.
 - [ ] Sidebar fallback and post TOC implemented.
 - [ ] Migration, documentation and regression tests completed.
 - [ ] Implementation pushed; planned checks pass on final pushed revision.
 - [ ] Draft PR opened for user review.
 
-Next action: commit this plan alone, then implement content entry discovery.
+Content IDs for Markdown pages now retain their source extension and the `pages/` prefix,
+so duplicate source formats remain visible to URL validation. Public page URLs
+follow the filename path (or an explicit `slug`); existing authored URLs are unchanged.
+
+Next action: implement shared sidebar layout, then run integration coverage.
