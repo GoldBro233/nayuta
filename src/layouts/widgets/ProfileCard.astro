@@ -1,14 +1,16 @@
 ---
-import Avatar from '../components/Avatar.astro';
-import Button from '../components/Button.astro';
-import Icon from '../components/Icon.astro';
-import config from '../config';
+import Avatar from '../../components/Avatar.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import config from '../../config';
 
 const links = config.links ?? [];
 ---
 
 <div class="profile-card">
-  <Avatar src={config.avatar} alt={`${config.author} Avatar`} />
+  <a class="avatar-link" href="/" aria-label="Go to homepage">
+    <Avatar src={config.avatar} alt="" />
+  </a>
   <div class="profile-info">
     <h2 class="profile-name">{config.author}</h2>
     <div class="profile-title">
@@ -44,6 +46,17 @@ const links = config.links ?? [];
 </div>
 
 <style>
+  .avatar-link {
+    display: inline-flex;
+    width: fit-content;
+    border-radius: var(--ny-radius-md);
+  }
+
+  .avatar-link:focus-visible {
+    outline: 2px solid var(--ny-color-outline);
+    outline-offset: var(--ny-space-1);
+  }
+
   .profile-card {
     display: flex;
     flex-direction: column;

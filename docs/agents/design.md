@@ -55,6 +55,9 @@ four responsive stages:
 Layout rules:
 
 - All pages must be wrapped in `frame.astro`.
+- `frame.astro` shows the profile card in the left sidebar by default. Pass
+  `withProfileCard={false}` to omit it on a page, or `withLeftSidebar={false}` to
+  remove the entire left region.
 - Content in the main region must use `Prose.astro` or have `.prose` class
   to inherit typography styles.
 - Avoid introducing independent sidebar drawer containers or fixed headers in
@@ -65,11 +68,12 @@ Layout rules:
 
 ### Widget Directory Boundaries
 
-- `src/layouts/widgets/` contains the page's own composed parts, such as post
-  lists and their items. Group related parts by feature, as with `PostList.astro`
-  and `PostListItem.astro` in `src/layouts/widgets/postlist/`.
+- `src/layouts/widgets/` contains composed parts owned by the page layout,
+  including the shared `ProfileCard` and post lists and their items. Group
+  related parts by feature, as with `PostList.astro` and `PostListItem.astro`
+  in `src/layouts/widgets/postlist/`.
 - `src/widgets/` is reserved for widgets usable in the left or right sidebar,
-  such as `ProfileCard`, `RecentPosts`, `TagCloud`, `WebsiteStatus`, and
+  such as `RecentPosts`, `TagCloud`, `WebsiteStatus`, and
   `TableOfContents`, along with their shared containers and composition helpers.
   They retain this role when responsive layouts place sidebar content in drawers.
 
