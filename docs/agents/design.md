@@ -232,7 +232,7 @@ still owns its query and static path generation.
 
 `bun run test` covers tag validation, draft handling, and generated article,
 archive, and tag-cloud HTML using temporary content in an isolated copy of the
-site. Test fixtures do not modify authored content or `design/`.
+site. Test fixtures do not modify authored content.
 Pagination coverage includes page boundaries, stable ordering, tag URL encoding,
 empty/single-page archives, draft exclusion, and selected pages from 100,000
 numeric entries. The last check exercises slicing and bounded controls; it is
@@ -349,8 +349,6 @@ This is an upstream issue in `@astrojs/mdx` when used with Vite's bundling pipel
 
 ## Common Pitfalls & Agent Rules
 
-- **Strict Protocol Requirement**: All conversational responses MUST start with the prefix:
-  `NYT-AGENT / Working <Step>` (e.g., `NYT-AGENT / Working Plan`, `NYT-AGENT / Working Verify`, `NYT-AGENT / Working Done`).
 - **Do not introduce heavy JS frameworks**: Nayuta is an Astro-native theme. Do not add React, Vue, or Svelte components unless explicitly requested by the user.
 - **Preserve semantic markup & CSS variables**: Every custom element or layout modification must use `--ny-*` variables for colors, fonts, and dimensions.
 - **Check mobile/responsive layouts**: Whenever a layout component is added or modified, verify how it looks on mobile screens (`<= 640px`) and tablet screens (`<= 900px`).
