@@ -112,23 +112,6 @@ const fallbackStyle = [
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  :global(.link-card::before) {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--ny-color-outline),
-      transparent
-    );
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-
   :global(.link-card:hover) {
     transform: translateY(-3px);
     border-color: var(--ny-color-outline);
@@ -136,10 +119,6 @@ const fallbackStyle = [
     box-shadow:
       0 8px 24px var(--ny-color-shadow),
       0 0 0 1px color-mix(in srgb, var(--ny-color-outline) 15%, transparent);
-  }
-
-  :global(.link-card:hover::before) {
-    opacity: 1;
   }
 
   .link-header {
