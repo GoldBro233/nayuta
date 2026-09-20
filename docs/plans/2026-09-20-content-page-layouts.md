@@ -75,14 +75,14 @@ or client framework. Preserve existing article/page URLs and responsive layouts.
 - [x] Migration, documentation and regression tests completed.
 - [x] Implementation pushed; planned checks completed, with one reproduced baseline
       failure on the local filesystem (details below).
-- [ ] Draft PR opened for user review.
+- [x] Draft PR opened for user review: https://github.com/yuanzui-cf/nayuta/pull/13
 
 Content IDs for Markdown pages now retain their source extension and the `pages/` prefix,
 so duplicate source formats remain visible to URL validation. Public page URLs
 follow the filename path (or an explicit `slug`); existing authored URLs are unchanged.
 
-Next action: open the Draft PR with validation results and request user review.
-Retain this plan until the user approves promotion.
+Next action: await user review of Draft PR #13. Retain this plan until the user
+approves promotion; do not merge.
 
 The frame now labels custom right content separately from the TOC, keeps closed
 drawers inert, traps keyboard focus while open and restores focus on close.
