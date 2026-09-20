@@ -177,7 +177,7 @@ their owning components; collection loaders and common schemas remain centralize
 
 - [x] Revised design approved; existing workspace and PR inspected.
 - [x] Shared types and dispatcher migration completed.
-- [ ] Template validation, regression coverage and documentation completed.
+- [x] Template validation, regression coverage and documentation completed.
 - [ ] Pushed revision validated and Draft PR updated.
 
-Next action: move template-specific validation and add build regressions.
+Next action: push implementation, run the planned checks and inspect the pages.

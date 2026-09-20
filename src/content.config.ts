@@ -39,41 +39,6 @@ export const pageSchema = z
     breadcrumbs: z
       .array(z.object({ text: z.string(), href: z.string() }))
       .optional(),
-    categories: z
-      .array(
-        z.object({
-          id: z.string(),
-          title: z.string(),
-          desc: z.string().optional(),
-        }),
-      )
-      .optional(),
-    friends: z
-      .array(
-        z.object({
-          name: z.string(),
-          href: z.string(),
-          site: z.string().optional(),
-          desc: z.string().optional(),
-          favicon: z.string().optional(),
-          faviconText: z.string().optional(),
-          faviconBg: z.string().optional(),
-          faviconColor: z.string().optional(),
-          tag: z.string().optional(),
-          tags: z.array(z.string()).optional(),
-          category: z.string().optional(),
-        }),
-      )
-      .optional()
-      .default([]),
-    mySite: z
-      .object({
-        name: z.string(),
-        url: z.string(),
-        avatar: z.string().optional(),
-        desc: z.string().optional(),
-      })
-      .optional(),
   })
   .superRefine((data, context) => {
     if ('rightWidgets' in data) {

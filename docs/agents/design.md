@@ -161,7 +161,8 @@ within the reading region when their contents are wider than the viewport.
 
 `src/content/*` contains authored Markdown/MDX posts, Markdown/MDX/Astro pages,
 local sidebar Astro components, and colocated assets. It is reserved for final content; theme TypeScript modules do not belong
-there. Content schemas and collection loaders belong in `src/content.config.ts`.
+there. Collection loaders and common metadata schemas belong in
+`src/content.config.ts`; template-specific schemas belong in their templates.
 
 Current content collections:
 
@@ -172,7 +173,7 @@ Current content collections:
   `pages/`. IDs retain the relative source filename and extension, preventing
   duplicate author URLs from being silently overwritten before route validation.
 - Astro homepage/standalone components are discovered separately at build time
-  and export `page` metadata validated with `pageSchema` in `src/content.config.ts`.
+  and export common `page` metadata validated with `pageSchema` in `src/content.config.ts`.
   They are not content-collection Markdown render targets.
 
 `src/pages/index.astro` dispatches to the single `src/content/index.{md,mdx,astro}`
@@ -198,6 +199,21 @@ only optional content and never the article TOC. Old `rightWidgets` arrays are
 rejected with migration guidance. Astro pages get an empty `headings` array;
 Markdown/MDX headings come from `render()`.
 
+The common `pageSchema` uses `z.looseObject()` to validate shared fields while
+preserving custom metadata as unknown. Each template validates its own fields
+before consuming them. `FriendTemplate.astro` owns the `friends`, `categories`
+and `mySite` schema and infers its local header type with `z.infer`. It merges
+parsed values into the entry passed to the frame, sidebars and body so defaults
+are consistent and unrelated custom metadata is preserved. Do not assert raw
+metadata to a template-specific type without parsing it.
+
+Common validation runs during collection synchronization (or Astro page discovery);
+template validation runs during rendering. Invalid rendered template metadata
+fails the static build with its source file and field paths. A content sync or
+type check alone does not validate those custom fields. Register a new concrete
+template in `ContentPage.astro` and keep its schema in the owning template; the
+central content config must not import template components.
+
 Root `_left.astro` now authors the default widgets; there is no hard-coded widget
 fallback in routes. Sidebar props are `entry` (absent for system pages), `headings`
 and `pathname`. Content source directories, not slugs, select sidebars. Components
@@ -208,8 +224,8 @@ restoration. Without its JavaScript, sidebars remain visible in document flow.
 
 Reserve `assets/` directories and underscore-prefixed paths for non-route content
 in every content collection and Astro discovery glob. Files remain importable;
-resources do not automatically receive public URLs. Theme loaders/schemas still
-belong in `src/content.config.ts`, not content directories. Authored `.astro`
+resources do not automatically receive public URLs. Collection loaders/common schemas
+still belong in `src/content.config.ts`, not content directories. Authored `.astro`
 components are allowed in content; shared theme logic is not.
 
 `tests/content/pages.test.ts` builds isolated fixtures for all homepage formats,

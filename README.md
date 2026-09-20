@@ -248,6 +248,21 @@ Inside a template, alias `content` to an uppercase component variable:
 `<content />` would create an HTML element. Templates own the body presentation
 and use `@layouts/content-frame.astro` for the page frame and sidebars.
 
+Common metadata (`title`, `description`, `template`, `slug`, `breadcrumbs` and
+sidebar switches) is validated in `src/content.config.ts`. Extra fields are
+preserved and remain `unknown` in the shared type until a template parses them.
+Each template defines its own Zod schema and derives its header type with
+`z.infer<typeof headerSchema>`. `FriendTemplate.astro`, for example, owns
+`friends`, `categories` and `mySite`; omitted `friends` defaults to an empty array.
+The parsed values are passed to the body and sidebars in `entry.data` together
+with the common and other custom fields.
+
+Template-specific validation runs when the template renders. `bun run build`
+reports invalid fields with the content source path; content synchronization or
+type checking alone only covers the common metadata. To add a template, implement
+the shared props, validate its custom fields locally and add its selection in
+`ContentPage.astro`.
+
 ### Custom Sidebars
 
 Each side resolves independently: a `_left.astro` or `_right.astro` beside the

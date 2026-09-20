@@ -1,13 +1,68 @@
 ---
 import Frame from '@layouts/content-frame.astro';
 import type { TemplateProps } from '@type/template';
+import { z } from 'astro/zod';
 import LinkCard from '@layouts/components/LinkCard.astro';
 import Prose from '@layouts/components/Prose.astro';
 
 interface Props extends TemplateProps {}
 
-const { entry, content: Content, headings = [], isHome = false } = Astro.props;
-const data = entry.data;
+const headerSchema = z.object({
+  categories: z
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        desc: z.string().optional(),
+      }),
+    )
+    .optional(),
+  friends: z
+    .array(
+      z.object({
+        name: z.string(),
+        href: z.string(),
+        site: z.string().optional(),
+        desc: z.string().optional(),
+        favicon: z.string().optional(),
+        faviconText: z.string().optional(),
+        faviconBg: z.string().optional(),
+        faviconColor: z.string().optional(),
+        tag: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+        category: z.string().optional(),
+      }),
+    )
+    .optional()
+    .default([]),
+  mySite: z
+    .object({
+      name: z.string(),
+      url: z.string(),
+      avatar: z.string().optional(),
+      desc: z.string().optional(),
+    })
+    .optional(),
+});
+type Header = z.infer<typeof headerSchema>;
+
+const {
+  entry: sourceEntry,
+  content: Content,
+  headings = [],
+  isHome = false,
+} = Astro.props;
+const parsed = headerSchema.safeParse(sourceEntry.data);
+if (!parsed.success) {
+  const details = parsed.error.issues
+    .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+    .join('; ');
+  throw new Error(
+    `Invalid friend template metadata in ${sourceEntry.filePath ?? sourceEntry.id}: ${details}`,
+  );
+}
+const data = { ...sourceEntry.data, ...parsed.data };
+const entry = { ...sourceEntry, data };
 
 const breadcrumbs =
   data.breadcrumbs ||
@@ -24,19 +79,19 @@ const configuredCategories = data.categories || [];
 let displaySections: Array<{
   id: string;
   title: string;
-  friends: any[];
+  friends: Header['friends'];
 }> = [];
 
 if (configuredCategories.length > 0) {
-  const knownIds = new Set(configuredCategories.map((c: any) => c.id));
-  displaySections = configuredCategories.map((cat: any) => ({
+  const knownIds = new Set(configuredCategories.map((c) => c.id));
+  displaySections = configuredCategories.map((cat) => ({
     id: cat.id,
     title: cat.title,
-    friends: friends.filter((f: any) => f.category === cat.id),
+    friends: friends.filter((f) => f.category === cat.id),
   }));
 
   const remainingFriends = friends.filter(
-    (f: any) => !f.category || !knownIds.has(f.category),
+    (f) => !f.category || !knownIds.has(f.category),
   );
   if (remainingFriends.length > 0) {
     displaySections.push({
@@ -47,7 +102,7 @@ if (configuredCategories.length > 0) {
   }
 } else {
   const uniqueKeys: string[] = [];
-  friends.forEach((f: any) => {
+  friends.forEach((f) => {
     const key = f.category || '';
     if (!uniqueKeys.includes(key)) {
       uniqueKeys.push(key);
@@ -57,7 +112,7 @@ if (configuredCategories.length > 0) {
   displaySections = uniqueKeys.map((key) => ({
     id: key || 'default',
     title: key ? key : 'Friends & Connections',
-    friends: friends.filter((f: any) => (f.category || '') === key),
+    friends: friends.filter((f) => (f.category || '') === key),
   }));
 }
 
@@ -102,7 +157,7 @@ const mySiteLogo = mySite ? mySite.avatar : null;
               </span>
             </div>
             <div class="friends-grid">
-              {section.friends.map((friend: any) => (
+              {section.friends.map((friend) => (
                 <LinkCard {...friend} />
               ))}
             </div>

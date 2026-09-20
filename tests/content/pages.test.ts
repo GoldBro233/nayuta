@@ -76,6 +76,60 @@ beforeAll(async () => {
   );
   await write('about.md', markdown('Not a route outside pages'));
   await write('pages/about.md', markdown('About', 'ABOUT-CONTENT'));
+  for (const extension of ['md', 'mdx', 'astro']) {
+    const metadata = {
+      title: `${extension} friends`,
+      description: 'Friend template description',
+      template: 'friend',
+      categories: [{ id: 'writers', title: 'Fixture writers' }],
+      friends: [
+        {
+          name: 'Known writer',
+          href: 'https://writer.example/',
+          category: 'writers',
+          tags: ['Fixture tag'],
+        },
+        {
+          name: 'Unlisted category',
+          href: 'https://unlisted.example/',
+          category: 'unlisted',
+        },
+        { name: 'Uncategorized friend', href: 'https://friend.example/' },
+      ],
+      mySite: { name: 'Fixture site', url: 'https://site.example/' },
+    };
+    await write(
+      `pages/friends/${extension}.${extension}`,
+      extension === 'astro'
+        ? `---\nexport const page = ${JSON.stringify(metadata)};\n---\n<p>FRIEND-BODY</p>`
+        : markdown(metadata.title, 'FRIEND-BODY', metadata),
+    );
+  }
+  for (const extension of ['mdx', 'astro']) {
+    const metadata = {
+      title: 'Defaulted friends',
+      template: 'friend',
+      extra: 'PRESERVED-CUSTOM-FIELD',
+    };
+    await write(
+      `pages/friends/default-${extension}.${extension}`,
+      extension === 'astro'
+        ? `---\nexport const page = ${JSON.stringify(metadata)};\nconst { entry } = Astro.props;\n---\n<p>DEFAULT-FRIENDS:{entry.data.friends.length}</p><p>{entry.data.extra}</p>`
+        : markdown(
+            metadata.title,
+            '<p>DEFAULT-FRIENDS:{props.entry.data.friends.length}</p><p>{props.entry.data.extra}</p>',
+            metadata,
+          ),
+    );
+  }
+  await write(
+    'pages/friends/_right.astro',
+    `---\nconst { entry } = Astro.props;\n---\n<p>SIDEBAR-FRIENDS:{entry.data.friends.length}</p>`,
+  );
+  await write(
+    'pages/own-fields.astro',
+    `---\nexport const page = { title: 'Own fields', friends: 'A custom string', categories: 42, mySite: false };\nconst { entry } = Astro.props;\n---\n<p>OWN-FIELDS:{entry.data.friends}:{entry.data.categories}:{String(entry.data.mySite)}</p>`,
+  );
   await write(
     'pages/a/b/c/index.mdx',
     markdown(
@@ -239,6 +293,46 @@ test('renders the content homepage and both nested page formats with metadata', 
   expect(astro).toContain('ASTRO-PAGE Astro projects');
   expect(astro).toContain('content="Astro page description"');
   expect(astro.match(/<!DOCTYPE html>/gi)).toHaveLength(1);
+});
+
+test('renders template-specific fields from Markdown, MDX and Astro', async () => {
+  for (const extension of ['md', 'mdx', 'astro']) {
+    const document = await html(`friends/${extension}`);
+    expect(document).toContain('FRIEND-BODY');
+    expect(document).toContain('content="Friend template description"');
+    const known = await region(document, '#category-writers');
+    expect(known).toContain('Fixture writers');
+    expect(known).toContain('Known writer');
+    expect(known).toContain('Fixture tag');
+    expect(known).not.toContain('Unlisted category');
+    const other = await region(document, '#category-other');
+    expect(other).toContain('Unlisted category');
+    expect(other).toContain('Uncategorized friend');
+    expect(await region(document, '.exchange-section')).toContain(
+      'Fixture site',
+    );
+    expect(await region(document, '#right-sidebar')).toContain(
+      'SIDEBAR-FRIENDS:3',
+    );
+  }
+});
+
+test('passes parsed defaults and preserved custom metadata to bodies and sidebars', async () => {
+  for (const extension of ['mdx', 'astro']) {
+    const document = await html(`friends/default-${extension}`);
+    expect(await region(document, '.top-prose-wrapper')).toContain(
+      'DEFAULT-FRIENDS:0',
+    );
+    expect(document).toContain('PRESERVED-CUSTOM-FIELD');
+    expect(await region(document, '#right-sidebar')).toContain(
+      'SIDEBAR-FRIENDS:0',
+    );
+    expect(document).not.toContain('class="friend-section"');
+    expect(document).not.toContain('class="exchange-section"');
+  }
+  expect(await region(await html('own-fields'), 'main')).toContain(
+    'OWN-FIELDS:A custom string:42:false',
+  );
 });
 
 test('does not generate routes for assets, helpers or arbitrary content-root files', async () => {
@@ -592,3 +686,38 @@ test('reports invalid Astro metadata and explains the legacy sidebar migration',
     });
   }
 }, 60_000);
+
+for (const extension of ['md', 'mdx', 'astro']) {
+  test(`reports source and nested fields for invalid ${extension} template metadata`, async () => {
+    const path = `pages/invalid-friend.${extension}`;
+    const metadata = {
+      title: 'Invalid friends',
+      template: 'friend',
+      friends: [{ name: 123, href: false }],
+      categories: [{ id: 123, title: 'Invalid category' }],
+      mySite: { name: 'Invalid site', url: null },
+    };
+    try {
+      await write(
+        path,
+        extension === 'astro'
+          ? `---\nexport const page = ${JSON.stringify(metadata)};\n---\n<p>Invalid friends</p>`
+          : markdown(metadata.title, 'Invalid friends', metadata),
+      );
+      const result = await build();
+      expect(result.code).not.toBe(0);
+      expect(result.output).toContain('Invalid friend template metadata');
+      expect(result.output).toContain(`src/content/${path}`);
+      for (const field of [
+        'friends.0.name',
+        'friends.0.href',
+        'categories.0.id',
+        'mySite.url',
+      ]) {
+        expect(result.output).toContain(field);
+      }
+    } finally {
+      await rm(join(fixtureRoot, 'src/content', path), { force: true });
+    }
+  }, 60_000);
+}

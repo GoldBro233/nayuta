@@ -2,7 +2,7 @@ import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 
-/** Page metadata validated by the content collection's shared schema. */
+/** Common validated metadata; template-specific fields remain unknown until parsed. */
 export type TemplateHeader = CollectionEntry<'pages'>['data'];
 
 /** Common source identity and metadata for Markdown, MDX and Astro pages. */
