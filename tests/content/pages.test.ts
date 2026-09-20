@@ -356,9 +356,14 @@ for (const width of [390, 800, 1440]) {
             ),
           ).toBe(true);
           if (theme === 'light') {
-            const palette = await Bun.file(
-              join(repositoryRoot, 'src/assets/styles/themes/sakura-pink.css'),
-            ).text();
+            // Fixture-only light palette exercises the same semantic tokens.
+            const palette = `:root {
+              --ny-color-bg: #f8fafc; --ny-color-surface: #ffffff;
+              --ny-color-surface-container: #eef2f6; --ny-color-text: #17212e;
+              --ny-color-text-muted: #42546b; --ny-color-text-subtle: #52647b;
+              --ny-color-primary: #24669c; --ny-color-outline: #24669c;
+              --ny-color-border: #c4ceda;
+            }`;
             await evaluate(
               `(() => { const style = document.createElement('style'); style.textContent = ${JSON.stringify(palette)}; document.head.append(style); })()`,
             );
@@ -375,6 +380,8 @@ for (const width of [390, 800, 1440]) {
             );
             await browser.send('Input.dispatchKeyEvent', {
               type: 'keyDown',
+              text: '\r',
+              unmodifiedText: '\r',
               key: 'Enter',
               code: 'Enter',
               windowsVirtualKeyCode: 13,
@@ -618,7 +625,7 @@ test('development routing observes sidebar add, edit, removal and ignored conten
     );
   }
   try {
-    expect(await waitFor('/posts', 'Plain post')).not.toContain(
+    expect(await waitFor('/posts', 'Bundle post')).not.toContain(
       'USER-CONFLICT-posts',
     );
     expect(await waitFor('/posts/bundle', 'POST-BODY')).not.toContain(

@@ -94,3 +94,9 @@ Sidebar visibility falls back to normal document flow when JavaScript is absent.
   corrected the import. Follow-up `bun run check`: passed (one schema API hint).
 - An initial simultaneous check/build collided on Astro generated cache writes.
   Run Astro commands sequentially in each checkout from now on.
+
+- Production site build passed. First focused regression run: 17 passed, 5 failed.
+  Four browser cases omitted the Enter character event; the development archive
+  assertion expected page-two content on page one. Corrected those test inputs.
+  Light-theme checks now use an actual light fixture palette; bundled palettes
+  are dark variants.

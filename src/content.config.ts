@@ -28,7 +28,7 @@ const postsCollection = defineCollection({
 });
 
 export const pageSchema = z
-  .object({
+  .looseObject({
     title: z.string(),
     description: z.string().optional(),
     template: z.string().optional().default('default'),
@@ -75,7 +75,6 @@ export const pageSchema = z
       })
       .optional(),
   })
-  .passthrough()
   .superRefine((data, context) => {
     if ('rightWidgets' in data) {
       context.addIssue({
