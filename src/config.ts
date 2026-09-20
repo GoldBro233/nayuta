@@ -1,4 +1,4 @@
-import type { Config } from './types/config';
+import type { Config } from '@type/config';
 
 const config: Config = {
   title: '✍️ Kani Nayuta',

@@ -2,7 +2,7 @@ import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { cp, mkdtemp, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { paginateList } from '../../src/utils/pagination';
+import { paginateList } from '../../src/assets/utils/pagination';
 
 const repositoryRoot = join(import.meta.dir, '../..');
 let fixtureRoot: string;
@@ -79,7 +79,7 @@ beforeAll(async () => {
 import Frame from '../../layouts/frame.astro';
 import Prose from '../../layouts/components/Prose.astro';
 import Pagination from '../../layouts/components/Pagination.astro';
-import { paginateList } from '../../utils/pagination';
+import { paginateList } from '../../assets/utils/pagination';
 export function getStaticPaths({ paginate }) {
   const entries = Array.from({ length: 100_000 }, (_, index) => index + 1);
   return paginateList(paginate, entries).filter(({ props }) =>
@@ -101,7 +101,7 @@ const { page } = Astro.props;
     join(fixtureRoot, 'src/pages/empty/[...page].astro'),
     `---
 import PostList from '../../layouts/widgets/post-list/PostList.astro';
-import { paginateList } from '../../utils/pagination';
+import { paginateList } from '../../assets/utils/pagination';
 export function getStaticPaths({ paginate }) {
   return paginateList(paginate, []);
 }

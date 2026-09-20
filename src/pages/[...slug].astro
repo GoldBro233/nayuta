@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
-import FriendTemplate from '../templates/FriendTemplate.astro';
-import PageTemplate from '../templates/PageTemplate.astro';
+import FriendTemplate from '@templates/FriendTemplate.astro';
+import PageTemplate from '@templates/PageTemplate.astro';
 
 export async function getStaticPaths() {
   const pages = await getCollection('pages');

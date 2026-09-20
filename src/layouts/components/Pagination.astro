@@ -1,6 +1,6 @@
 ---
 import type { Page } from 'astro';
-import { getPageUrl, getVisiblePages } from '../../utils/pagination';
+import { getPageUrl, getVisiblePages } from '@assets/utils/pagination';
 
 type Props = {
   ariaLabel?: string;
@@ -100,15 +100,12 @@ const visiblePages = getVisiblePages(currentPage, lastPage);
 }
 
 <script>
-  import type {
-    PaginationElement,
-    PaginationState,
-  } from '../../types/pagination';
+  import type { PaginationElement, PaginationState } from '@type/pagination';
   import {
     getQueryPageUrl,
     getVisiblePages,
     normalizePageNumber,
-  } from '../../utils/pagination';
+  } from '@assets/utils/pagination';
 
   class NayutaPagination extends HTMLElement implements PaginationElement {
     private observer?: ResizeObserver;

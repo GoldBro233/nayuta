@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { formatReadingTime } from '../../src/utils/reading-time';
+import { formatReadingTime } from '../../src/assets/utils/reading-time';
 
 test('formats minutes consistently for article metadata', () => {
   expect(formatReadingTime(1)).toBe('1 min');

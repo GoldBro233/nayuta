@@ -85,6 +85,17 @@ Layout rules:
   `src/assets/scripts/` only when multiple consumers need them. Shared
   build-time/browser logic remains in `src/utils/`.
 
+### Import Paths
+
+Use the aliases in `tsconfig.json` for module imports within `src/`, including
+Astro frontmatter, component scripts, TypeScript, MDX, and stylesheet imports.
+Prefer the matching directory alias: `@assets/`, `@layouts/`, `@pages/`,
+`@templates/`, `@type/`, or `@widgets/`. Use `~/` for other source modules,
+such as `~/config`. This also applies to imports from the same directory.
+
+Content-loader filesystem paths and browser URLs follow their own APIs; they
+are not resolved through TypeScript aliases.
+
 ### Component Design Principles
 
 - **No CSS framework dependencies**: Components are built with vanilla CSS
@@ -179,7 +190,7 @@ by content ID.
 Tag archives group the sorted posts in one pass before paginating each group.
 
 `PostList.astro` and `PostListItem.astro` live in `src/layouts/widgets/post-list/`.
-Consumers can import `PostList` from `~/layouts/widgets/post-list/PostList.astro`.
+Consumers can import `PostList` from `@layouts/widgets/post-list/PostList.astro`.
 `PostList` renders a light-DOM `<nayuta-post-list>` custom element with two modes.
 The default static mode takes `page: Page<CollectionEntry<'posts'>>` and renders
 only `page.data`, including reading-time preparation. Its complete HTML and

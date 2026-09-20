@@ -1,16 +1,16 @@
 ---
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
-import { formatReadingTime } from '../../utils/reading-time';
-import { getPosts } from '../../utils/posts';
-import Badge from '../../layouts/components/Badge.astro';
-import Frame from '../../layouts/frame.astro';
-import Prose from '../../layouts/components/Prose.astro';
-import Tag from '../../layouts/components/Tag.astro';
-import RecentPosts from '../../widgets/sidebar/RecentPosts.astro';
-import TagCloud from '../../widgets/sidebar/TagCloud.astro';
-import WebsiteStatus from '../../widgets/sidebar/WebsiteStatus.astro';
-import TableOfContents from '../../widgets/sidebar/TableOfContents.astro';
+import { formatReadingTime } from '@assets/utils/reading-time';
+import { getPosts } from '@assets/utils/posts';
+import Badge from '@layouts/components/Badge.astro';
+import Frame from '@layouts/frame.astro';
+import Prose from '@layouts/components/Prose.astro';
+import Tag from '@layouts/components/Tag.astro';
+import RecentPosts from '@widgets/sidebar/RecentPosts.astro';
+import TagCloud from '@widgets/sidebar/TagCloud.astro';
+import WebsiteStatus from '@widgets/sidebar/WebsiteStatus.astro';
+import TableOfContents from '@widgets/sidebar/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const posts = await getPosts();

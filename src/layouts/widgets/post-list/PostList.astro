@@ -1,9 +1,9 @@
 ---
 import type { Page } from 'astro';
 import { render, type CollectionEntry } from 'astro:content';
-import Pagination from '../../components/Pagination.astro';
-import PostListItem from './PostListItem.astro';
-import config from '../../../config';
+import Pagination from '@layouts/components/Pagination.astro';
+import PostListItem from '@layouts/widgets/post-list/PostListItem.astro';
+import config from '~/config';
 
 type Props = { id?: string } & (
   | { mode?: 'static'; page: Page<CollectionEntry<'posts'>>; pageSize?: never }
@@ -80,13 +80,13 @@ const summaries = await Promise.all(
     PostListElement,
     PostListPage,
     PostSummaryData,
-  } from '../../../types/post-list';
-  import type { PaginationElement } from '../../../types/pagination';
+  } from '@type/post-list';
+  import type { PaginationElement } from '@type/pagination';
   import {
     getQueryPageUrl,
     normalizePageNumber,
-  } from '../../../utils/pagination';
-  import { formatReadingTime } from '../../../utils/reading-time';
+  } from '@assets/utils/pagination';
+  import { formatReadingTime } from '@assets/utils/reading-time';
 
   class NayutaPostList extends HTMLElement implements PostListElement {
     private state: PostListPage = {

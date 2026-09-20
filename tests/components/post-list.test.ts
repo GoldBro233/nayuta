@@ -7,7 +7,7 @@ import {
   getQueryPageUrl,
   getVisiblePages,
   normalizePageNumber,
-} from '../../src/utils/pagination';
+} from '../../src/assets/utils/pagination';
 
 const repositoryRoot = join(import.meta.dir, '../..');
 const chrome =

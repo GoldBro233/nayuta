@@ -1,4 +1,4 @@
-import type { Icon } from './icon';
+import type { Icon } from '@type/icon';
 
 export interface Link {
   text?: string;

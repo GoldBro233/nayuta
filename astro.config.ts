@@ -3,7 +3,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
 import { defineConfig } from 'astro/config';
-import { remarkReadingTime } from './src/utils/reading-time';
+import { remarkReadingTime } from './src/assets/utils/reading-time';
 import config from './src/config';
 
 const site = config.site_url;

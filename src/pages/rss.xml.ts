@@ -1,7 +1,7 @@
 import rss from '@astrojs/rss';
 import type { APIRoute } from 'astro';
-import config from '../config';
-import { getPosts } from '../utils/posts';
+import config from '~/config';
+import { getPosts } from '@assets/utils/posts';
 
 export const GET: APIRoute = async ({ site }) => {
   if (!site) {

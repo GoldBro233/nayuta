@@ -1,9 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import Badge from '../../components/Badge.astro';
-import type { PostSummaryData } from '../../../types/post-list';
-import { formatReadingTime } from '../../../utils/reading-time';
+import Badge from '@layouts/components/Badge.astro';
+import type { PostSummaryData } from '@type/post-list';
+import { formatReadingTime } from '@assets/utils/reading-time';
 
 interface Props {
   item?: Omit<PostSummaryData, 'cover'>;

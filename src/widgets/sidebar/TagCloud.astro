@@ -1,7 +1,7 @@
 ---
-import { getPosts } from '../../utils/posts';
-import Tag from '../../layouts/components/Tag.astro';
-import Widget from './Widget.astro';
+import { getPosts } from '@assets/utils/posts';
+import Tag from '@layouts/components/Tag.astro';
+import Widget from '@widgets/sidebar/Widget.astro';
 
 const posts = await getPosts();
 const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();

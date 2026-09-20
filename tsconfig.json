@@ -6,11 +6,12 @@
     "types": ["bun"],
     "paths": {
       "~/*": ["./src/*"],
-      "@layouts/*": ["./src/layouts/*"],
-      "@widgets/*": ["./src/widgets/*"],
-      "@pages/*": ["./src/pages/*"],
       "@assets/*": ["./src/assets/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@layouts/*": ["./src/layouts/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@templates/*": ["./src/templates/*"],
+      "@type/*": ["./src/types/*"],
+      "@widgets/*": ["./src/widgets/*"]
     }
   }
 }
