@@ -143,3 +143,41 @@ into a folder bundle, with no tests and direct submission.
   checks for this content-only revision. Applied repository formatting only.
 - Delivery: examples belong to the existing Draft PR #13. Next action after
   submission: await user review.
+
+## Approved review: template contracts (2026-09-21)
+
+The user approved this revision in the current session. Reuse the same branch,
+worktree and Draft PR #13.
+
+1. Move `ContentPage.astro` into `src/layouts/widgets/` and update both routes.
+   Define shared header, entry and template prop types in `src/types/template.ts`.
+   Templates accept a lowercase `content` prop and alias it to `Content` when
+   rendering an Astro component.
+2. Keep common page metadata validation and unknown-field preservation in
+   `src/content.config.ts`. Move `friends`, `categories` and `mySite` validation
+   into `FriendTemplate.astro`; infer its header types from the local schema,
+   preserve defaults and pass normalized entry data to the frame and body.
+   Invalid template metadata must report its source file and field path.
+3. Update README and design guidance. Add meaningful build regressions for valid,
+   defaulted and invalid template metadata, including Markdown/MDX and Astro.
+4. Commit and push the changes, then run the targeted content tests,
+   `bun run check`, `bun run build` and `bun run format:check` sequentially.
+   Inspect existing homepage, ordinary and friend pages, including mobile and
+   tablet layouts. Record results, push updates and request review on Draft #13.
+
+Acceptance: no stale dispatcher imports; both templates use one prop contract;
+template-specific data remains unknown until parsed by its owning template;
+existing valid pages render successfully and invalid fields identify their source.
+No new dependencies or subagents are needed.
+
+Validation timing changes intentionally: content synchronization validates common
+metadata, while template-specific validation runs when that template renders.
+Static builds fail on invalid rendered template data. Template schemas belong in
+their owning components; collection loaders and common schemas remain centralized.
+
+- [x] Revised design approved; existing workspace and PR inspected.
+- [ ] Shared types and dispatcher migration completed.
+- [ ] Template validation, regression coverage and documentation completed.
+- [ ] Pushed revision validated and Draft PR updated.
+
+Next action: implement the shared contract and dispatcher move.
