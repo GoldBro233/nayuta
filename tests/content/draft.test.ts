@@ -3,7 +3,7 @@ import { cp, mkdtemp, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const repositoryRoot = join(import.meta.dir, '..');
+const repositoryRoot = join(import.meta.dir, '../..');
 let fixtureRoot: string;
 
 async function runScript(...args: string[]) {
@@ -52,7 +52,7 @@ async function attributes(html: string, selector: string, attribute: string) {
 beforeAll(async () => {
   fixtureRoot = await mkdtemp(join(tmpdir(), 'nayuta-draft-'));
   await Promise.all(
-    ['src', 'astro.config.mjs', 'package.json', 'tsconfig.json'].map((path) =>
+    ['src', 'astro.config.ts', 'package.json', 'tsconfig.json'].map((path) =>
       cp(join(repositoryRoot, path), join(fixtureRoot, path), {
         recursive: true,
       }),

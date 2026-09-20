@@ -2,14 +2,14 @@ import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { cp, mkdtemp, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { openChromium } from './fixtures/chromium';
+import { openChromium } from '../fixtures/chromium';
 import {
   getQueryPageUrl,
   getVisiblePages,
   normalizePageNumber,
-} from '../src/utils/pagination';
+} from '../../src/utils/pagination';
 
-const repositoryRoot = join(import.meta.dir, '..');
+const repositoryRoot = join(import.meta.dir, '../..');
 const chrome =
   process.env.CHROME_BIN ??
   Bun.which('chromium') ??
@@ -25,7 +25,7 @@ let server: ReturnType<typeof Bun.serve>;
 beforeAll(async () => {
   fixtureRoot = await mkdtemp(join(tmpdir(), 'nayuta-post-list-'));
   await Promise.all(
-    ['src', 'astro.config.mjs', 'package.json', 'tsconfig.json'].map((path) =>
+    ['src', 'astro.config.ts', 'package.json', 'tsconfig.json'].map((path) =>
       cp(join(repositoryRoot, path), join(fixtureRoot, path), {
         recursive: true,
       }),
@@ -58,11 +58,11 @@ beforeAll(async () => {
   await Bun.write(join(fixtureRoot, 'public/cover.svg'), cover);
   await Bun.write(join(fixtureRoot, 'src/content/posts/local.svg'), cover);
   await cp(
-    join(import.meta.dir, 'fixtures/post-list.astro'),
+    join(import.meta.dir, '../fixtures/post-list.astro'),
     join(fixtureRoot, 'src/pages/post-list-test.astro'),
   );
   // Keep browser fixtures offline, including fonts and icon styles from the site head.
-  const globalPath = join(fixtureRoot, 'src/styles/global.css');
+  const globalPath = join(fixtureRoot, 'src/assets/styles/global.css');
   await Bun.write(
     globalPath,
     (await Bun.file(globalPath).text()).replace(/^@import url\([^\n]+;$/gm, ''),

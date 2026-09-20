@@ -6,10 +6,10 @@
     "types": ["bun"],
     "paths": {
       "~/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
       "@layouts/*": ["./src/layouts/*"],
+      "@widgets/*": ["./src/widgets/*"],
       "@pages/*": ["./src/pages/*"],
-      "@styles/*": ["./src/styles/*"],
+      "@assets/*": ["./src/assets/*"],
       "@utils/*": ["./src/utils/*"]
     }
   }

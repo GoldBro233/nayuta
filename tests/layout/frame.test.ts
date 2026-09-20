@@ -2,9 +2,9 @@ import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { cp, mkdtemp, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { openChromium } from './fixtures/chromium';
+import { openChromium } from '../fixtures/chromium';
 
-const repositoryRoot = join(import.meta.dir, '..');
+const repositoryRoot = join(import.meta.dir, '../..');
 const chrome =
   process.env.CHROME_BIN ??
   Bun.which('chromium') ??
@@ -23,7 +23,7 @@ let server: ReturnType<typeof Bun.serve>;
 beforeAll(async () => {
   fixtureRoot = await mkdtemp(join(tmpdir(), 'nayuta-frame-'));
   await Promise.all(
-    ['src', 'public', 'astro.config.mjs', 'package.json', 'tsconfig.json'].map(
+    ['src', 'public', 'astro.config.ts', 'package.json', 'tsconfig.json'].map(
       (path) =>
         cp(join(repositoryRoot, path), join(fixtureRoot, path), {
           recursive: true,
@@ -56,6 +56,20 @@ import Frame from '../layouts/frame.astro';
   <p>Page content</p>
 </Frame>
 `,
+  );
+
+  const globalPath = join(fixtureRoot, 'src/assets/styles/global.css');
+  await Bun.write(
+    globalPath,
+    (await Bun.file(globalPath).text()).replace(/^@import url\([^\n]+;$/gm, ''),
+  );
+  const headPath = join(fixtureRoot, 'src/layouts/head-base.astro');
+  await Bun.write(
+    headPath,
+    (await Bun.file(headPath).text()).replace(
+      /<link\s[^>]*href="https:[\s\S]*?\/>/g,
+      '',
+    ),
   );
 
   const build = Bun.spawn(['bun', 'run', 'build'], {

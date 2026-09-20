@@ -24,20 +24,22 @@ const rawThemeName = config.theme || 'nayuta-aqua';
 const themeBaseName = rawThemeName.replace(/\.css$/, '');
 const themeFileName = `${themeBaseName}.css`;
 
-const themeLoaders = import.meta.glob('/src/styles/themes/*.css', {
+const themeLoaders = import.meta.glob('/src/assets/styles/themes/*.css', {
   query: '?raw',
   import: 'default',
 });
 
-const themePath = `/src/styles/themes/${themeFileName}`;
+const themePath = `/src/assets/styles/themes/${themeFileName}`;
 const loadTheme = themeLoaders[themePath];
 
 if (!loadTheme) {
   const availableThemes = Object.keys(themeLoaders)
-    .map((p) => p.replace('/src/styles/themes/', '').replace(/\.css$/, ''))
+    .map((p) =>
+      p.replace('/src/assets/styles/themes/', '').replace(/\.css$/, ''),
+    )
     .join(', ');
   throw new Error(
-    `Theme "${themeBaseName}" not found in src/styles/themes/. Available themes: ${availableThemes}`,
+    `Theme "${themeBaseName}" not found in src/assets/styles/themes/. Available themes: ${availableThemes}`,
   );
 }
 
