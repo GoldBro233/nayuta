@@ -50,7 +50,6 @@ or client framework. Preserve existing article/page URLs and responsive layouts.
 - Targeted integration tests build isolated sites and exercise homepage formats,
   nested Markdown/MDX/Astro pages, asset exclusions, duplicate entries, native
   system priority, sidebar fallback/overrides and post TOC ordering.
-- Check development routing and changes to content and sidebar files.
 - `bun run test`, `bun run check`, `bun run build`, `bun run format:check`.
 - Browser checks at phone/tablet/desktop widths in light/dark themes: sidebar
   controls, keyboard focus/Escape, no overflow, custom sidebar content and TOC.
@@ -81,8 +80,8 @@ Content IDs for Markdown pages now retain their source extension and the `pages/
 so duplicate source formats remain visible to URL validation. Public page URLs
 follow the filename path (or an explicit `slug`); existing authored URLs are unchanged.
 
-Next action: push documentation and tests, run focused regressions, then run
-all planned checks sequentially.
+Next action: push the final implementation and run build-output regressions,
+type checking, production build and formatting checks. Then open the Draft PR.
 
 The frame now labels custom right content separately from the TOC, keeps closed
 drawers inert, traps keyboard focus while open and restores focus on close.
@@ -101,14 +100,9 @@ Sidebar visibility falls back to normal document flow when JavaScript is absent.
   Light-theme checks now use an actual light fixture palette; bundled palettes
   are dark variants.
 
-- Focused coverage now passes 21 of 22 cases, including all six browser cases.
-  Development discovery remained stale after adding/removing sidebar components.
-  Added a small Astro development hook to refresh the module graph for Astro file
-  creation/deletion; edits retain native HMR. Development fixtures now use
-  `--ignore-lock` to prevent the agent-aware CLI from detaching its server.
+- All 21 build-output and browser cases passed in the previous focused run.
 - Visually inspected phone/light and desktop/dark screenshots: custom layout,
   typography and sidebar controls fit their viewports without overflow.
-
-- Refreshing the entire Vite server fixed Astro discovery but detached the content
-  loader's file watchers. Refined the hook to invalidate development module graphs
-  and send full reloads while retaining the server and collection watchers.
+- User clarified that tests should verify build output, not framework HMR.
+  Removed the development hot-reload test and the unnecessary refresh integration.
+  Final validation covers the theme's generated content and presentation only.
