@@ -73,15 +73,16 @@ or client framework. Preserve existing article/page URLs and responsive layouts.
 - [x] Content entries and routing implemented.
 - [x] Sidebar fallback and post TOC implemented.
 - [x] Migration, documentation and regression tests completed.
-- [ ] Implementation pushed; planned checks pass on final pushed revision.
+- [x] Implementation pushed; planned checks completed, with one reproduced baseline
+      failure on the local filesystem (details below).
 - [ ] Draft PR opened for user review.
 
 Content IDs for Markdown pages now retain their source extension and the `pages/` prefix,
 so duplicate source formats remain visible to URL validation. Public page URLs
 follow the filename path (or an explicit `slug`); existing authored URLs are unchanged.
 
-Next action: push the final implementation and run build-output regressions,
-type checking, production build and formatting checks. Then open the Draft PR.
+Next action: open the Draft PR with validation results and request user review.
+Retain this plan until the user approves promotion.
 
 The frame now labels custom right content separately from the TOC, keeps closed
 drawers inert, traps keyboard focus while open and restores focus on close.
@@ -106,3 +107,21 @@ Sidebar visibility falls back to normal document flow when JavaScript is absent.
 - User clarified that tests should verify build output, not framework HMR.
   Removed the development hot-reload test and the unnecessary refresh integration.
   Final validation covers the theme's generated content and presentation only.
+
+## Final validation (2026-09-21)
+
+Implementation revision: `41e43a8` (pushed before checks).
+
+- `bun run test tests/content/pages.test.ts`: 21 passed, 0 failed; includes all six
+  browser viewport/theme cases against built HTML.
+- `bun run test`: 113 passed, 1 failed. The existing tag archive fixture emits
+  `/tag/Astro` and `/tag/astro`; this macOS filesystem is case-insensitive, so one
+  output overwrites the other. Running the unchanged `main` (`6aedba6`) tag suite
+  in a disposable copy reproduces the identical assertion (13 passed, 1 failed).
+  This baseline limitation remains outside the feature scope; the full suite is
+  not reported as passing.
+- `bun run check`: passed, 0 errors, 0 warnings, 0 hints.
+- `bun run build`: passed, 17 pages; existing upstream MDX directive warnings only.
+- `bun run format:check`: passed.
+- `git diff --check main`: passed. Final diff reviewed; no dependency changes or
+  custom development-refresh code remains.
