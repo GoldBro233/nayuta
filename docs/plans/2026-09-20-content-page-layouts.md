@@ -176,8 +176,8 @@ Static builds fail on invalid rendered template data. Template schemas belong in
 their owning components; collection loaders and common schemas remain centralized.
 
 - [x] Revised design approved; existing workspace and PR inspected.
-- [ ] Shared types and dispatcher migration completed.
+- [x] Shared types and dispatcher migration completed.
 - [ ] Template validation, regression coverage and documentation completed.
 - [ ] Pushed revision validated and Draft PR updated.
 
-Next action: implement the shared contract and dispatcher move.
+Next action: move template-specific validation and add build regressions.

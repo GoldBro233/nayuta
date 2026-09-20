@@ -74,6 +74,11 @@ Layout rules:
 - `src/layouts/widgets/` contains composed theme UI used by layouts, routes,
   and templates. `ProfileCard.astro` lives here because it combines the author
   identity and navigation; shared post lists live in the `post-list/` subdirectory.
+- `src/layouts/widgets/ContentPage.astro` prepares content and selects a page
+  template. Concrete templates live in `src/templates/` and use `TemplateProps`
+  from `src/types/template.ts`. That module also owns `TemplateHeader` and
+  `PageEntry`. Templates accept `content` and alias it to `Content` for component
+  markup; lowercase `<content />` would render an HTML element.
 - `src/widgets/sidebar/` contains widgets usable in the left or right sidebar,
   including `RecentPosts`, `TagCloud`, `WebsiteStatus`, `TableOfContents`, and
   their composition helpers. They retain this role when responsive layouts
@@ -180,7 +185,7 @@ fail with both filenames; native Astro system route precedence skips content
 collisions with a build warning. Do not switch all prerender conflicts to errors:
 system routes must continue to win without failing the build.
 
-`src/templates/ContentPage.astro` selects the friend/default template. Both render
+`src/layouts/widgets/ContentPage.astro` selects the friend/default template. Both render
 inside `src/layouts/content-frame.astro`, as do post detail, archives and 404. This
 shared layout discovers `_left.astro` / `_right.astro`, resolves each independently
 from the content file's directory or the content root, and delegates responsive

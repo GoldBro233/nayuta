@@ -235,6 +235,19 @@ public URLs; use `public/` for files that need stable, direct download URLs.
 Only the root `index.*`, files under `pages/`, and registered posts are entries;
 other files directly under `content/` do not become routes.
 
+### Theme Templates
+
+`src/layouts/widgets/ContentPage.astro` prepares the body and selects the template:
+`template: friend` uses `FriendTemplate.astro`; other values use `PageTemplate.astro`.
+Concrete templates live in `src/templates/` and share `TemplateProps` from
+`@type/template`: `entry`, optional `content`, `headings` and `isHome`.
+`PageEntry` and `TemplateHeader` are defined in the same module.
+
+Inside a template, alias `content` to an uppercase component variable:
+`const { content: Content } = Astro.props`. Render it with `<Content />`;
+`<content />` would create an HTML element. Templates own the body presentation
+and use `@layouts/content-frame.astro` for the page frame and sidebars.
+
 ### Custom Sidebars
 
 Each side resolves independently: a `_left.astro` or `_right.astro` beside the

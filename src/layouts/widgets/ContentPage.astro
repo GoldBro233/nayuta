@@ -6,14 +6,14 @@ interface Props {
   page: ContentPage;
 }
 const { page } = Astro.props;
-const { Content, headings } = await renderContentPage(page);
+const { Content: content, headings } = await renderContentPage(page);
 const Template =
   page.entry.data.template === 'friend' ? FriendTemplate : PageTemplate;
 ---
 
 <Template
   entry={page.entry}
-  Content={Content}
+  content={content}
   headings={headings}
   isHome={page.isHome}
 />

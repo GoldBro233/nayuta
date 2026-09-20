@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import { getContentPages } from '@assets/utils/pages';
-import ContentPage from '@templates/ContentPage.astro';
+import ContentPage from '@layouts/widgets/ContentPage.astro';
 export const getStaticPaths = (async () =>
   (await getContentPages())
     .filter((page) => !page.isHome)

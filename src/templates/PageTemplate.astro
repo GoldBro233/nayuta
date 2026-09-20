@@ -1,18 +1,11 @@
 ---
 import Frame from '@layouts/content-frame.astro';
-import type { MarkdownHeading } from 'astro';
-import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
-import type { PageEntry } from '@assets/utils/pages';
+import type { TemplateProps } from '@type/template';
 import Prose from '@layouts/components/Prose.astro';
 
-interface Props {
-  entry: PageEntry;
-  Content?: AstroComponentFactory;
-  headings?: MarkdownHeading[];
-  isHome?: boolean;
-}
+interface Props extends TemplateProps {}
 
-const { entry, Content, headings = [], isHome = false } = Astro.props;
+const { entry, content: Content, headings = [], isHome = false } = Astro.props;
 const data = entry.data;
 
 const breadcrumbs =

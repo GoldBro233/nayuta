@@ -2,6 +2,7 @@ import type { MarkdownHeading } from 'astro';
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { pageSchema } from '~/content.config';
+import type { PageEntry } from '@type/template';
 
 interface AstroPageModule {
   default: AstroComponentFactory;
@@ -19,10 +20,6 @@ const astroPages = import.meta.glob<AstroPageModule>(
   { eager: true },
 );
 
-export type PageEntry = Pick<
-  CollectionEntry<'pages'>,
-  'id' | 'data' | 'filePath'
->;
 export type ContentPage = { slug: string; isHome: boolean } & (
   | { kind: 'markdown'; entry: CollectionEntry<'pages'> }
   | { kind: 'astro'; entry: PageEntry; modulePath: string }
