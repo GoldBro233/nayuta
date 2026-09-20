@@ -280,6 +280,17 @@ to `src/content/index.mdx`. Markdown page collection IDs now retain the content
 source path and extension (for example `pages/friend.mdx`); URLs are resolved
 separately. Existing bundled site URLs are unchanged.
 
+### Bundled Demos
+
+Open `/demo` (also linked from the homepage) to explore the examples:
+
+| Route                    | Source                                          | Demonstrates                                                    |
+| ------------------------ | ----------------------------------------------- | --------------------------------------------------------------- |
+| `/demo/markdown`         | `src/content/pages/demo/markdown.md`            | Root left sidebar, no right sidebar                             |
+| `/demo/notes/nested`     | `src/content/pages/demo/notes/nested/index.mdx` | Nested routing, local assets, local right sidebar               |
+| `/demo/studio`           | `src/content/pages/demo/studio/index.astro`     | Astro body and both local sidebars                              |
+| `/posts/typography-test` | `src/content/posts/typography-test/index.mdx`   | Bundled article, local sidebars, TOC before extra right content |
+
 ---
 
 ## 📄 License

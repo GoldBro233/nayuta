@@ -125,3 +125,21 @@ Implementation revision: `41e43a8` (pushed before checks).
 - `bun run format:check`: passed.
 - `git diff --check main`: passed. Final diff reviewed; no dependency changes or
   custom development-refresh code remains.
+
+## Review addition: demonstration content (2026-09-21)
+
+User requested several demonstration pages and conversion of one existing article
+into a folder bundle, with no tests and direct submission.
+
+- Added `/demo` as an index linked from the homepage, plus Markdown, nested MDX,
+  and Astro examples showing default sidebars and independent local overrides.
+- Included a colocated SVG and a shared text asset; authored underscore helpers
+  provide reusable demo navigation without generating routes.
+- Moved the existing typography article into `typography-test/index.mdx`, keeping
+  its body and URL, and added local left/right components to demonstrate article
+  sidebars and the mandatory TOC above the extra right content.
+- Updated the README demo list and the typography source reference.
+- Per the user's instruction, did not run tests, type checks, builds, or browser
+  checks for this content-only revision. Applied repository formatting only.
+- Delivery: examples belong to the existing Draft PR #13. Next action after
+  submission: await user review.

@@ -146,7 +146,7 @@ gap below them. Inline elements (`a`, `strong`, `code`, `mark`) inherit the
 surrounding font-size; only specialized blocks (blockquotes, tables, figure
 captions) may introduce subtle sizing variations.
 
-Verify typography against `src/content/posts/typography-test.mdx`, which exercises
+Verify typography against `src/content/posts/typography-test/index.mdx`, which exercises
 lists, nested quotes, tables, code, media, and callouts at desktop and mobile
 widths. Also check post summaries and the friends template when adjusting the
 shared typography scale. Prose tables and code blocks scroll horizontally
