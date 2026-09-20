@@ -40,7 +40,11 @@ beforeAll(async () => {
     'dir',
   );
   // All fixture content and config changes stay outside the repository.
-  await rm(join(fixtureRoot, 'src/content'), { recursive: true });
+  await Promise.all(
+    ['posts', 'pages'].map((directory) =>
+      rm(join(fixtureRoot, 'src/content', directory), { recursive: true }),
+    ),
+  );
   const configPath = join(fixtureRoot, 'src/config.ts');
   await cp(configPath, join(fixtureRoot, 'src/fixture-config.ts'));
   await Bun.write(

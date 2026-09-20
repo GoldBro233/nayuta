@@ -66,7 +66,11 @@ beforeAll(async () => {
     "import config from './fixture-config';\nexport default { ...config, postsPerPage: 10 };\n",
   );
   // Only the isolated fixture contains test content; authored posts stay untouched.
-  await rm(join(fixtureRoot, 'src/content'), { recursive: true });
+  await Promise.all(
+    ['posts', 'pages'].map((directory) =>
+      rm(join(fixtureRoot, 'src/content', directory), { recursive: true }),
+    ),
+  );
   await writePost('older.md', {
     title: 'Older tagged article',
     publishDate: '2025-01-01',
@@ -93,8 +97,16 @@ beforeAll(async () => {
     tags: [],
   });
   await Bun.write(
-    join(fixtureRoot, 'src/content/pages/about.md'),
-    '---\ntitle: About\nwithRightSidebar: true\nrightWidgets: [tag-cloud]\n---\n\nAbout this site.\n',
+    join(fixtureRoot, 'src/content/pages/about/index.md'),
+    '---\ntitle: About\n---\n\nAbout this site.\n',
+  );
+  await Bun.write(
+    join(fixtureRoot, 'src/content/pages/about/_right.astro'),
+    `---
+import TagCloud from '@widgets/sidebar/TagCloud.astro';
+---
+<TagCloud />
+`,
   );
   const build = await runScript('build');
   expect(build.exitCode, build.output).toBe(0);

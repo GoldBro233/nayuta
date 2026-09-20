@@ -3,10 +3,11 @@ import config from '~/config';
 
 interface Props {
   title?: string;
+  description?: string;
   isHome?: boolean;
 }
 
-const { title, isHome = false } = Astro.props;
+const { title, description, isHome = false } = Astro.props;
 
 // Format page title:
 // - Home page: directly config.title
@@ -51,7 +52,7 @@ const themeCss = (await loadTheme()) as string;
 <meta name="generator" content={Astro.generator} />
 <link rel="icon" type="image/png" href={config.avatar} />
 <title>{formattedTitle}</title>
-<meta name="description" content={config.description || ''} />
+<meta name="description" content={description ?? config.description ?? ''} />
 <meta name="author" content={config.author || ''} />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link

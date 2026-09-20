@@ -1,7 +1,5 @@
 ---
-import Frame from '@layouts/frame.astro';
-import RecentPosts from '@widgets/sidebar/RecentPosts.astro';
-import WebsiteStatus from '@widgets/sidebar/WebsiteStatus.astro';
+import Frame from '@layouts/content-frame.astro';
 ---
 
 <Frame
@@ -12,9 +10,6 @@ import WebsiteStatus from '@widgets/sidebar/WebsiteStatus.astro';
   ]}
 >
   <meta slot="head" name="robots" content="noindex" />
-
-  <RecentPosts slot="left" />
-  <WebsiteStatus slot="left" />
 
   <h1 class="not-found" aria-label="404: Page not found">404</h1>
 </Frame>

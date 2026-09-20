@@ -36,7 +36,11 @@ beforeAll(async () => {
     join(fixtureRoot, 'node_modules'),
     'dir',
   );
-  await rm(join(fixtureRoot, 'src/content'), { recursive: true });
+  await Promise.all(
+    ['posts', 'pages'].map((directory) =>
+      rm(join(fixtureRoot, 'src/content', directory), { recursive: true }),
+    ),
+  );
   for (const [id, title, publishDate, cover, draft] of [
     [
       'first',

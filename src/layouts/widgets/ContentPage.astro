@@ -1,0 +1,19 @@
+---
+import { renderContentPage, type ContentPage } from '@assets/utils/pages';
+import PageTemplate from '@templates/PageTemplate.astro';
+import FriendTemplate from '@templates/FriendTemplate.astro';
+interface Props {
+  page: ContentPage;
+}
+const { page } = Astro.props;
+const { Content: content, headings } = await renderContentPage(page);
+const Template =
+  page.entry.data.template === 'friend' ? FriendTemplate : PageTemplate;
+---
+
+<Template
+  entry={page.entry}
+  content={content}
+  headings={headings}
+  isHome={page.isHome}
+/>

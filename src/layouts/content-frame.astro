@@ -1,0 +1,61 @@
+---
+import type { MarkdownHeading } from 'astro';
+import type { ComponentProps } from 'astro/types';
+import type { CollectionEntry } from 'astro:content';
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import type { PageEntry } from '@type/template';
+import Frame from '@layouts/frame.astro';
+import TableOfContents from '@widgets/sidebar/TableOfContents.astro';
+
+type Props = ComponentProps<typeof Frame> & {
+  entry?: PageEntry | CollectionEntry<'posts'>;
+  headings?: MarkdownHeading[];
+  isPost?: boolean;
+};
+
+const { entry, headings = [], isPost = false, ...frame } = Astro.props;
+const sidebars = import.meta.glob<AstroComponentFactory>(
+  [
+    '/src/content/**/_left.astro',
+    '/src/content/**/_right.astro',
+    '!/src/content/**/assets/**',
+    '!/src/content/**/_*/**',
+  ],
+  { eager: true, import: 'default' },
+);
+const directory = entry?.filePath
+  ? `/${entry.filePath.slice(0, entry.filePath.lastIndexOf('/'))}`
+  : '/src/content';
+const Left =
+  sidebars[`${directory}/_left.astro`] ?? sidebars['/src/content/_left.astro'];
+const Right =
+  sidebars[`${directory}/_right.astro`] ??
+  sidebars['/src/content/_right.astro'];
+const showExtraRight =
+  Boolean(Right) &&
+  (frame.withRightSidebar ?? entry?.data.withRightSidebar) !== false;
+const sidebarProps = { entry, headings, pathname: Astro.url.pathname };
+---
+
+<Frame
+  {...frame}
+  title={frame.title ?? entry?.data.title}
+  description={frame.description ?? entry?.data.description}
+  withLeftSidebar={frame.withLeftSidebar ?? entry?.data.withLeftSidebar ?? true}
+  withProfileCard={frame.withProfileCard ?? entry?.data.withProfileCard ?? true}
+  withRightSidebar={isPost || showExtraRight}
+  rightSidebarLabel={isPost ? 'Table of Contents' : 'Right Sidebar'}
+>
+  <slot name="head" slot="head" />
+  {
+    Astro.slots.has('left-header') && (
+      <slot name="left-header" slot="left-header" />
+    )
+  }
+  {Left && <Left slot="left" {...sidebarProps} />}
+  <slot />
+  <Fragment slot="right">
+    {isPost && <TableOfContents headings={headings} />}
+    {showExtraRight && Right && <Right {...sidebarProps} />}
+  </Fragment>
+</Frame>
