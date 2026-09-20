@@ -178,6 +178,25 @@ their owning components; collection loaders and common schemas remain centralize
 - [x] Revised design approved; existing workspace and PR inspected.
 - [x] Shared types and dispatcher migration completed.
 - [x] Template validation, regression coverage and documentation completed.
-- [ ] Pushed revision validated and Draft PR updated.
+- [x] Pushed revision validated and Draft PR updated.
 
-Next action: push implementation, run the planned checks and inspect the pages.
+Validation of pushed implementation `ef73682`:
+
+- `bun run test tests/content/pages.test.ts`: 26 passed, 0 failed (218 assertions).
+  Includes valid and invalid friend metadata in Markdown, MDX and Astro; parsed
+  defaults reaching bodies/sidebars; custom fields surviving the common schema;
+  and six existing viewport/theme cases with keyboard and no-JavaScript checks.
+- `bun run check`: passed, 0 errors, warnings or hints across 70 files.
+- `bun run build`: passed, 21 pages. Existing upstream MDX directive warnings
+  remain; no new build warnings were introduced.
+- `bun run format:check` and `git diff --check main`: passed.
+- Inspected the built homepage, ordinary page and friend page at 390, 800 and
+  1440px. All nine views had no horizontal overflow; all six friend cards were
+  present at each width. Reviewed desktop homepage/friend, tablet ordinary/friend
+  and mobile friend-card screenshots.
+- The full suite was not rerun for this focused revision. Its previously
+  reproduced case-insensitive tag fixture failure remains documented above.
+- Draft PR #13 now describes the final template contracts and these checks.
+
+Next action: await user review of Draft PR #13. Retain this plan and draft state;
+do not merge.
