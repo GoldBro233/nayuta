@@ -68,10 +68,12 @@ Layout rules:
 
 ### Layout and Widget Boundaries
 
-- `src/layout/` owns page structure and UI embedded directly by routes and
-  templates. Small internal pieces such as `Prose`, `Pagination`, and
-  `ProfileCard` live in `src/layout/components/`; shared post lists live in
-  `src/layout/post-list/`.
+- `src/layouts/` owns page structure and UI embedded directly by routes and
+  templates. Small reusable UI pieces such as `Prose`, `Pagination`, `Avatar`,
+  and `Button` live in `src/layouts/components/`.
+- `src/layouts/widgets/` contains composed theme UI used by layouts, routes,
+  and templates. `ProfileCard.astro` lives here because it combines the author
+  identity and navigation; shared post lists live in the `post-list/` subdirectory.
 - `src/widgets/sidebar/` contains widgets usable in the left or right sidebar,
   including `RecentPosts`, `TagCloud`, `WebsiteStatus`, `TableOfContents`, and
   their composition helpers. They retain this role when responsive layouts
@@ -126,7 +128,7 @@ tokens in `src/assets/styles/themes/nayuta.css`. The scale keeps a stable hierar
 - Code blocks and inline code: `--ny-font-size-code` (`0.875rem`),
   `--ny-font-family-code`, line height `--ny-line-height-code` (`1.65`).
 
-When modifying `src/layout/components/Prose.astro` or markdown rules, preserve body
+When modifying `src/layouts/components/Prose.astro` or markdown rules, preserve body
 readability. Avoid loose line heights below `1.7` on long-form paragraphs, and
 keep section headings clearly separated with `margin-top: 1.8em` and a small
 gap below them. Inline elements (`a`, `strong`, `code`, `mark`) inherit the
@@ -176,8 +178,8 @@ integer; omitting it defaults to 10. Apply visibility filtering and
 by content ID.
 Tag archives group the sorted posts in one pass before paginating each group.
 
-`PostList.astro` and `PostListItem.astro` live in `src/layout/post-list/`.
-Consumers can import `PostList` from `~/layout/post-list/PostList.astro`.
+`PostList.astro` and `PostListItem.astro` live in `src/layouts/widgets/post-list/`.
+Consumers can import `PostList` from `~/layouts/widgets/post-list/PostList.astro`.
 `PostList` renders a light-DOM `<nayuta-post-list>` custom element with two modes.
 The default static mode takes `page: Page<CollectionEntry<'posts'>>` and renders
 only `page.data`, including reading-time preparation. Its complete HTML and

@@ -103,9 +103,11 @@ Nayuta organizes its code into distinct layers of responsibility:
 ```text
 nayuta/
 ├── src/
-│   ├── layout/             # Page structure and directly embedded UI
-│   │   ├── components/     # Internal UI pieces (Prose, Pagination, ProfileCard, etc.)
-│   │   └── post-list/      # Shared archive and dynamic result presentation
+│   ├── layouts/            # Page structure and directly embedded UI
+│   │   ├── components/     # Reusable UI pieces (Prose, Pagination, Avatar, Button, etc.)
+│   │   └── widgets/        # Composed theme UI
+│   │       ├── ProfileCard.astro # Author identity and navigation
+│   │       └── post-list/  # Shared archive and dynamic result presentation
 │   ├── widgets/            # User-facing components
 │   │   ├── sidebar/        # RecentPosts, TableOfContents, WebsiteStatus, etc.
 │   │   └── article/        # MDX components such as Callout and TableContainer

@@ -67,7 +67,7 @@ beforeAll(async () => {
     globalPath,
     (await Bun.file(globalPath).text()).replace(/^@import url\([^\n]+;$/gm, ''),
   );
-  const headPath = join(fixtureRoot, 'src/layout/head-base.astro');
+  const headPath = join(fixtureRoot, 'src/layouts/head-base.astro');
   await Bun.write(
     headPath,
     (await Bun.file(headPath).text()).replace(

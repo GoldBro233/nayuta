@@ -38,7 +38,7 @@ beforeAll(async () => {
   await Bun.write(
     join(fixtureRoot, 'src/pages/frame-opt-out.astro'),
     `---
-import Frame from '../layout/frame.astro';
+import Frame from '../layouts/frame.astro';
 ---
 <Frame title="No profile" withProfileCard={false}>
   <p slot="left">Sidebar remains</p>
@@ -49,7 +49,7 @@ import Frame from '../layout/frame.astro';
   await Bun.write(
     join(fixtureRoot, 'src/pages/frame-custom-header.astro'),
     `---
-import Frame from '../layout/frame.astro';
+import Frame from '../layouts/frame.astro';
 ---
 <Frame title="Custom header" withProfileCard={false}>
   <p slot="left-header">Custom identity</p>
@@ -63,7 +63,7 @@ import Frame from '../layout/frame.astro';
     globalPath,
     (await Bun.file(globalPath).text()).replace(/^@import url\([^\n]+;$/gm, ''),
   );
-  const headPath = join(fixtureRoot, 'src/layout/head-base.astro');
+  const headPath = join(fixtureRoot, 'src/layouts/head-base.astro');
   await Bun.write(
     headPath,
     (await Bun.file(headPath).text()).replace(

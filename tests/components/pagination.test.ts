@@ -76,9 +76,9 @@ beforeAll(async () => {
   await Bun.write(
     join(fixtureRoot, 'src/pages/large/[...page].astro'),
     `---
-import Frame from '../../layout/frame.astro';
-import Prose from '../../layout/components/Prose.astro';
-import Pagination from '../../layout/components/Pagination.astro';
+import Frame from '../../layouts/frame.astro';
+import Prose from '../../layouts/components/Prose.astro';
+import Pagination from '../../layouts/components/Pagination.astro';
 import { paginateList } from '../../utils/pagination';
 export function getStaticPaths({ paginate }) {
   const entries = Array.from({ length: 100_000 }, (_, index) => index + 1);
@@ -100,7 +100,7 @@ const { page } = Astro.props;
   await Bun.write(
     join(fixtureRoot, 'src/pages/empty/[...page].astro'),
     `---
-import PostList from '../../layout/post-list/PostList.astro';
+import PostList from '../../layouts/widgets/post-list/PostList.astro';
 import { paginateList } from '../../utils/pagination';
 export function getStaticPaths({ paginate }) {
   return paginateList(paginate, []);

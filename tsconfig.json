@@ -6,7 +6,7 @@
     "types": ["bun"],
     "paths": {
       "~/*": ["./src/*"],
-      "@layout/*": ["./src/layout/*"],
+      "@layouts/*": ["./src/layouts/*"],
       "@widgets/*": ["./src/widgets/*"],
       "@pages/*": ["./src/pages/*"],
       "@assets/*": ["./src/assets/*"],

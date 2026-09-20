@@ -2,9 +2,9 @@
 import type { Page } from 'astro';
 import { getImage } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
-import Frame from '~/layout/frame.astro';
-import Prose from '~/layout/components/Prose.astro';
-import PostList from '~/layout/post-list/PostList.astro';
+import Frame from '~/layouts/frame.astro';
+import Prose from '~/layouts/components/Prose.astro';
+import PostList from '~/layouts/widgets/post-list/PostList.astro';
 import { getPosts, sortPosts } from '~/utils/posts';
 
 const posts = sortPosts(await getPosts()).slice(0, 2);
