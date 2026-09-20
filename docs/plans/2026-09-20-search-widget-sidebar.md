@@ -23,12 +23,21 @@
 - The left region is scrollable. Another widget may push Tags Cloud below the visible height on shorter screens; check scrolling instead of changing global layout.
 - One owner handles these small, coupled edits; subagents would not help.
 
+## Validation Results
+
+- `bun run format:check`: passed.
+- `bun run check`: passed; existing Zod deprecation warnings in `src/content.config.ts`.
+- `bun run build`: passed, 17 pages; existing MDX directive warnings.
+- `bun run test`: 91 passed, 2 failed in the `PostList` browser fixture at 390px (`Selector restores numbers when space returns`). The same two tests fail on unchanged `main` with `--test-name-pattern 390px`; that fixture renders `Frame` with `withLeftSidebar={false}` and never mounts this widget. Leave the unrelated pagination code unchanged for this review.
+- Live build preview at `127.0.0.1:4322`: verified ordering and no horizontal overflow at 1440px, 820px, and 390px; mobile drawer opens and shows the field above Recent Posts. Verified input focus, typing, Enter with unchanged URL and no results; injected the existing sakura-pink tokens in the browser to check alternate colors without changing project files.
+
 ## Progress
 
 - [x] Read repository guidance; confirmed clean `main` and created the requested worktree/branch.
 - [x] Committed this plan alone as `c2958c3`.
 - [x] Implemented the labeled, editable placeholder and inserted it before both left widget slots.
-- [ ] Run commands and inspect browser views.
-- [ ] Push and prepare Draft PR for user acceptance.
+- [x] Ran planned checks and inspected desktop, tablet, mobile, and alternate theme views; documented pre-existing test failures above.
+- [x] Committed widget/frame as `f2f5d43` and pushed the feature branch.
+- [ ] Push the validation record and prepare a Draft PR for user acceptance.
 
-Next action: commit the widget and frame changes, push the branch, then run checks and inspect browser views.
+Next action: commit and push this validation record, open a Draft PR, and request visual review before any Pagefind work.
