@@ -1,6 +1,6 @@
 # Streamline Agent Workflow
 
-Status: Implementation complete; push and validation pending.
+Status: Validated; ready for Draft PR review.
 Branch: `docs/streamline-agent-workflow`; base: `main` at `3212e01`.
 Worktree: `.worktree/streamline-agent-workflow/`.
 
@@ -27,8 +27,9 @@ project constraints and defining the approved plan-to-PR workflow.
 - [x] Commit this plan before implementation.
 - [x] Exclude nested worktrees and commit that change.
 - [x] Rewrite instructions and commit the documentation change.
-- [ ] Push, inspect the diff and rule consistency, and verify ignore behavior.
-- [ ] Record results, commit, push, recheck, and open a Draft PR against `main`.
+- [x] Push, inspect the diff and rule consistency, and verify ignore behavior.
+- [x] Record validation results for handoff.
+- [ ] Obtain user review of the Draft PR against `main`.
 - [ ] Await user review; revise as requested or remove this plan and promote.
 
 ## Validation and Decisions
@@ -41,5 +42,15 @@ worktrees and user changes. Keep this plan until explicit Draft PR approval.
 
 ## Handoff
 
-Next: push, validate, and record results before opening the Draft PR. Merge
-belongs to the user.
+- `git diff --check origin/main...HEAD`: passed after pushing implementation.
+- Removed-rule inspection: no obsolete prefixes or directory references remain
+  in the agent instructions. Workflow and commit format reviewed against scope.
+- `git check-ignore -v .worktree/probe`: matched `.gitignore`; Prettier ignore
+  entry also verified. The original checkout and unrelated worktree are intact.
+- `AGENTS.md`: 335 to 130 lines; 63.4% fewer characters.
+- All Bun checks and application tests skipped as requested.
+
+Next: commit and push this record, recheck the diff, then open a Draft PR from
+`docs/streamline-agent-workflow` if absent. Find it by branch when resuming.
+Wait for explicit user review approval before deleting this plan and promoting
+the PR. Merge belongs to the user.
