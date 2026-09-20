@@ -38,7 +38,7 @@ Featuring an adaptive multi-column layout, Nayuta keeps long-form prose comforta
 - ⚡ **Astro 7 & Content Collections**: Fully typed Markdown and MDX content powered by Zod validation and Astro glob loaders.
 - ⏱️ **Automatic Reading Time**: Native bilingual (CJK + Latin) reading time estimation without browser runtime overhead.
 - 🏷️ **Tags & Dynamic Archives**: Built-in tag filtering, tag cloud widget, and static `/tag/<name>` archive pages.
-- 🧩 **Modular Sidebar Widgets**: Declaratively configure right sidebar widgets (TOC, recent posts, website status, tag cloud) per page.
+- 🧩 **Modular Sidebar Widgets**: Compose per-page Astro sidebars with shared defaults and a built-in article TOC.
 - 👥 **Pre-built Templates**: Ready-to-use templates for personal homepages, post archives, and friends link walls.
 
 ---
@@ -163,22 +163,122 @@ Article content here...
 - **Folder Bundles**: For posts with collocated images, create `src/content/posts/<slug>/index.md` alongside your assets and use relative paths like `cover: './cover.png'`.
 - **Article MDX Components**: Reusable components such as `<Callout />` are available under `src/widgets/article/`.
 
-### Custom Pages (`src/content/pages/`)
+### Homepage and Custom Pages
 
-Add Markdown or MDX files in `src/content/pages/`. Routes map directly to filenames (e.g. `about.md` &rarr; `/about`):
+Edit the homepage in `src/content/index.mdx`. You can use `index.md` or
+`index.astro` instead; keep exactly one homepage file. The theme supplies the
+page frame, title, sidebars and responsive drawers.
+
+```text
+src/content/
+├── assets/                    # Shared content resources, never routes
+├── index.mdx                  # Homepage: .md / .mdx / .astro
+├── _left.astro                # Default left widgets
+├── _right.astro               # Optional default right widgets
+├── pages/
+│   ├── about.astro            # /about
+│   └── a/b/c/
+│       ├── index.mdx          # /a/b/c
+│       ├── _left.astro        # Override the left widgets for this directory
+│       ├── _right.astro       # Override the right widgets for this directory
+│       └── assets/
+└── posts/
+    └── hello/
+        ├── index.mdx          # /posts/hello
+        ├── _left.astro
+        └── _right.astro       # Additional content below the mandatory TOC
+```
+
+Standalone pages accept `.md`, `.mdx` and `.astro`. For Markdown/MDX:
 
 ```markdown
 ---
-title: 'About Me'
-template: 'default'
-withRightSidebar: true
-rightWidgets:
-  - 'recent-posts'
-  - 'website-status'
+title: About Me
+description: A short introduction
+template: default
 ---
 
 Page content goes here...
 ```
+
+An Astro page exports the same metadata as `page` and supplies body content:
+
+```astro
+---
+export const page = { title: 'About Me', description: 'A short introduction' };
+---
+
+<p>Compose Astro components here. The theme renders the page title.</p>
+```
+
+Astro pages receive `entry` and `headings` props. Their `headings` array is empty;
+automatic heading extraction applies to Markdown/MDX. Article bodies remain
+Markdown/MDX so reading time, drafts, tags and the article TOC retain their normal
+behavior. Astro pages can contain scoped styles and normal Astro scripts, but
+should not include another HTML document or Frame. Dynamic route declarations
+such as `[id].astro` belong in `src/pages`, not in authored content.
+
+Routes follow the path below `content/pages`, without the extension or terminal
+`index`. Thus `a/b/c.md` and `a/b/c/index.mdx` both describe `/a/b/c`; choose one.
+Paths retain filename case. An optional `slug: published/path` overrides the URL
+without changing where the theme finds sidebars or relative assets. Duplicate
+standalone URLs, including different file formats, fail with the source paths.
+The homepage dispatcher and generated system routes take priority over content
+pages: `pages/posts.mdx` cannot replace the archive, and the build reports the
+ignored route without failing. Only URLs actually emitted by system routes win;
+this does not reserve every possible URL below `/posts` or `/tag`.
+
+All `assets/` directories and underscore-prefixed files/directories are excluded
+from page and post discovery. Resource files remain importable, including relative
+Markdown images and MDX/Astro imports. They are not automatically copied to matching
+public URLs; use `public/` for files that need stable, direct download URLs.
+Only the root `index.*`, files under `pages/`, and registered posts are entries;
+other files directly under `content/` do not become routes.
+
+### Custom Sidebars
+
+Each side resolves independently: a `_left.astro` or `_right.astro` beside the
+content file takes precedence over the corresponding file at `src/content/`.
+There is no search through intermediate ancestor directories. Files in the same
+directory share sidebars; use a folder bundle for independent per-page overrides.
+The profile card and footer remain part of the layout.
+
+For example, place this at `src/content/_right.astro` for a site-wide default,
+or next to a page's `index.mdx` to replace that default for the page:
+
+```astro
+---
+import RecentPosts from '@widgets/sidebar/RecentPosts.astro';
+import WebsiteStatus from '@widgets/sidebar/WebsiteStatus.astro';
+---
+
+<RecentPosts />
+<WebsiteStatus />
+```
+
+Without a local or root right component, ordinary pages have no right column or
+right drawer. Article detail always renders its TOC first, followed by the chosen
+right component. Article/tag archives and the 404 page use the root defaults.
+
+Both sidebar components receive `entry`, `headings` and `pathname` through
+`Astro.props`. `entry` is absent for system archive/404 pages, so access it with
+optional chaining. Match sidebar links against `pathname`, not a collection ID.
+Sidebars render in both desktop regions and mobile drawers; avoid fixed HTML IDs
+and scope any client behavior to its component instance.
+
+Optional metadata switches are `withLeftSidebar: false` (hide the entire left
+region), `withProfileCard: false` (hide only the profile), and
+`withRightSidebar: false` (hide optional right content). The latter never hides an
+article's TOC. Setting it to `true` does not create an empty right column when no
+right component exists. An empty local component replaces the root content but
+still counts as an existing right component; use the switch to hide the region.
+
+**Migration:** move old `rightWidgets` arrays into `_right.astro` imports; legacy
+arrays produce an actionable error. The default left widgets now live in
+`src/content/_left.astro`, and homepage content moved from `src/pages/index.astro`
+to `src/content/index.mdx`. Markdown page collection IDs now retain the content
+source path and extension (for example `pages/friend.mdx`); URLs are resolved
+separately. Existing bundled site URLs are unchanged.
 
 ---
 

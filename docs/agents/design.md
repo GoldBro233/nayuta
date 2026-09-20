@@ -154,16 +154,64 @@ within the reading region when their contents are wider than the viewport.
 
 ### Content
 
-`src/content/*` contains authored Markdown/MDX pages, posts, and their colocated
-assets. It is reserved for final content; theme TypeScript modules do not belong
+`src/content/*` contains authored Markdown/MDX posts, Markdown/MDX/Astro pages,
+local sidebar Astro components, and colocated assets. It is reserved for final content; theme TypeScript modules do not belong
 there. Content schemas and collection loaders belong in `src/content.config.ts`.
 
 Current content collections:
 
 - `posts`: Markdown/MDX blog posts with title, publishDate, cover,
   description, draft flag, and optional tags.
-- `pages`: Markdown/MDX standalone pages supporting customizable templates,
-  breadcrumbs, widget slots, and structured friend metadata.
+- `pages`: Markdown/MDX homepage and standalone page records. The loader starts
+  at `src/content` and selects only `index.md` / `index.mdx` and entries below
+  `pages/`. IDs retain the relative source filename and extension, preventing
+  duplicate author URLs from being silently overwritten before route validation.
+- Astro homepage/standalone components are discovered separately at build time
+  and export `page` metadata validated with `pageSchema` in `src/content.config.ts`.
+  They are not content-collection Markdown render targets.
+
+`src/pages/index.astro` dispatches to the single `src/content/index.{md,mdx,astro}`
+homepage. `src/pages/[...slug].astro` dispatches standalone content pages.
+`src/assets/utils/pages.ts` is shared by both routes: it combines the entry
+formats, validates metadata/unique public URLs, and renders content. Public paths
+retain filename case, drop extensions and terminal `index`, and may be overridden
+with `slug`. Keep source paths separate from public URLs. Duplicate author pages
+fail with both filenames; native Astro system route precedence skips content
+collisions with a build warning. Do not switch all prerender conflicts to errors:
+system routes must continue to win without failing the build.
+
+`src/templates/ContentPage.astro` selects the friend/default template. Both render
+inside `src/layouts/content-frame.astro`, as do post detail, archives and 404. This
+shared layout discovers `_left.astro` / `_right.astro`, resolves each independently
+from the content file's directory or the content root, and delegates responsive
+structure to `frame.astro`. It does not walk intermediate ancestors. System pages
+use the root defaults. Local components replace corresponding root components.
+Articles always render TableOfContents first and append the selected right
+component. Ordinary pages omit the right region without a component. Existing
+profile/left-region opt-outs remain available; `withRightSidebar: false` hides
+only optional content and never the article TOC. Old `rightWidgets` arrays are
+rejected with migration guidance. Astro pages get an empty `headings` array;
+Markdown/MDX headings come from `render()`.
+
+Root `_left.astro` now authors the default widgets; there is no hard-coded widget
+fallback in routes. Sidebar props are `entry` (absent for system pages), `headings`
+and `pathname`. Content source directories, not slugs, select sidebars. Components
+render in both desktop regions and drawers, so avoid fixed IDs or document-wide
+assumptions in authored sidebar scripts. The frame supplies generic labels for
+custom right content, inert closed drawers, keyboard focus containment and focus
+restoration. Without its JavaScript, sidebars remain visible in document flow.
+
+Reserve `assets/` directories and underscore-prefixed paths for non-route content
+in every content collection and Astro discovery glob. Files remain importable;
+resources do not automatically receive public URLs. Theme loaders/schemas still
+belong in `src/content.config.ts`, not content directories. Authored `.astro`
+components are allowed in content; shared theme logic is not.
+
+`tests/content/pages.test.ts` builds isolated fixtures for all homepage formats,
+nested pages, exclusions, collisions, sidebar precedence/TOC ordering and metadata.
+It also checks development add/edit/remove behavior and browser keyboard,
+responsive, light/dark theme and no-JavaScript behavior. Existing content tests
+preserve the root homepage/default sidebar while replacing posts/pages fixtures.
 
 Post `draft` is a boolean defaulting to `false`. Draft posts (`draft: true`) are
 completely excluded during production builds (`astro build` / `import.meta.env.PROD`),

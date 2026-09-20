@@ -73,7 +73,7 @@ or client framework. Preserve existing article/page URLs and responsive layouts.
 - [x] User approved the revised plan; isolated branch and worktree created.
 - [x] Content entries and routing implemented.
 - [x] Sidebar fallback and post TOC implemented.
-- [ ] Migration, documentation and regression tests completed.
+- [x] Migration, documentation and regression tests completed.
 - [ ] Implementation pushed; planned checks pass on final pushed revision.
 - [ ] Draft PR opened for user review.
 
@@ -81,9 +81,16 @@ Content IDs for Markdown pages now retain their source extension and the `pages/
 so duplicate source formats remain visible to URL validation. Public page URLs
 follow the filename path (or an explicit `slug`); existing authored URLs are unchanged.
 
-Next action: push implementation and check compilation, then finish migration
-documentation and isolated regression coverage.
+Next action: push documentation and tests, run focused regressions, then run
+all planned checks sequentially.
 
 The frame now labels custom right content separately from the TOC, keeps closed
 drawers inert, traps keyboard focus while open and restores focus on close.
 Sidebar visibility falls back to normal document flow when JavaScript is absent.
+
+## Validation log
+
+- Initial type check found the Astro 7 `ComponentProps` import in `astro/types`;
+  corrected the import. Follow-up `bun run check`: passed (one schema API hint).
+- An initial simultaneous check/build collided on Astro generated cache writes.
+  Run Astro commands sequentially in each checkout from now on.
