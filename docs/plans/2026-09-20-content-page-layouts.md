@@ -72,7 +72,7 @@ or client framework. Preserve existing article/page URLs and responsive layouts.
 - [x] Repository and toolchain inspected; design validated in disposable fixtures.
 - [x] User approved the revised plan; isolated branch and worktree created.
 - [x] Content entries and routing implemented.
-- [ ] Sidebar fallback and post TOC implemented.
+- [x] Sidebar fallback and post TOC implemented.
 - [ ] Migration, documentation and regression tests completed.
 - [ ] Implementation pushed; planned checks pass on final pushed revision.
 - [ ] Draft PR opened for user review.
@@ -81,4 +81,9 @@ Content IDs for Markdown pages now retain their source extension and the `pages/
 so duplicate source formats remain visible to URL validation. Public page URLs
 follow the filename path (or an explicit `slug`); existing authored URLs are unchanged.
 
-Next action: implement shared sidebar layout, then run integration coverage.
+Next action: push implementation and check compilation, then finish migration
+documentation and isolated regression coverage.
+
+The frame now labels custom right content separately from the TOC, keeps closed
+drawers inert, traps keyboard focus while open and restores focus on close.
+Sidebar visibility falls back to normal document flow when JavaScript is absent.

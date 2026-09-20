@@ -7,6 +7,8 @@ import '@assets/styles/global.css';
 
 interface Props {
   title?: string;
+  description?: string;
+  rightSidebarLabel?: string;
   isHome?: boolean;
   withLeftSidebar?: boolean;
   withProfileCard?: boolean;
@@ -16,6 +18,8 @@ interface Props {
 
 const {
   title,
+  description,
+  rightSidebarLabel = 'Table of Contents',
   isHome = false,
   withLeftSidebar = true,
   withProfileCard = true,
@@ -27,7 +31,7 @@ const {
 <!doctype html>
 <html lang="en">
   <head>
-    <HeadBase title={title} isHome={isHome} />
+    <HeadBase title={title} description={description} isHome={isHome} />
     <slot name="head" />
   </head>
   <body>
@@ -40,6 +44,8 @@ const {
               class="mobile-menu-btn"
               id="open-widgets-btn"
               aria-label="Open Sidebar"
+              aria-controls="widgets-drawer"
+              aria-expanded="false"
             >
               <svg
                 viewBox="0 0 16 16"
@@ -121,7 +127,15 @@ const {
     <!-- Left Drawer (Widgets) -->
     {
       withLeftSidebar && (
-        <div class="drawer" id="widgets-drawer">
+        <div
+          class="drawer"
+          id="widgets-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Sidebar"
+          aria-hidden="true"
+          inert
+        >
           <button class="drawer-close" id="close-widgets-btn">
             [Close]
           </button>
@@ -135,7 +149,15 @@ const {
     <!-- Right Drawer (Context) -->
     {
       withRightSidebar && (
-        <div class="drawer drawer-right" id="context-drawer">
+        <div
+          class="drawer drawer-right"
+          id="context-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label={rightSidebarLabel}
+          aria-hidden="true"
+          inert
+        >
           <button class="drawer-close" id="close-context-btn">
             [Close]
           </button>
@@ -154,7 +176,9 @@ const {
         <button
           class="mobile-floating-btn"
           id="open-context-btn"
-          aria-label="Open Table of Contents"
+          aria-label={`Open ${rightSidebarLabel}`}
+          aria-controls="context-drawer"
+          aria-expanded="false"
         >
           <span class="btn-bracket">[</span>
           <svg
@@ -170,7 +194,9 @@ const {
             <line x1="2" y1="8" x2="10" y2="8" />
             <line x1="2" y1="12.5" x2="14" y2="12.5" />
           </svg>
-          <span class="btn-text">TOC</span>
+          <span class="btn-text">
+            {rightSidebarLabel === 'Table of Contents' ? 'TOC' : 'Sidebar'}
+          </span>
           <span class="btn-bracket">]</span>
         </button>
       )
@@ -178,81 +204,106 @@ const {
 
     <!-- Pure JS for drawer transitions (Progressive Enhancement) -->
     <script>
+      let drawerController: AbortController | undefined;
       function setupDrawers() {
-        const openBtn = document.getElementById('open-widgets-btn');
-        const closeBtn = document.getElementById('close-widgets-btn');
-        const openContextBtn = document.getElementById('open-context-btn');
-        const closeContextBtn = document.getElementById('close-context-btn');
-
-        const widgetsDrawer = document.getElementById('widgets-drawer');
-        const contextDrawer = document.getElementById('context-drawer');
+        drawerController?.abort();
+        drawerController = new AbortController();
+        const { signal } = drawerController;
         const backdrop = document.getElementById('drawer-backdrop');
-
-        function toggleWidgetsDrawer(open: boolean) {
-          if (!widgetsDrawer || !backdrop) return;
-          if (open) {
-            widgetsDrawer.classList.add('open');
-            backdrop.classList.add('open');
-          } else {
-            widgetsDrawer.classList.remove('open');
-            backdrop.classList.remove('open');
-          }
-        }
-
-        function toggleContextDrawer(open: boolean) {
-          if (!contextDrawer || !backdrop) return;
-          if (open) {
-            contextDrawer.classList.add('open');
-            backdrop.classList.add('open');
-          } else {
-            contextDrawer.classList.remove('open');
-            backdrop.classList.remove('open');
-          }
-        }
-
-        function closeAll() {
-          toggleWidgetsDrawer(false);
-          toggleContextDrawer(false);
-        }
-
-        if (openBtn) {
-          openBtn.addEventListener('click', () => {
-            closeAll();
-            toggleWidgetsDrawer(true);
+        const pairs = [
+          ['open-widgets-btn', 'widgets-drawer'],
+          ['open-context-btn', 'context-drawer'],
+        ].flatMap(([buttonId, drawerId]) => {
+          const button = document.getElementById(buttonId);
+          const drawer = document.getElementById(drawerId);
+          return button && drawer ? [{ button, drawer }] : [];
+        });
+        let active: (typeof pairs)[number] | undefined;
+        const background = [
+          document.querySelector<HTMLElement>('.layout-container'),
+          document.querySelector<HTMLElement>('.mobile-sticky-header'),
+          document.getElementById('open-context-btn'),
+        ];
+        function close(restoreFocus = true) {
+          if (!active) return;
+          const { button, drawer } = active;
+          drawer.classList.remove('open');
+          drawer.inert = true;
+          drawer.setAttribute('aria-hidden', 'true');
+          button.setAttribute('aria-expanded', 'false');
+          backdrop?.classList.remove('open');
+          background.forEach((element) => {
+            if (element) element.inert = false;
           });
+          active = undefined;
+          if (restoreFocus) button.focus();
         }
-        if (closeBtn) {
-          closeBtn.addEventListener('click', () => toggleWidgetsDrawer(false));
-        }
-
-        if (openContextBtn) {
-          openContextBtn.addEventListener('click', () => {
-            closeAll();
-            toggleContextDrawer(true);
-          });
-        }
-        if (closeContextBtn) {
-          closeContextBtn.addEventListener('click', () =>
-            toggleContextDrawer(false),
+        for (const pair of pairs) {
+          pair.button.addEventListener(
+            'click',
+            () => {
+              close(false);
+              active = pair;
+              pair.drawer.inert = false;
+              pair.drawer.setAttribute('aria-hidden', 'false');
+              pair.drawer.classList.add('open');
+              pair.button.setAttribute('aria-expanded', 'true');
+              backdrop?.classList.add('open');
+              background.forEach((element) => {
+                if (element) element.inert = true;
+              });
+              pair.drawer
+                .querySelector<HTMLButtonElement>('.drawer-close')
+                ?.focus();
+            },
+            { signal },
           );
+          pair.drawer
+            .querySelector('.drawer-close')
+            ?.addEventListener('click', () => close(), { signal });
         }
-
-        if (backdrop) {
-          backdrop.addEventListener('click', closeAll);
-        }
-
-        // Close on Escape key
-        const escHandler = (e: KeyboardEvent) => {
-          if (e.key === 'Escape') {
-            closeAll();
-          }
-        };
-        document.removeEventListener('keydown', escHandler);
-        document.addEventListener('keydown', escHandler);
+        backdrop?.addEventListener('click', () => close(), { signal });
+        document.addEventListener(
+          'keydown',
+          (event) => {
+            if (!active) return;
+            if (event.key === 'Escape') {
+              event.preventDefault();
+              close();
+            } else if (event.key === 'Tab') {
+              const focusable = [
+                ...active.drawer.querySelectorAll<HTMLElement>(
+                  'a[href], button, input, select, textarea, [tabindex]',
+                ),
+              ].filter(
+                (element) =>
+                  element.tabIndex >= 0 &&
+                  !element.matches(':disabled') &&
+                  element.getClientRects().length,
+              );
+              const first = focusable[0];
+              const last = focusable.at(-1);
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last?.focus();
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first?.focus();
+              }
+            }
+          },
+          { signal },
+        );
+        window.addEventListener(
+          'resize',
+          () => {
+            if (active && !active.button.getClientRects().length) close(false);
+          },
+          { signal },
+        );
+        document.documentElement.dataset.drawersReady = '';
       }
-
       setupDrawers();
-      // Support Astro View Transitions if swap occurs
       document.addEventListener('astro:after-swap', setupDrawers);
     </script>
   </body>
@@ -362,6 +413,7 @@ const {
   }
 
   .drawer {
+    visibility: hidden;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -384,6 +436,7 @@ const {
   }
 
   .drawer.open {
+    visibility: visible;
     transform: translateX(0);
   }
 
@@ -497,6 +550,11 @@ const {
     }
 
     :global(.right-region) {
+      grid-column: 1 / -1;
+      position: static;
+    }
+
+    :global(html[data-drawers-ready] .right-region) {
       display: none;
     }
 
@@ -557,7 +615,7 @@ const {
       text-overflow: ellipsis;
     }
 
-    .mobile-floating-btn {
+    :global(html[data-drawers-ready]) .mobile-floating-btn {
       display: flex;
     }
 
@@ -590,7 +648,7 @@ const {
       gap: 0;
     }
 
-    :global(.left-region .left-sidebar-content),
+    :global(html[data-drawers-ready] .left-region .left-sidebar-content),
     :global(.left-region .left-footer) {
       display: none;
     }
@@ -610,7 +668,7 @@ const {
       line-height: 1.6;
     }
 
-    .mobile-menu-btn {
+    :global(html[data-drawers-ready]) .mobile-menu-btn {
       display: inline-flex;
     }
   }

@@ -16,6 +16,9 @@ const postsCollection = defineCollection({
         .optional(),
       description: z.string().optional(),
       draft: z.boolean().default(false),
+      withLeftSidebar: z.boolean().optional(),
+      withProfileCard: z.boolean().optional(),
+      withRightSidebar: z.boolean().optional(),
       tags: z
         .array(z.string().trim().min(1, 'Tags must not be empty.'))
         .default([])

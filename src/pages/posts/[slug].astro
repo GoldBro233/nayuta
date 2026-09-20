@@ -4,13 +4,9 @@ import { render } from 'astro:content';
 import { formatReadingTime } from '@assets/utils/reading-time';
 import { getPosts } from '@assets/utils/posts';
 import Badge from '@layouts/components/Badge.astro';
-import Frame from '@layouts/frame.astro';
+import Frame from '@layouts/content-frame.astro';
 import Prose from '@layouts/components/Prose.astro';
 import Tag from '@layouts/components/Tag.astro';
-import RecentPosts from '@widgets/sidebar/RecentPosts.astro';
-import TagCloud from '@widgets/sidebar/TagCloud.astro';
-import WebsiteStatus from '@widgets/sidebar/WebsiteStatus.astro';
-import TableOfContents from '@widgets/sidebar/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -35,13 +31,11 @@ const breadcrumbs = [
 
 <Frame
   title={post.data.title}
-  withRightSidebar={true}
+  entry={post}
+  headings={headings}
+  isPost={true}
   breadcrumbs={breadcrumbs}
 >
-  <RecentPosts slot="left" />
-  <TagCloud slot="left" />
-  <WebsiteStatus slot="left" />
-
   <Prose>
     {
       post.data.cover && (
@@ -91,8 +85,6 @@ const breadcrumbs = [
       </nav>
     )
   }
-
-  <TableOfContents slot="right" headings={headings} />
 </Frame>
 
 <style>
