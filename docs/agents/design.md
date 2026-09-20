@@ -209,7 +209,11 @@ components are allowed in content; shared theme logic is not.
 
 `tests/content/pages.test.ts` builds isolated fixtures for all homepage formats,
 nested pages, exclusions, collisions, sidebar precedence/TOC ordering and metadata.
-It also checks development add/edit/remove behavior and browser keyboard,
+The small `contentEntryUpdates` integration in `astro.config.ts` restarts the dev
+module graph when discovered Astro entry/sidebar files are added or removed;
+edits use native HMR. This avoids stale discovery results and adds no production
+runtime code. Tests run `dev --ignore-lock` in the foreground to own its lifecycle.
+They also check development add/edit/remove behavior and browser keyboard,
 responsive, light/dark theme and no-JavaScript behavior. Existing content tests
 preserve the root homepage/default sidebar while replacing posts/pages fixtures.
 

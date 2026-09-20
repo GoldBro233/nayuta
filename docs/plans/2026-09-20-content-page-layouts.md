@@ -100,3 +100,11 @@ Sidebar visibility falls back to normal document flow when JavaScript is absent.
   assertion expected page-two content on page one. Corrected those test inputs.
   Light-theme checks now use an actual light fixture palette; bundled palettes
   are dark variants.
+
+- Focused coverage now passes 21 of 22 cases, including all six browser cases.
+  Development discovery remained stale after adding/removing sidebar components.
+  Added a small Astro development hook to refresh the module graph for Astro file
+  creation/deletion; edits retain native HMR. Development fixtures now use
+  `--ignore-lock` to prevent the agent-aware CLI from detaching its server.
+- Visually inspected phone/light and desktop/dark screenshots: custom layout,
+  typography and sidebar controls fit their viewports without overflow.

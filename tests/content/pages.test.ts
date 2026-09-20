@@ -602,7 +602,16 @@ test('development routing observes sidebar add, edit, removal and ignored conten
   const port = reservation.port;
   reservation.stop(true);
   const child = Bun.spawn(
-    ['bun', 'run', 'dev', '--host', '127.0.0.1', '--port', String(port)],
+    [
+      'bun',
+      'run',
+      'dev',
+      '--ignore-lock',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+    ],
     {
       cwd: fixtureRoot,
       stdout: Bun.file(join(fixtureRoot, 'dev.log')),
@@ -610,10 +619,12 @@ test('development routing observes sidebar add, edit, removal and ignored conten
     },
   );
   async function waitFor(path: string, text: string) {
+    let lastDocument = '';
     for (let attempt = 0; attempt < 150; attempt++) {
       try {
         const response = await fetch(`http://127.0.0.1:${port}${path}`);
         const document = await response.text();
+        lastDocument = document;
         if (response.ok && document.includes(text)) return document;
       } catch {
         /* Server startup or content reload. */
@@ -621,7 +632,7 @@ test('development routing observes sidebar add, edit, removal and ignored conten
       await Bun.sleep(50);
     }
     throw new Error(
-      `Development page ${path} did not contain ${text}.\n${await Bun.file(join(fixtureRoot, 'dev-error.log')).text()}`,
+      `Development page ${path} did not contain ${text}. Latest response: ${lastDocument.slice(-2500)}\n${await Bun.file(join(fixtureRoot, 'dev-error.log')).text()}`,
     );
   }
   try {
@@ -645,6 +656,11 @@ test('development routing observes sidebar add, edit, removal and ignored conten
     );
     await write('pages/dev-page.md', markdown('Dev page', 'DEV-NEW-PAGE'));
     await waitFor('/dev-page', 'DEV-NEW-PAGE');
+    await write(
+      'pages/dev-astro.astro',
+      `---\nexport const page = { title: 'New Astro page' };\n---\n<p>DEV-NEW-ASTRO-PAGE</p>`,
+    );
+    await waitFor('/dev-astro', 'DEV-NEW-ASTRO-PAGE');
     expect(
       (await fetch(`http://127.0.0.1:${port}/assets/dev-ignored`)).status,
     ).toBe(404);
