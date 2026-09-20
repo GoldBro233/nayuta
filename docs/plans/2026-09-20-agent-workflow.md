@@ -1,6 +1,6 @@
 # Streamline Agent Workflow
 
-Status: Approved; implementation pending.
+Status: Implementation in progress.
 Branch: `docs/streamline-agent-workflow`; base: `main` at `3212e01`.
 Worktree: `.worktree/streamline-agent-workflow/`.
 
@@ -24,8 +24,8 @@ project constraints and defining the approved plan-to-PR workflow.
 
 - [x] Read all agent context and verify Git/GitHub CLI workflow support.
 - [x] Obtain approval; skip all Bun checks per user instruction.
-- [ ] Commit this plan before implementation.
-- [ ] Exclude nested worktrees and commit that change.
+- [x] Commit this plan before implementation.
+- [x] Exclude nested worktrees and commit that change.
 - [ ] Rewrite instructions and commit the documentation change.
 - [ ] Push, inspect the diff and rule consistency, and verify ignore behavior.
 - [ ] Record results, commit, push, recheck, and open a Draft PR against `main`.
@@ -41,5 +41,5 @@ worktrees and user changes. Keep this plan until explicit Draft PR approval.
 
 ## Handoff
 
-Next: commit this plan, then begin implementation. Record validation results and
-remaining review actions here before opening the Draft PR. Merge belongs to the user.
+Next: rewrite instructions, commit, and push before validation. Record results
+and remaining review actions here before opening the Draft PR. Merge belongs to the user.

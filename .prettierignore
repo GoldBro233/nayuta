@@ -1,4 +1,5 @@
 dist/
 .astro/
 node_modules/
+.worktree/
 design/
