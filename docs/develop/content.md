@@ -45,30 +45,147 @@ The common `pageSchema` validates `title`, `description`, `template`, `slug`,
 `breadcrumbs`, and sidebar visibility switches. It uses `z.looseObject()` to
 preserve additional fields as unknown until the selected template validates them.
 
-`src/layouts/widgets/ContentPage.astro` prepares `content` and `headings`, then
-selects `FriendTemplate.astro` for `template: friend` or `PageTemplate.astro`
-otherwise. Both receive `TemplateProps` from `@type/template`:
+[`src/layouts/template.astro`](../../src/layouts/template.astro) is the unified
+template entry point. It resolves the page's template ID, parses template metadata,
+prepares body content and headings, computes default breadcrumbs, and renders
+`frame.astro` around the selected template. The same parsed `entry` reaches the
+frame, sidebars, template, and authored body. Parsed fields are merged with common
+metadata and unrelated custom fields, including defaults and schema transforms.
 
-| Prop       | Meaning                                                |
-| ---------- | ------------------------------------------------------ |
-| `entry`    | Source identity and common validated metadata.         |
-| `content`  | Optional Astro component for the authored body.        |
-| `headings` | Markdown/MDX headings; empty for Astro-authored pages. |
-| `isHome`   | Whether this is the root homepage.                     |
+Templates receive `TemplateProps` from `@type/template`:
 
-The same type module owns `TemplateHeader` and `PageEntry`. Alias the body to an
-uppercase component variable, for example `const { content: Content } = Astro.props`,
-and render `<Content />`. Lowercase `<content />` creates an HTML element.
-Templates pass `entry` and `headings` to authored bodies and use
-`content-frame.astro` for the shared frame. Authored Astro pages supply body
-markup, not another document shell or frame.
+| Prop       | Meaning                                                               |
+| ---------- | --------------------------------------------------------------------- |
+| `entry`    | Source identity plus common and template-specific validated metadata. |
+| `headings` | Markdown/MDX headings; an empty array for Astro-authored pages.       |
+| `isHome`   | Whether this is the root homepage.                                    |
 
-Each template owns its custom Zod schema and derives its local metadata type with
-`z.infer`. `FriendTemplate.astro` validates `friends`, `categories`, and `mySite`,
-defaulting omitted `friends` to an empty array. Merge parsed fields back into
-`entry.data` so the frame, sidebar, and body receive the same defaults while
-unrelated custom fields are preserved. Do not cast unknown metadata to a
-template-specific type without parsing it.
+The authored body is provided through the default `<slot />`. Place it wherever
+the template needs it, using `Prose` around reading content. Templates control
+their title, body arrangement, and styles; the entry point handles the document
+frame and forwards `entry` and `headings` to the body. Authored Astro pages also
+supply body markup without a document shell or frame.
+
+The shared type module owns `TemplateDefinition`, `TemplateSchema`, `TemplateHeader`,
+and `PageEntry`. Use `TemplateProps<typeof schema>` to infer template field types
+from a separately exported schema, including its defaults and transforms. Use
+plain `TemplateProps` when there is no schema. Import schemas with `import type`
+in components; deriving props directly from a definition that loads that same
+component would create a circular type dependency.
+
+### Registry and IDs
+
+[`src/templates/registry.ts`](../../src/templates/registry.ts) exports the single
+`templates` registration list and `getTemplate(id, source?)` / `listTemplates()`.
+Each definition is created with `defineTemplate()` and owns a unique `id`, an
+optional display `name` and `description`, an optional `schema`, and a `load`
+function returning a dynamic import of its Astro component. IDs use lowercase
+kebab-case, starting with a letter. Duplicate registrations fail immediately.
+
+The bundled IDs are `default` and `friend`. Omitting page metadata's `template`
+selects `default`; specifying an unknown ID fails with the source and available
+IDs. This replaces the previous fallback for misspelled or unregistered IDs.
+
+`listTemplates()` returns display metadata without loading components. Definitions
+and the registry are ordinary TypeScript modules, so Bun tools can enumerate them
+without an Astro build:
+
+```sh
+bun -e 'import { listTemplates } from "./src/templates/registry"; console.log(listTemplates());'
+```
+
+`getTemplate()` also exposes the schema and lazy loader. Only rendering calls
+`load()`. Keep component imports inside that function, and keep the central
+content configuration independent of template components and the registry.
+
+### Adding a Template
+
+Create `src/templates/projects/index.ts` with metadata and, if needed, a schema
+for its extra fields:
+
+```ts
+import { z } from 'astro/zod';
+import { defineTemplate } from '@templates/define';
+
+export const schema = z.object({
+  projects: z
+    .array(z.object({ name: z.string(), href: z.string() }))
+    .default([]),
+});
+
+export default defineTemplate({
+  id: 'projects',
+  name: 'Projects',
+  description: 'A reading introduction followed by project links.',
+  schema,
+  load: () => import('@templates/projects/Template.astro'),
+});
+```
+
+Define only template-specific fields in this schema; common fields are already
+validated by `pageSchema`. No schema or additional field types are needed for a
+template that only changes presentation.
+
+Create `src/templates/projects/Template.astro`:
+
+```astro
+---
+import type { schema } from '@templates/projects';
+import type { TemplateProps } from '@type/template';
+import Prose from '@layouts/components/Prose.astro';
+
+type Props = TemplateProps<typeof schema>;
+const { entry } = Astro.props;
+---
+
+<Prose>
+  <h1>{entry.data.title}</h1>
+  <slot />
+</Prose>
+
+<ul>
+  {
+    entry.data.projects.map((project) => (
+      <li>
+        <a href={project.href}>{project.name}</a>
+      </li>
+    ))
+  }
+</ul>
+```
+
+Import the definition into `registry.ts` and append it to `templates`:
+
+```ts
+import projectsTemplate from '@templates/projects';
+
+export const templates = [
+  defaultTemplate,
+  friendTemplate,
+  projectsTemplate,
+] as const;
+```
+
+Use it in any homepage or standalone page, for example
+`src/content/pages/projects.mdx`:
+
+```mdx
+---
+title: Projects
+template: projects
+projects:
+  - name: Nayuta
+    href: https://github.com/yuanzui-cf/nayuta
+---
+
+An introduction to my projects.
+```
+
+Astro-authored pages select the same ID and fields through their exported `page`
+object. The bundled [default](../../src/templates/default/Template.astro) and
+[friend](../../src/templates/friend/Template.astro) components provide further
+examples. The friend definition validates `friends`, `categories`, and `mySite`,
+defaulting omitted `friends` to an empty array.
 
 Common metadata is checked during collection synchronization or Astro page
 discovery. Template metadata is checked during rendering; failures include the
@@ -76,13 +193,9 @@ source file and field paths. `bun run check` alone cannot validate every custom
 field. A static build is required when changing template schemas or content that
 uses them.
 
-To add a template, implement `TemplateProps`, validate custom fields locally, and
-register its selection in `ContentPage.astro`. Keep the central content config
-independent of template components.
-
 ## Sidebars
 
-`content-frame.astro` resolves each side independently:
+`frame.astro` resolves each side independently:
 
 1. Use `_left.astro` or `_right.astro` beside the content source file, if present.
 2. Otherwise use the matching file at `src/content/`.
@@ -112,6 +225,11 @@ empty local component still replaces the root component and counts as present;
 use the visibility switch to hide the optional region. The frame owns drawer
 labels, focus handling, and the fallback that keeps sidebars in normal flow when
 JavaScript is unavailable.
+
+Frame callers can supply `head` and `left-header` slots for document metadata and
+a custom profile header. Author sidebar content through `_left.astro` and
+`_right.astro`; the merged frame resolves these for both content and system pages.
+Explicit frame props override the corresponding metadata visibility switches.
 
 Legacy `rightWidgets` page metadata is rejected with migration guidance. Move
 those imports into `_right.astro`. Older homepage bodies belong in

@@ -235,9 +235,6 @@ Pages use `template: default` for ordinary reading content or `template: friend`
 for a friend-link collection. See [the bundled friends page](src/content/pages/friend.mdx)
 for an example of `friends`, `categories`, and `mySite` metadata.
 
-Developers adding templates can find the shared props, schema validation, and
-rendering rules in [Content and templates](docs/develop/content.md#metadata-and-templates).
-
 ### Custom Sidebars
 
 Each side resolves independently: a `_left.astro` or `_right.astro` beside the

@@ -13,8 +13,8 @@ Prefer existing dependencies, semantic HTML, and native browser APIs.
 | `src/pages/`              | Astro routes, static path generation, archives, RSS, and the 404 page.        |
 | `src/layouts/`            | Document structure, metadata, page regions, sidebars, and responsive drawers. |
 | `src/layouts/components/` | Small reusable UI such as `Prose`, `Pagination`, `Avatar`, and `Button`.      |
-| `src/layouts/widgets/`    | Composed theme UI such as `ProfileCard`, `ContentPage`, and `post-list/`.     |
-| `src/templates/`          | Page body presentation and template-specific metadata schemas.                |
+| `src/layouts/widgets/`    | Composed theme UI such as `ProfileCard` and `post-list/`.                     |
+| `src/templates/`          | Template definitions, registration, metadata schemas, and body presentation.  |
 | `src/widgets/sidebar/`    | Sidebar widgets and their composition helpers, also used inside drawers.      |
 | `src/widgets/article/`    | Public MDX components such as `Callout` and `TableContainer`.                 |
 | `src/assets/styles/`      | Global style tokens and theme palettes.                                       |
@@ -34,14 +34,16 @@ under `src/assets/utils/`.
 ## Page Composition
 
 `frame.astro` owns the HTML document, head, responsive grid, sticky header,
-drawers, and footer placement. `content-frame.astro` wraps it to resolve authored
-sidebars and the article table of contents. Page templates, post detail, archives,
-and the 404 page use this shared content frame.
+drawers, footer placement, authored sidebar resolution, and the article table
+of contents. Post detail, archives, and the 404 page use it directly.
 
-`ContentPage.astro` renders an authored page and selects its concrete template.
-Templates own the body presentation; they do not duplicate the document shell or
-drawer controllers. See [Content and templates](content.md) for metadata and
-sidebar contracts.
+`layouts/template.astro` is the shared entry point for the homepage and authored
+pages. It looks up the template in `templates/registry.ts`, validates its metadata,
+prepares breadcrumbs and body content, and wraps the template in `frame.astro`.
+Templates own body presentation and receive authored content through their default
+slot. Template definitions expose metadata and lazy component loaders so Bun tools
+can read the registry without loading Astro components. See
+[Content and templates](content.md) for registration, metadata, and sidebar contracts.
 
 Use `Prose.astro` around reading content. Its scoped styles apply to descendants;
 adding a `prose` class to an unrelated element does not attach those styles.

@@ -1,11 +1,19 @@
 ---
+import type { MarkdownHeading } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import type { PageEntry } from '@type/template';
 import HeadBase from '@layouts/head-base.astro';
 import LeftSidebar from '@layouts/left-sidebar.astro';
 import RightSidebar from '@layouts/right-sidebar.astro';
 import SidebarFooter from '@layouts/sidebar-footer.astro';
+import TableOfContents from '@widgets/sidebar/TableOfContents.astro';
 import '@assets/styles/global.css';
 
 interface Props {
+  entry?: PageEntry | CollectionEntry<'posts'>;
+  headings?: MarkdownHeading[];
+  isPost?: boolean;
   title?: string;
   description?: string;
   rightSidebarLabel?: string;
@@ -17,15 +25,39 @@ interface Props {
 }
 
 const {
-  title,
-  description,
-  rightSidebarLabel = 'Table of Contents',
+  entry,
+  headings = [],
+  isPost = false,
+  title = entry?.data.title,
+  description = entry?.data.description,
+  rightSidebarLabel = isPost ? 'Table of Contents' : 'Right Sidebar',
   isHome = false,
-  withLeftSidebar = true,
-  withProfileCard = true,
-  withRightSidebar = false,
+  withLeftSidebar = entry?.data.withLeftSidebar ?? true,
+  withProfileCard = entry?.data.withProfileCard ?? true,
+  withRightSidebar: extraRightEnabled = entry?.data.withRightSidebar,
   breadcrumbs = [{ text: 'Home', href: '/' }],
 } = Astro.props;
+
+const sidebars = import.meta.glob<AstroComponentFactory>(
+  [
+    '/src/content/**/_left.astro',
+    '/src/content/**/_right.astro',
+    '!/src/content/**/assets/**',
+    '!/src/content/**/_*/**',
+  ],
+  { eager: true, import: 'default' },
+);
+const directory = entry?.filePath
+  ? `/${entry.filePath.slice(0, entry.filePath.lastIndexOf('/'))}`
+  : '/src/content';
+const Left =
+  sidebars[`${directory}/_left.astro`] ?? sidebars['/src/content/_left.astro'];
+const Right =
+  sidebars[`${directory}/_right.astro`] ??
+  sidebars['/src/content/_right.astro'];
+const showExtraRight = Boolean(Right) && extraRightEnabled !== false;
+const withRightSidebar = isPost || showExtraRight;
+const sidebarProps = { entry, headings, pathname: Astro.url.pathname };
 ---
 
 <!doctype html>
@@ -88,7 +120,7 @@ const {
             {Astro.slots.has('left-header') && (
               <slot name="left-header" slot="header" />
             )}
-            <slot name="left" />
+            {Left && <Left {...sidebarProps} />}
           </LeftSidebar>
         )
       }
@@ -115,7 +147,8 @@ const {
       {
         withRightSidebar && (
           <RightSidebar>
-            <slot name="right" />
+            {isPost && <TableOfContents headings={headings} />}
+            {showExtraRight && Right && <Right {...sidebarProps} />}
           </RightSidebar>
         )
       }
@@ -140,7 +173,7 @@ const {
             [Close]
           </button>
           <div style="margin-top: 20px;">
-            <slot name="left" />
+            {Left && <Left {...sidebarProps} />}
           </div>
         </div>
       )
@@ -163,7 +196,8 @@ const {
           </button>
           <div style="margin-top: 20px;">
             <RightSidebar drawer>
-              <slot name="right" />
+              {isPost && <TableOfContents headings={headings} />}
+              {showExtraRight && Right && <Right {...sidebarProps} />}
             </RightSidebar>
           </div>
         </div>

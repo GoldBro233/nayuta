@@ -1,6 +1,6 @@
 ---
 import { getContentPages } from '@assets/utils/pages';
-import ContentPage from '@layouts/widgets/ContentPage.astro';
+import Template from '@layouts/template.astro';
 const page = (await getContentPages()).find((page) => page.isHome);
 if (!page) {
   throw new Error(
@@ -9,4 +9,4 @@ if (!page) {
 }
 ---
 
-<ContentPage page={page} />
+<Template page={page} />
