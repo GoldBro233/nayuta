@@ -69,6 +69,46 @@ beforeAll(async () => {
     'dir',
   );
   await rm(join(fixtureRoot, 'src/content'), { recursive: true });
+  // A third template exercises registration independently of bundled templates.
+  await Bun.write(
+    join(fixtureRoot, 'src/templates/fixture/index.ts'),
+    `
+import { z } from 'astro/zod';
+import { defineTemplate } from '@templates/define';
+export const schema = z.object({
+  labels: z.string().default('one,two').transform((value) => value.split(',')),
+});
+export default defineTemplate({
+  id: 'fixture',
+  schema,
+  load: () => import('@templates/fixture/Template.astro'),
+});
+`,
+  );
+  await Bun.write(
+    join(fixtureRoot, 'src/templates/fixture/Template.astro'),
+    `---
+import type { schema } from '@templates/fixture';
+import type { TemplateProps } from '@type/template';
+type Props = TemplateProps<typeof schema>;
+const { entry, headings, isHome } = Astro.props;
+---
+<h1>{entry.data.title}</h1>
+<p>TEMPLATE-LABELS:{entry.data.labels.join('|')}</p>
+<p>TEMPLATE-HEADINGS:{headings.map((heading) => heading.text).join('|')}</p>
+<p>TEMPLATE-HOME:{String(isHome)}</p>
+<section data-fixture-body><slot /></section>
+`,
+  );
+  const registryPath = join(fixtureRoot, 'src/templates/registry.ts');
+  await Bun.write(
+    registryPath,
+    "import fixtureTemplate from '@templates/fixture';\n" +
+      (await Bun.file(registryPath).text()).replace(
+        'export const templates = [',
+        'export const templates = [fixtureTemplate,',
+      ),
+  );
   await write('index.md', markdown('Content home', 'HOMEPAGE-MARKDOWN'));
   await write(
     '_left.astro',
@@ -77,6 +117,22 @@ beforeAll(async () => {
   await write('about.md', markdown('Not a route outside pages'));
   await write('pages/about.md', markdown('About', 'ABOUT-CONTENT'));
   for (const extension of ['md', 'mdx', 'astro']) {
+    const fixtureMetadata = {
+      title: `${extension} fixture`,
+      template: 'fixture',
+    };
+    await write(
+      `pages/registered/${extension}.${extension}`,
+      extension === 'astro'
+        ? `---\nexport const page = ${JSON.stringify(fixtureMetadata)};\nconst { entry } = Astro.props;\n---\n<p>REGISTERED-BODY:{entry.data.labels.join('|')}</p>`
+        : markdown(
+            fixtureMetadata.title,
+            extension === 'md'
+              ? '## Registered heading\n\nREGISTERED-BODY'
+              : "## Registered heading\n\n<p>REGISTERED-BODY:{props.entry.data.labels.join('|')}</p>",
+            fixtureMetadata,
+          ),
+    );
     const metadata = {
       title: `${extension} friends`,
       description: 'Friend template description',
@@ -105,6 +161,10 @@ beforeAll(async () => {
         : markdown(metadata.title, 'FRIEND-BODY', metadata),
     );
   }
+  await write(
+    'pages/registered/_right.astro',
+    `---\nconst { entry } = Astro.props;\n---\n<p>SIDEBAR-LABELS:{entry.data.labels.join('|')}</p>`,
+  );
   for (const extension of ['mdx', 'astro']) {
     const metadata = {
       title: 'Defaulted friends',
@@ -313,6 +373,27 @@ test('renders template-specific fields from Markdown, MDX and Astro', async () =
     );
     expect(await region(document, '#right-sidebar')).toContain(
       'SIDEBAR-FRIENDS:3',
+    );
+  }
+});
+
+test('registered templates receive parsed metadata, headings and body slots for every page format', async () => {
+  for (const extension of ['md', 'mdx', 'astro']) {
+    const document = await html(`registered/${extension}`);
+    expect(document.match(/<!DOCTYPE html>/gi)).toHaveLength(1);
+    expect(document).toContain('TEMPLATE-LABELS:one|two');
+    expect(document).toContain('TEMPLATE-HOME:false');
+    const body = await region(document, '[data-fixture-body]');
+    expect(body).toContain(
+      extension === 'md' ? 'REGISTERED-BODY' : 'REGISTERED-BODY:one|two',
+    );
+    expect(document).toContain(
+      extension === 'astro'
+        ? 'TEMPLATE-HEADINGS:</p>'
+        : 'TEMPLATE-HEADINGS:Registered heading',
+    );
+    expect(await region(document, '#right-sidebar')).toContain(
+      'SIDEBAR-LABELS:one|two',
     );
   }
 });
@@ -632,14 +713,17 @@ for (const extension of ['mdx', 'astro']) {
     await write(
       `index.${extension}`,
       extension === 'astro'
-        ? `---\nexport const page = { title: 'Astro homepage' };\n---\n<p>HOME-ASTRO-FORMAT</p>`
-        : markdown('MDX homepage', '<p>HOME-MDX-FORMAT</p>'),
+        ? `---\nexport const page = { title: 'Astro homepage', template: 'fixture' };\n---\n<p>HOME-ASTRO-FORMAT</p>`
+        : markdown('MDX homepage', '<p>HOME-MDX-FORMAT</p>', {
+            template: 'fixture',
+          }),
     );
     const result = await build();
     expect(result.code, result.output).toBe(0);
     expect(await html()).toContain(
       extension === 'astro' ? 'HOME-ASTRO-FORMAT' : 'HOME-MDX-FORMAT',
     );
+    expect(await html()).toContain('TEMPLATE-HOME:true');
   }, 60_000);
 }
 
@@ -688,6 +772,31 @@ test('reports invalid Astro metadata and explains the legacy sidebar migration',
 }, 60_000);
 
 for (const extension of ['md', 'mdx', 'astro']) {
+  test(`rejects unknown ${extension} template IDs with source and available IDs`, async () => {
+    const path = `pages/unknown-template.${extension}`;
+    const metadata = {
+      title: 'Unknown template',
+      template: 'missing-template',
+    };
+    try {
+      await write(
+        path,
+        extension === 'astro'
+          ? `---\nexport const page = ${JSON.stringify(metadata)};\n---\n<p>Unknown</p>`
+          : markdown(metadata.title, '', metadata),
+      );
+      const result = await build();
+      expect(result.code).not.toBe(0);
+      expect(result.output).toContain('Unknown template "missing-template"');
+      expect(result.output).toContain(`src/content/${path}`);
+      expect(result.output).toContain(
+        'Available templates: fixture, default, friend',
+      );
+    } finally {
+      await rm(join(fixtureRoot, 'src/content', path), { force: true });
+    }
+  }, 60_000);
+
   test(`reports source and nested fields for invalid ${extension} template metadata`, async () => {
     const path = `pages/invalid-friend.${extension}`;
     const metadata = {

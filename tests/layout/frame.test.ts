@@ -36,12 +36,15 @@ beforeAll(async () => {
     'dir',
   );
   await Bun.write(
+    join(fixtureRoot, 'src/content/_left.astro'),
+    '<p>Sidebar remains</p>',
+  );
+  await Bun.write(
     join(fixtureRoot, 'src/pages/frame-opt-out.astro'),
     `---
 import Frame from '../layouts/frame.astro';
 ---
 <Frame title="No profile" withProfileCard={false}>
-  <p slot="left">Sidebar remains</p>
   <p>Page content</p>
 </Frame>
 `,

@@ -1,4 +1,4 @@
-# Content and Templates
+# Content
 
 [< Development guide](index.md)
 
@@ -39,50 +39,25 @@ become entries. Put dynamic Astro route declarations in `src/pages/`.
 Use `public/` for stable download URLs; content assets are processed through
 Markdown, MDX, or Astro imports.
 
-## Metadata and Templates
+## Page Metadata
 
 The common `pageSchema` validates `title`, `description`, `template`, `slug`,
-`breadcrumbs`, and sidebar visibility switches. It uses `z.looseObject()` to
-preserve additional fields as unknown until the selected template validates them.
+`breadcrumbs`, and sidebar visibility switches during collection synchronization
+or Astro page discovery. It uses `z.looseObject()` to preserve additional fields
+until the selected template validates them during rendering.
 
-`src/layouts/widgets/ContentPage.astro` prepares `content` and `headings`, then
-selects `FriendTemplate.astro` for `template: friend` or `PageTemplate.astro`
-otherwise. Both receive `TemplateProps` from `@type/template`:
+The `template` field selects a registered template ID. Omitting it selects
+`default`; `friend` renders a friend-link collection. Unknown IDs fail with the
+source file and available IDs. Astro-authored pages select templates through the
+same field in their exported `page` object.
 
-| Prop       | Meaning                                                |
-| ---------- | ------------------------------------------------------ |
-| `entry`    | Source identity and common validated metadata.         |
-| `content`  | Optional Astro component for the authored body.        |
-| `headings` | Markdown/MDX headings; empty for Astro-authored pages. |
-| `isHome`   | Whether this is the root homepage.                     |
-
-The same type module owns `TemplateHeader` and `PageEntry`. Alias the body to an
-uppercase component variable, for example `const { content: Content } = Astro.props`,
-and render `<Content />`. Lowercase `<content />` creates an HTML element.
-Templates pass `entry` and `headings` to authored bodies and use
-`content-frame.astro` for the shared frame. Authored Astro pages supply body
-markup, not another document shell or frame.
-
-Each template owns its custom Zod schema and derives its local metadata type with
-`z.infer`. `FriendTemplate.astro` validates `friends`, `categories`, and `mySite`,
-defaulting omitted `friends` to an empty array. Merge parsed fields back into
-`entry.data` so the frame, sidebar, and body receive the same defaults while
-unrelated custom fields are preserved. Do not cast unknown metadata to a
-template-specific type without parsing it.
-
-Common metadata is checked during collection synchronization or Astro page
-discovery. Template metadata is checked during rendering; failures include the
-source file and field paths. `bun run check` alone cannot validate every custom
-field. A static build is required when changing template schemas or content that
-uses them.
-
-To add a template, implement `TemplateProps`, validate custom fields locally, and
-register its selection in `ContentPage.astro`. Keep the central content config
-independent of template components.
+Template defaults and parsed fields are merged into `entry.data`, so the authored
+body and sidebars receive the same metadata. For template definitions, schemas,
+and registration, see [Creating a template](templates.md).
 
 ## Sidebars
 
-`content-frame.astro` resolves each side independently:
+`frame.astro` resolves each side independently:
 
 1. Use `_left.astro` or `_right.astro` beside the content source file, if present.
 2. Otherwise use the matching file at `src/content/`.
@@ -112,6 +87,11 @@ empty local component still replaces the root component and counts as present;
 use the visibility switch to hide the optional region. The frame owns drawer
 labels, focus handling, and the fallback that keeps sidebars in normal flow when
 JavaScript is unavailable.
+
+Frame callers can supply `head` and `left-header` slots for document metadata and
+a custom profile header. Author sidebar content through `_left.astro` and
+`_right.astro`; the merged frame resolves these for both content and system pages.
+Explicit frame props override the corresponding metadata visibility switches.
 
 Legacy `rightWidgets` page metadata is rejected with migration guidance. Move
 those imports into `_right.astro`. Older homepage bodies belong in
