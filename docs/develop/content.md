@@ -1,4 +1,4 @@
-# Content and Templates
+# Content
 
 [< Development guide](index.md)
 
@@ -39,159 +39,21 @@ become entries. Put dynamic Astro route declarations in `src/pages/`.
 Use `public/` for stable download URLs; content assets are processed through
 Markdown, MDX, or Astro imports.
 
-## Metadata and Templates
+## Page Metadata
 
 The common `pageSchema` validates `title`, `description`, `template`, `slug`,
-`breadcrumbs`, and sidebar visibility switches. It uses `z.looseObject()` to
-preserve additional fields as unknown until the selected template validates them.
+`breadcrumbs`, and sidebar visibility switches during collection synchronization
+or Astro page discovery. It uses `z.looseObject()` to preserve additional fields
+until the selected template validates them during rendering.
 
-[`src/layouts/template.astro`](../../src/layouts/template.astro) is the unified
-template entry point. It resolves the page's template ID, parses template metadata,
-prepares body content and headings, computes default breadcrumbs, and renders
-`frame.astro` around the selected template. The same parsed `entry` reaches the
-frame, sidebars, template, and authored body. Parsed fields are merged with common
-metadata and unrelated custom fields, including defaults and schema transforms.
+The `template` field selects a registered template ID. Omitting it selects
+`default`; `friend` renders a friend-link collection. Unknown IDs fail with the
+source file and available IDs. Astro-authored pages select templates through the
+same field in their exported `page` object.
 
-Templates receive `TemplateProps` from `@type/template`:
-
-| Prop       | Meaning                                                               |
-| ---------- | --------------------------------------------------------------------- |
-| `entry`    | Source identity plus common and template-specific validated metadata. |
-| `headings` | Markdown/MDX headings; an empty array for Astro-authored pages.       |
-| `isHome`   | Whether this is the root homepage.                                    |
-
-The authored body is provided through the default `<slot />`. Place it wherever
-the template needs it, using `Prose` around reading content. Templates control
-their title, body arrangement, and styles; the entry point handles the document
-frame and forwards `entry` and `headings` to the body. Authored Astro pages also
-supply body markup without a document shell or frame.
-
-The shared type module owns `TemplateDefinition`, `TemplateSchema`, `TemplateHeader`,
-and `PageEntry`. Use `TemplateProps<typeof schema>` to infer template field types
-from a separately exported schema, including its defaults and transforms. Use
-plain `TemplateProps` when there is no schema. Import schemas with `import type`
-in components; deriving props directly from a definition that loads that same
-component would create a circular type dependency.
-
-### Registry and IDs
-
-[`src/templates/registry.ts`](../../src/templates/registry.ts) exports the single
-`templates` registration list and `getTemplate(id, source?)` / `listTemplates()`.
-Each definition is created with `defineTemplate()` and owns a unique `id`, an
-optional display `name` and `description`, an optional `schema`, and a `load`
-function returning a dynamic import of its Astro component. IDs use lowercase
-kebab-case, starting with a letter. Duplicate registrations fail immediately.
-
-The bundled IDs are `default` and `friend`. Omitting page metadata's `template`
-selects `default`; specifying an unknown ID fails with the source and available
-IDs. This replaces the previous fallback for misspelled or unregistered IDs.
-
-`listTemplates()` returns display metadata without loading components. Definitions
-and the registry are ordinary TypeScript modules, so Bun tools can enumerate them
-without an Astro build:
-
-```sh
-bun -e 'import { listTemplates } from "./src/templates/registry"; console.log(listTemplates());'
-```
-
-`getTemplate()` also exposes the schema and lazy loader. Only rendering calls
-`load()`. Keep component imports inside that function, and keep the central
-content configuration independent of template components and the registry.
-
-### Adding a Template
-
-Create `src/templates/projects/index.ts` with metadata and, if needed, a schema
-for its extra fields:
-
-```ts
-import { z } from 'astro/zod';
-import { defineTemplate } from '@templates/define';
-
-export const schema = z.object({
-  projects: z
-    .array(z.object({ name: z.string(), href: z.string() }))
-    .default([]),
-});
-
-export default defineTemplate({
-  id: 'projects',
-  name: 'Projects',
-  description: 'A reading introduction followed by project links.',
-  schema,
-  load: () => import('@templates/projects/Template.astro'),
-});
-```
-
-Define only template-specific fields in this schema; common fields are already
-validated by `pageSchema`. No schema or additional field types are needed for a
-template that only changes presentation.
-
-Create `src/templates/projects/Template.astro`:
-
-```astro
----
-import type { schema } from '@templates/projects';
-import type { TemplateProps } from '@type/template';
-import Prose from '@layouts/components/Prose.astro';
-
-type Props = TemplateProps<typeof schema>;
-const { entry } = Astro.props;
----
-
-<Prose>
-  <h1>{entry.data.title}</h1>
-  <slot />
-</Prose>
-
-<ul>
-  {
-    entry.data.projects.map((project) => (
-      <li>
-        <a href={project.href}>{project.name}</a>
-      </li>
-    ))
-  }
-</ul>
-```
-
-Import the definition into `registry.ts` and append it to `templates`:
-
-```ts
-import projectsTemplate from '@templates/projects';
-
-export const templates = [
-  defaultTemplate,
-  friendTemplate,
-  projectsTemplate,
-] as const;
-```
-
-Use it in any homepage or standalone page, for example
-`src/content/pages/projects.mdx`:
-
-```mdx
----
-title: Projects
-template: projects
-projects:
-  - name: Nayuta
-    href: https://github.com/yuanzui-cf/nayuta
----
-
-An introduction to my projects.
-```
-
-Astro-authored pages select the same ID and fields through their exported `page`
-object. The bundled [default](../../src/templates/default/Template.astro) and
-[friend](../../src/templates/friend/Template.astro) components provide further
-examples. The friend definition validates `friends`, `categories`, and `mySite`,
-defaulting omitted `friends` to an empty array.
-
-Common metadata is checked during collection synchronization or Astro page
-discovery. Template metadata is checked during rendering; failures include the
-source file and field paths. `bun run check` alone cannot validate every custom
-field. A static build is required when changing template schemas or content that
-uses them.
+Template defaults and parsed fields are merged into `entry.data`, so the authored
+body and sidebars receive the same metadata. For template definitions, schemas,
+and registration, see [Creating a template](templates.md).
 
 ## Sidebars
 

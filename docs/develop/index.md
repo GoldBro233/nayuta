@@ -8,7 +8,8 @@ These documents describe Nayuta's current design and development conventions.
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | [Visual design](design.md)                           | Color palettes, typography, spacing, responsive composition, and control appearance. |
 | [Architecture and code conventions](architecture.md) | Directory ownership, imports, TypeScript, styling, and browser behavior.             |
-| [Content and templates](content.md)                  | Content discovery, metadata, routing, sidebars, drafts, tags, and reading time.      |
+| [Content](content.md)                                | Content discovery, metadata, routing, sidebars, drafts, tags, and reading time.      |
+| [Creating a template](templates.md)                  | Template definitions, schemas, body components, registration, and validation.        |
 | [Components and pagination](components.md)           | Shared UI, static archives, and the dynamic post-list API.                           |
 
 Start with architecture when adding a feature, and consult the relevant contract

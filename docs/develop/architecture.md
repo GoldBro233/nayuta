@@ -41,9 +41,8 @@ of contents. Post detail, archives, and the 404 page use it directly.
 pages. It looks up the template in `templates/registry.ts`, validates its metadata,
 prepares breadcrumbs and body content, and wraps the template in `frame.astro`.
 Templates own body presentation and receive authored content through their default
-slot. Template definitions expose metadata and lazy component loaders so Bun tools
-can read the registry without loading Astro components. See
-[Content and templates](content.md) for registration, metadata, and sidebar contracts.
+slot. See [Creating a template](templates.md) for the template contract and
+[Content](content.md) for metadata and sidebar contracts.
 
 Use `Prose.astro` around reading content. Its scoped styles apply to descendants;
 adding a `prose` class to an unrelated element does not attach those styles.
