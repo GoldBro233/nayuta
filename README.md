@@ -1,121 +1,86 @@
-<div align="center">
-
-<img src="./public/assets/images/banner.png" alt="Nayuta Banner" width="100%" />
-
-<br />
-<br />
-
 # Nayuta
 
-**A sleek, responsive, reading-first Astro theme designed for developers and writers.**
+![Nayuta banner](public/assets/images/banner.png)
+
+A responsive, reading-first Astro theme for personal homepages, blogs, and notes.
 
 [![Astro](https://img.shields.io/badge/Astro-7.x-FF5D01?style=flat-square&logo=astro&logoColor=white)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Bun](https://img.shields.io/badge/Bun-1.x-FBF0DF?style=flat-square&logo=bun&logoColor=black)](https://bun.sh)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
-[Features](#-features) • [Showcase](#-showcase) • [Quick Start](#-quick-start) • [Configuration](#-configuration)
+[Features](#features) · [Showcase](#showcase) · [Quick start](#quick-start) ·
+[Configuration](#configuration) · [Content](#content) · [Contributing](#contributing)
 
-</div>
+Nayuta combines static site generation with compact monospace UI and a larger
+reading scale. Its responsive layout places navigation and widgets beside the
+content on desktop and makes them available through drawers on smaller screens.
 
----
+The name comes from **Kani Nayuta** (可児 那由多), the novelist in Yomi Hirasaka's
+_A Sister's All You Need_ (妹さえいればいい。).
 
-## 📖 Overview
+## Features
 
-**Nayuta** is an Astro theme crafted with a strict **reading-first** philosophy. It combines high-performance static site generation with a clean, compact monospace visual aesthetic.
+- **Reading-focused typography:** JetBrains Mono and Fira Code, with separate
+  scales for prose and compact interface text.
+- **Responsive layout:** optional side columns, mobile drawers, and keyboard
+  navigation with a no-JavaScript fallback.
+- **Five color palettes:** `nayuta`, `nayuta-aqua`, `midnight-blue`, `oled-dark`,
+  and `sakura-pink`, selected in the site configuration.
+- **Astro content collections:** Markdown/MDX posts, authored Astro pages, and
+  validated metadata.
+- **Automatic reading time:** build-time estimates for CJK and Latin text.
+- **Post and tag archives:** static pagination, tag pages, and sidebar widgets.
+- **Custom sidebars and templates:** per-page Astro widgets, an article TOC,
+  personal pages, and friend-link collections.
 
-Featuring an adaptive multi-column layout, Nayuta keeps long-form prose comfortable and readable on wide desktop viewports while smoothly collapsing sidebars into accessible drawers on smaller screens.
+## Showcase
 
-> **Nayuta** takes its name from **Kani Nayuta** (_可児 那由多_), the eccentric genius novelist from Yomi Hirasaka's _A Sister's All You Need_ (_妹さえいればいい。_).
-
----
-
-## ✨ Features
-
-- 📖 **Reading-First Typography**: Monospace-centered typography stack (JetBrains Mono & Fira Code) with comfortable line lengths and prose rhythm.
-- 📐 **Adaptive Multi-Column Layout**: Intelligent 3-column desktop structure that collapses into lightweight slide-out drawers on mobile and tablets.
-- 🎨 **5 Curated Color Themes**: Includes `nayuta`, `nayuta-aqua`, `midnight-blue`, `oled-dark`, and `sakura-pink` palettes, easily switchable via config.
-- ⚡ **Astro 7 & Content Collections**: Fully typed Markdown and MDX content powered by Zod validation and Astro glob loaders.
-- ⏱️ **Automatic Reading Time**: Native bilingual (CJK + Latin) reading time estimation without browser runtime overhead.
-- 🏷️ **Tags & Dynamic Archives**: Built-in tag filtering, tag cloud widget, and static `/tag/<name>` archive pages.
-- 🧩 **Modular Sidebar Widgets**: Compose per-page Astro sidebars with shared defaults and a built-in article TOC.
-- 👥 **Pre-built Templates**: Ready-to-use templates for personal homepages, post archives, and friends link walls.
-
----
-
-## 📸 Showcase
-
-<div align="center">
-
-|                                    Desktop Experience (Home)                                    |                                      Mobile Responsive                                      |
-| :---------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
-| <img src="./docs/assets/01-home-desktop-1920x1080.png" alt="Nayuta Home Desktop" width="650" /> | <img src="./docs/assets/05-home-mobile-440x956.png" alt="Nayuta Home Mobile" width="180" /> |
+| Desktop homepage                                                                                     | Mobile homepage                                                                                  |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| <img src="docs/assets/01-home-desktop-1920x1080.png" alt="Nayuta homepage on desktop" width="650" /> | <img src="docs/assets/05-home-mobile-440x956.png" alt="Nayuta homepage on mobile" width="180" /> |
 
 <details>
-<summary><b>🔍 View More Screenshots (Posts, Article, Friends)</b></summary>
-<br />
+<summary>More screenshots: posts, articles, and friends</summary>
 
-| Page                |                      Desktop Experience (1920×1080)                      |                      Mobile Responsive (440×956)                      |
-| :------------------ | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: |
-| **Posts Stream**    |  <img src="./docs/assets/02-posts-desktop-1920x1080.png" width="500" />  |  <img src="./docs/assets/06-posts-mobile-440x956.png" width="150" />  |
-| **Article Reading** | <img src="./docs/assets/03-article-desktop-1920x1080.png" width="500" /> | <img src="./docs/assets/07-article-mobile-440x956.png" width="150" /> |
-| **Friend Links**    | <img src="./docs/assets/04-friends-desktop-1920x1080.png" width="500" /> | <img src="./docs/assets/08-friends-mobile-440x956.png" width="150" /> |
+| Page    | Desktop                                                                                              | Mobile                                                                                           |
+| ------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Posts   | <img src="docs/assets/02-posts-desktop-1920x1080.png" alt="Post archive on desktop" width="500" />   | <img src="docs/assets/06-posts-mobile-440x956.png" alt="Post archive on mobile" width="150" />   |
+| Article | <img src="docs/assets/03-article-desktop-1920x1080.png" alt="Article on desktop" width="500" />      | <img src="docs/assets/07-article-mobile-440x956.png" alt="Article on mobile" width="150" />      |
+| Friends | <img src="docs/assets/04-friends-desktop-1920x1080.png" alt="Friend links on desktop" width="500" /> | <img src="docs/assets/08-friends-mobile-440x956.png" alt="Friend links on mobile" width="150" /> |
 
 </details>
 
-</div>
+## Quick Start
 
----
+Install [Bun 1.x](https://bun.sh) and [Node.js 22.12+](https://nodejs.org), then:
 
-## 🚀 Quick Start
-
-### 1. Clone and Install
-
-Make sure you have [Bun](https://bun.sh) (recommended) or [Node.js](https://nodejs.org) (v18+) installed.
-
-```bash
-# Clone the repository
+```sh
 git clone https://github.com/yuanzui-cf/nayuta.git
 cd nayuta
-
-# Install dependencies
 bun install
-```
-
-### 2. Development
-
-```bash
 bun run dev
 ```
 
-Open [http://localhost:4321](http://localhost:4321) to preview your site.
+Open [localhost:4321](http://localhost:4321). To contribute to the theme, follow
+[the fork setup](CONTRIBUTION.md#requirements-and-setup) instead.
 
-### 3. Build & Test
+| Command                | Purpose                                        |
+| ---------------------- | ---------------------------------------------- |
+| `bun run dev`          | Start the development server.                  |
+| `bun run check`        | Check Astro templates and TypeScript.          |
+| `bun run test`         | Run the test suite.                            |
+| `bun run build`        | Generate the static site in `dist/`.           |
+| `bun run preview`      | Preview the production build locally.          |
+| `bun run format`       | Format source and documentation with Prettier. |
+| `bun run format:check` | Check formatting without changing files.       |
 
-```bash
-# Type check Astro templates and TypeScript
-bun run check
-
-# Run test suite
-bun run test
-
-# Build static output (outputs to dist/)
-bun run build
-
-# Preview production build locally
-bun run preview
-```
-
----
-
-## ⚙️ Configuration
-
-### Site Settings (`src/config.ts`)
+## Configuration
 
 Customize your site profile, metadata, navigation, and theme preset in [`src/config.ts`](./src/config.ts):
 
 ```typescript
-import type { Config } from './types/config';
+import type { Config } from '@type/config';
 
 const config: Config = {
   title: '✍️ Kani Nayuta',
@@ -126,6 +91,7 @@ const config: Config = {
   // Presets: 'nayuta' | 'nayuta-aqua' | 'midnight-blue' | 'oled-dark' | 'sakura-pink'
   theme: 'nayuta',
   since: '2024-01-01',
+  postsPerPage: 10,
   links: [
     {
       text: 'Posts',
@@ -143,7 +109,20 @@ const config: Config = {
 export default config;
 ```
 
-### Writing Posts (`src/content/posts/`)
+The checked-in default is `nayuta`; all five bundled palettes are dark.
+`site_url` must be an absolute HTTP(S) URL. `postsPerPage` controls post and tag
+archives and defaults to 10 when omitted.
+
+## Content
+
+- [Writing posts](#writing-posts)
+- [Homepage and custom pages](#homepage-and-custom-pages)
+- [Routes and assets](#routes-and-assets)
+- [Page templates](#page-templates)
+- [Custom sidebars](#custom-sidebars)
+- [Bundled demos](#bundled-demos)
+
+### Writing Posts
 
 Place `.md` or `.mdx` files into `src/content/posts/`. You can author posts as standalone files or folder bundles:
 
@@ -151,7 +130,7 @@ Place `.md` or `.mdx` files into `src/content/posts/`. You can author posts as s
 ---
 title: 'The Architecture of Reading-First Design'
 publishDate: '2026-09-09'
-description: 'A deep dive into balancing information density and typography.'
+description: 'Balancing information density and typography.'
 cover: '/assets/images/banner.png' # or './cover.png' in a folder bundle
 tags: ['Astro', 'CSS Grid', 'Typography']
 ---
@@ -159,9 +138,12 @@ tags: ['Astro', 'CSS Grid', 'Typography']
 Article content here...
 ```
 
-- **Reading Time**: Calculated automatically at compile time based on bilingual (CJK + Latin) content.
-- **Folder Bundles**: For posts with collocated images, create `src/content/posts/<slug>/index.md` alongside your assets and use relative paths like `cover: './cover.png'`.
-- **Article MDX Components**: Reusable components such as `<Callout />` are available under `src/widgets/article/`.
+- **Reading time**: Calculated automatically at compile time based on bilingual (CJK + Latin) content.
+- **Folder bundles**: For posts with colocated images, create `src/content/posts/<slug>/index.md` alongside your assets and use relative paths like `cover: './cover.png'`.
+- **MDX components**: Reusable components such as `<Callout />` are available under `src/widgets/article/`.
+
+Set `draft: true` to preview a post in development while excluding it from the
+production site. Tags produce archive links at `/tag/<name>`.
 
 ### Homepage and Custom Pages
 
@@ -174,19 +156,22 @@ src/content/
 ├── assets/                    # Shared content resources, never routes
 ├── index.mdx                  # Homepage: .md / .mdx / .astro
 ├── _left.astro                # Default left widgets
-├── _right.astro               # Optional default right widgets
+├── _right.astro               # (Optional) Default right widgets
 ├── pages/
 │   ├── about.astro            # /about
 │   └── a/b/c/
 │       ├── index.mdx          # /a/b/c
-│       ├── _left.astro        # Override the left widgets for this directory
-│       ├── _right.astro       # Override the right widgets for this directory
-│       └── assets/
+│       ├── _left.astro        # (Optional) Override the left widgets for this directory
+│       ├── _right.astro       # (Optional) Override the right widgets for this directory
+│       └── assets/            # (Optional) Directory-specific assets, won't be routed
 └── posts/
     └── hello/
+        ├── world/
+        │   ├── assets/            # (Optional) Directory-specific assets, won't be routed
+        │   └── index.mdx          # /posts/hello/world
         ├── index.mdx          # /posts/hello
         ├── _left.astro
-        └── _right.astro       # Additional content below the mandatory TOC
+        └── _right.astro       # (Optional) Additional content below the mandatory TOC
 ```
 
 Standalone pages accept `.md`, `.mdx` and `.astro`. For Markdown/MDX:
@@ -218,6 +203,8 @@ behavior. Astro pages can contain scoped styles and normal Astro scripts, but
 should not include another HTML document or Frame. Dynamic route declarations
 such as `[id].astro` belong in `src/pages`, not in authored content.
 
+### Routes and Assets
+
 Routes follow the path below `content/pages`, without the extension or terminal
 `index`. Thus `a/b/c.md` and `a/b/c/index.mdx` both describe `/a/b/c`; choose one.
 Paths retain filename case. An optional `slug: published/path` overrides the URL
@@ -235,33 +222,14 @@ public URLs; use `public/` for files that need stable, direct download URLs.
 Only the root `index.*`, files under `pages/`, and registered posts are entries;
 other files directly under `content/` do not become routes.
 
-### Theme Templates
+### Page Templates
 
-`src/layouts/widgets/ContentPage.astro` prepares the body and selects the template:
-`template: friend` uses `FriendTemplate.astro`; other values use `PageTemplate.astro`.
-Concrete templates live in `src/templates/` and share `TemplateProps` from
-`@type/template`: `entry`, optional `content`, `headings` and `isHome`.
-`PageEntry` and `TemplateHeader` are defined in the same module.
+Pages use `template: default` for ordinary reading content or `template: friend`
+for a friend-link collection. See [the bundled friends page](src/content/pages/friend.mdx)
+for an example of `friends`, `categories`, and `mySite` metadata.
 
-Inside a template, alias `content` to an uppercase component variable:
-`const { content: Content } = Astro.props`. Render it with `<Content />`;
-`<content />` would create an HTML element. Templates own the body presentation
-and use `@layouts/content-frame.astro` for the page frame and sidebars.
-
-Common metadata (`title`, `description`, `template`, `slug`, `breadcrumbs` and
-sidebar switches) is validated in `src/content.config.ts`. Extra fields are
-preserved and remain `unknown` in the shared type until a template parses them.
-Each template defines its own Zod schema and derives its header type with
-`z.infer<typeof headerSchema>`. `FriendTemplate.astro`, for example, owns
-`friends`, `categories` and `mySite`; omitted `friends` defaults to an empty array.
-The parsed values are passed to the body and sidebars in `entry.data` together
-with the common and other custom fields.
-
-Template-specific validation runs when the template renders. `bun run build`
-reports invalid fields with the content source path; content synchronization or
-type checking alone only covers the common metadata. To add a template, implement
-the shared props, validate its custom fields locally and add its selection in
-`ContentPage.astro`.
+Developers adding templates can find the shared props, schema validation, and
+rendering rules in [Content and templates](docs/develop/content.md#metadata-and-templates).
 
 ### Custom Sidebars
 
@@ -301,12 +269,8 @@ article's TOC. Setting it to `true` does not create an empty right column when n
 right component exists. An empty local component replaces the root content but
 still counts as an existing right component; use the switch to hide the region.
 
-**Migration:** move old `rightWidgets` arrays into `_right.astro` imports; legacy
-arrays produce an actionable error. The default left widgets now live in
-`src/content/_left.astro`, and homepage content moved from `src/pages/index.astro`
-to `src/content/index.mdx`. Markdown page collection IDs now retain the content
-source path and extension (for example `pages/friend.mdx`); URLs are resolved
-separately. Existing bundled site URLs are unchanged.
+For discovery details and migration from `rightWidgets`, see
+[the sidebar contract](docs/develop/content.md#sidebars).
 
 ### Bundled Demos
 
@@ -319,8 +283,12 @@ Open `/demo` (also linked from the homepage) to explore the examples:
 | `/demo/studio`           | `src/content/pages/demo/studio/index.astro`     | Astro body and both local sidebars                              |
 | `/posts/typography-test` | `src/content/posts/typography-test/index.mdx`   | Bundled article, local sidebars, TOC before extra right content |
 
----
+## License
 
-## 📄 License
+[MIT](LICENSE)
 
-[MIT](./LICENSE)
+## Contributing
+
+See [CONTRIBUTION.md](CONTRIBUTION.md) for discussing changes, setting up a fork,
+branch and commit conventions, checks, and submitting pull requests. The
+[development guide](docs/develop/index.md) covers visual design and code conventions.
