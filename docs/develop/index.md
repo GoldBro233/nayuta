@@ -16,5 +16,5 @@ before changing its implementation. Visual changes should also follow the design
 reference. Update these documents when a public API or convention changes.
 
 For local setup, branch and commit naming, validation commands, and pull requests,
-see [Contributing to Nayuta](../../CONTRIBUTION.md). For site configuration and
+see [Contributing to Nayuta](../../CONTRIBUTING.md). For site configuration and
 authoring examples, see the [README](../../README.md).

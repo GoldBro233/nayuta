@@ -9,7 +9,7 @@ scoped CSS, configurable color themes, and native browser enhancements.
 ## Read at Session Start
 
 - [README.md](README.md): setup, configuration, and content authoring.
-- [CONTRIBUTION.md](CONTRIBUTION.md): contribution and commit conventions.
+- [CONTRIBUTING.md](CONTRIBUTING.md): contributing and commit conventions.
 - [docs/develop/index.md](docs/develop/index.md) and every document linked in its
   directory if needed: visual design, architecture, content, and component contracts.
 - [package.json](package.json), [astro.config.ts](astro.config.ts),

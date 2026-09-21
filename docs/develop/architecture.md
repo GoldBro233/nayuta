@@ -104,4 +104,4 @@ content. Preserve Astro scope attributes in dynamically cloned component markup.
   accessibility, and maintenance costs.
 
 Formatting and validation commands are documented in
-[Contributing to Nayuta](../../CONTRIBUTION.md#checks-and-formatting).
+[Contributing to Nayuta](../../CONTRIBUTING.md#checks-and-formatting).

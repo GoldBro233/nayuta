@@ -138,8 +138,8 @@ When working on a few files, use the installed formatter with an explicit file
 list to avoid formatting unrelated files:
 
 ```sh
-bun x --no-install prettier --write README.md CONTRIBUTION.md 'docs/develop/*.md'
-bun x --no-install prettier --check README.md CONTRIBUTION.md 'docs/develop/*.md'
+bun x --no-install prettier --write README.md CONTRIBUTING.md 'docs/develop/*.md'
+bun x --no-install prettier --check README.md CONTRIBUTING.md 'docs/develop/*.md'
 ```
 
 Browser tests skip when Chromium/Chrome is unavailable. Report skipped checks

@@ -66,7 +66,7 @@ bun run dev
 ```
 
 Open [localhost:4321](http://localhost:4321). To contribute to the theme, follow
-[the fork setup](CONTRIBUTION.md#requirements-and-setup) instead.
+[the fork setup](CONTRIBUTING.md#requirements-and-setup) instead.
 
 | Command                | Purpose                                        |
 | ---------------------- | ---------------------------------------------- |
@@ -292,6 +292,6 @@ Open `/demo` (also linked from the homepage) to explore the examples:
 
 ## Contributing
 
-See [CONTRIBUTION.md](CONTRIBUTION.md) for discussing changes, setting up a fork,
+See [CONTRIBUTING.md](CONTRIBUTING.md) for discussing changes, setting up a fork,
 branch and commit conventions, checks, and submitting pull requests. The
 [development guide](docs/develop/index.md) covers visual design and code conventions.

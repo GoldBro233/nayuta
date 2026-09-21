@@ -134,4 +134,4 @@ HTTP(S) or relative URLs for links and images. Static summaries retain Astro's
 The tests under `tests/components/` cover page boundaries, updates, DOM
 preservation, history, focus, and style parity using isolated fixtures. Chromium
 setup and the broader validation checklist are in
-[Contributing to Nayuta](../../CONTRIBUTION.md#checks-and-formatting).
+[Contributing to Nayuta](../../CONTRIBUTING.md#checks-and-formatting).
