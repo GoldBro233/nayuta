@@ -1,6 +1,8 @@
-# Nayuta
-
 ![Nayuta banner](public/assets/images/banner.png)
+
+<div align="center">
+
+# Nayuta
 
 A responsive, reading-first Astro theme for personal homepages, blogs, and notes.
 
@@ -11,6 +13,8 @@ A responsive, reading-first Astro theme for personal homepages, blogs, and notes
 
 [Features](#features) · [Showcase](#showcase) · [Quick start](#quick-start) ·
 [Configuration](#configuration) · [Content](#content) · [Contributing](#contributing)
+
+</div>
 
 Nayuta combines static site generation with compact monospace UI and a larger
 reading scale. Its responsive layout places navigation and widgets beside the
@@ -88,7 +92,7 @@ import type { Config } from '@type/config';
 const config: Config = {
   title: '✍️ Kani Nayuta',
   author: 'Kani Nayuta',
-  avatar: '/assets/images/avatar.jpg',
+  avatar: '/assets/images/avatar.png',
   description: 'Genius Light Novelist | Author of "The Landscape Series"',
   site_url: 'https://nayuta.kani.dev',
   // Presets: 'nayuta' | 'nayuta-aqua' | 'midnight-blue' | 'oled-dark' | 'sakura-pink'

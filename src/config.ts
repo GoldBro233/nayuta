@@ -3,7 +3,7 @@ import type { Config } from '@type/config';
 const config: Config = {
   title: '✍️ Kani Nayuta',
   author: 'Kani Nayuta',
-  avatar: '/assets/images/avatar.jpg',
+  avatar: '/assets/images/avatar.png',
   description:
     'Genius Light Novelist | Author of "The Landscape Series" | Operating principle: 100% Love for Itsuki Hashima',
   site_url: 'https://nayuta.kani.dev',
