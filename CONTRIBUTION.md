@@ -27,15 +27,18 @@ personal site configuration changes.
 
 ## Requirements and Setup
 
-Install [Git](https://git-scm.com/), a current stable [Bun 1.x](https://bun.sh/),
-and [Node.js 22.12 or newer](https://nodejs.org/). Bun manages dependencies,
-scripts, and tests; the installed Astro 7 CLI requires Node.js 22.12+. Use the
-versions declared in `package.json` and resolved by `bun.lock` rather than
-installing Astro or TypeScript globally.
+Install [Git](https://git-scm.com/) and a current stable [Bun 1.x](https://bun.sh/)
+(recommended). Bun can install dependencies, run the development server, check
+types, run tests, format code, and build the site without a separate Node.js
+installation.
 
-For browser checks, install Chromium or Google Chrome. Tests look for `chromium`,
-`google-chrome`, or the standard macOS Chrome installation. Set `CHROME_BIN` to
-the executable path if it is elsewhere.
+Alternatively, [Node.js 22.12 or newer](https://nodejs.org/) can run Astro, but
+this is not recommended for contributions: the test suite uses `bun:test` and
+Bun APIs, so Bun is still required. The commands below use Bun. If Node.js is
+also installed, `bun run --bun <script>` explicitly selects the Bun runtime.
+
+Use the versions declared in `package.json` and resolved by `bun.lock` rather
+than installing Astro or TypeScript globally.
 
 1. Fork [yuanzui-cf/nayuta](https://github.com/yuanzui-cf/nayuta) on GitHub.
 2. Clone your fork and configure the upstream repository, replacing
@@ -171,10 +174,14 @@ Include the following in the description:
   when the PR fully resolves that issue.
 - **Implementation:** the relevant approach, public API changes, dependency
   changes, and migration steps.
-- **Validation:** commands run and their results, manual checks, and any skipped
-  or unavailable checks with reasons.
 - **Visual changes:** before/after screenshots at relevant widths and palettes.
 - **Limitations:** remaining concerns or follow-up work reviewers should know.
+
+Omit a **Validation** section when all applicable checks pass. If checks fail,
+are skipped, or cannot run, include this section and explain which checks did
+not pass, why, and why the PR can still be merged despite the missing validation.
+Support that reasoning with relevant evidence, the affected scope, and any
+remaining risk or follow-up work so the maintainer can assess the exception.
 
 Respond to review on the same branch, update documentation and checks as needed,
 and keep the description accurate as the implementation changes. Maintainers

@@ -53,7 +53,10 @@ _A Sister's All You Need_ (妹さえいればいい。).
 
 ## Quick Start
 
-Install [Bun 1.x](https://bun.sh) and [Node.js 22.12+](https://nodejs.org), then:
+Use [Bun 1.x](https://bun.sh) (recommended), or [Node.js](https://nodejs.org)
+as an alternative runtime for Astro.
+
+The following setup uses only Bun; no separate Node.js installation is needed:
 
 ```sh
 git clone https://github.com/yuanzui-cf/nayuta.git

@@ -21,8 +21,9 @@ scoped CSS, configurable color themes, and native browser enhancements.
 
 - Astro 7 with static output, TypeScript 6 in strict mode, and vanilla scoped CSS.
 - Markdown/MDX, Astro content collections, and Zod schemas from `astro/zod`.
-- Bun for dependency management, repository scripts, and tests; Node.js 22.12+
-  for the Astro CLI. Astro manages Vite.
+- Bun for dependency management, repository scripts, and tests (recommended;
+  no separate Node.js installation needed). Do not use Node.js for
+  contributions.
 - Native browser APIs and custom elements for progressive enhancement.
 
 ## Validation and Formatting
