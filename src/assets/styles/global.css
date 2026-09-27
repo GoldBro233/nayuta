@@ -4,7 +4,7 @@
 
 :root {
   /* Typography */
-  --ny-font-ui: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --ny-font-ui: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace, sans-serif;
   --ny-font-prose: var(--ny-font-ui);
   --ny-font-code: var(--ny-font-ui);
   --ny-letter-spacing-ui: -0.01em;
