@@ -22,7 +22,8 @@ const {
   style,
   ...attributes
 } = Astro.props;
-const metadata = typeof src === 'object' ? src : undefined;
+// Astro SVG imports are callable components carrying ImageMetadata properties.
+const metadata = typeof src !== 'string' ? src : undefined;
 const optimized = metadata ? await getImage({ src: metadata }) : undefined;
 const url = optimized?.src ?? (typeof src === 'string' ? src : undefined);
 const dimensions =
@@ -43,6 +44,17 @@ const height =
     : dimensions?.height);
 const imageRatio =
   ratio ?? (width && height ? `${width} / ${height}` : '16 / 9');
+const imageAttributes = {
+  ...optimized?.attributes,
+  ...attributes,
+  src: url,
+  alt,
+  width,
+  height,
+  loading: attributes.loading ?? 'lazy',
+  decoding: 'async' as const,
+  style,
+};
 ---
 
 <nayuta-image
@@ -52,15 +64,5 @@ const imageRatio =
   style={`--ny-image-ratio:${imageRatio};${!ratio && width ? `--ny-image-width:${Number(width)}px;` : ''}`}
 >
   <div class="ny-image-placeholder" aria-hidden="true"></div>
-  <img
-    {...optimized?.attributes}
-    {...attributes}
-    src={url}
-    alt={alt}
-    width={width}
-    height={height}
-    loading={attributes.loading ?? 'lazy'}
-    decoding="async"
-    style={style}
-  />
+  <img {...imageAttributes} />
 </nayuta-image>

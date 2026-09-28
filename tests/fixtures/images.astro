@@ -2,6 +2,7 @@
 import Frame from '@layouts/frame.astro';
 import Prose from '@layouts/components/Prose.astro';
 import Image from '@layouts/components/Image.astro';
+import importedPortrait from './assets/image-test-portrait.svg';
 ---
 
 <Frame title="Image checks" withLeftSidebar={false}>
@@ -40,6 +41,14 @@ import Image from '@layouts/components/Image.astro';
         src="/landscape.svg"
         width={320}
         alt="Half width"
+        loading="eager"
+      />
+    </figure>
+    <figure id="imported">
+      <Image
+        src={importedPortrait}
+        width={120}
+        alt="Imported SVG"
         loading="eager"
       />
     </figure>

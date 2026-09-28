@@ -105,6 +105,10 @@ beforeAll(async () => {
   await Bun.write(join(fixture, 'public/landscape.svg'), landscape);
   await Bun.write(join(fixture, 'public/portrait.svg'), portrait);
   await Bun.write(
+    join(fixture, 'src/pages/assets/image-test-portrait.svg'),
+    portrait,
+  );
+  await Bun.write(
     join(fixture, 'src/pages/image-test.astro'),
     (await Bun.file(join(root, 'tests/fixtures/images.astro')).text()).replace(
       '__REMOTE_IMAGE__',
@@ -169,6 +173,16 @@ test('image sizes respect explicit dimensions, local metadata and remote failure
   ).text();
   expect(html).toContain('width="640" height="360"');
   expect(html).toContain('width="320" height="180"');
+  let importedSource = '';
+  await new HTMLRewriter()
+    .on('img[alt="Imported SVG"]', {
+      element(element) {
+        importedSource = element.getAttribute('src') ?? '';
+      },
+    })
+    .transform(new Response(html))
+    .text();
+  expect(importedSource).toMatch(/^\/_astro\/.+\.svg$/);
   expect(html).toContain('--ny-image-ratio:16 / 9');
 });
 
@@ -177,13 +191,18 @@ test('Markdown and MDX preserve local assets, dimensions, links and valid paragr
     const html = await Bun.file(
       join(fixture, `dist/images-${extension}/index.html`),
     ).text();
-    expect(html).toContain('/_astro/portrait.');
     expect(html).toContain('--ny-image-ratio:240 / 480');
     expect(html).toContain('--ny-image-ratio:640 / 360');
     expect(html).toContain(`${server.url}runtime.svg`);
     let count = 0;
     let invalid = 0;
+    let bundledSource = '';
     await new HTMLRewriter()
+      .on('img[alt="Bundled portrait"]', {
+        element(element) {
+          bundledSource = element.getAttribute('src') ?? '';
+        },
+      })
       .on('nayuta-image', {
         element() {
           count++;
@@ -198,6 +217,10 @@ test('Markdown and MDX preserve local assets, dimensions, links and valid paragr
       .text();
     expect(count).toBe(5);
     expect(invalid).toBe(0);
+    expect(bundledSource).toMatch(/^\/_astro\/.+\.svg$/);
+    expect(await Bun.file(join(fixture, 'dist', bundledSource)).exists()).toBe(
+      true,
+    );
     expect(html).toMatch(/href="\/demo"[^>]*><nayuta-image/);
   }
 });
@@ -253,6 +276,19 @@ test.skipIf(!chrome)(
         ),
       ).toBe('ny-image-pulse');
       expect(farRequests).toBe(0);
+      await until(
+        `document.querySelector('#imported nayuta-image')?.dataset.state === 'ready'`,
+      );
+      expect(
+        await evaluate(
+          `document.querySelector('#imported img').getAttribute('width')`,
+        ),
+      ).toBe('120');
+      expect(
+        await evaluate(
+          `document.querySelector('#imported img').getAttribute('height')`,
+        ),
+      ).toBe('240');
       await until(
         `document.querySelector('#broken nayuta-image')?.dataset.state === 'error'`,
       );
