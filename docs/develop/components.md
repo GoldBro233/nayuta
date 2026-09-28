@@ -18,6 +18,11 @@ Use `Prose` for authored reading content, `Button` for link/action controls,
 classes. Font Awesome 6.5.1 is loaded by `head-base.astro`. Inline SVGs should use
 `currentColor` when they are intended to follow the surrounding text color.
 
+`CopyrightCard` is the post-only license notice inside `Prose`, after the authored
+body. It uses the site author and URL plus the post's title and effective
+Creative Commons license. The post route controls visibility and
+license inheritance; keep tags outside `Prose` after the card.
+
 Reuse `Pagination` for other lists without requiring post-specific presentation.
 Sidebar `Widget` supplies a section heading and optional “More” link, while
 `Callout` and `TableContainer` are public imports for authored MDX.

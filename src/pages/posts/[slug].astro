@@ -7,6 +7,8 @@ import Badge from '@layouts/components/Badge.astro';
 import Frame from '@layouts/frame.astro';
 import Prose from '@layouts/components/Prose.astro';
 import Tag from '@layouts/components/Tag.astro';
+import CopyrightCard from '@layouts/widgets/CopyrightCard.astro';
+import config from '~/config';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -21,6 +23,15 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post);
 const readingTime = formatReadingTime(
   remarkPluginFrontmatter.readingTimeMinutes,
 );
+const showCopyright =
+  post.data.copyright?.enabled ?? config.copyright?.enabled ?? false;
+const copyrightLicense =
+  post.data.copyright?.license ?? config.copyright?.license;
+if (showCopyright && !copyrightLicense) {
+  throw new Error(
+    `Post "${post.id}" enables the copyright card without a Creative Commons license. Set copyright.license in its front matter or src/config.ts.`,
+  );
+}
 
 const breadcrumbs = [
   { text: 'Home', href: '/' },
@@ -68,6 +79,15 @@ const breadcrumbs = [
     </p>
 
     <Content />
+    {
+      showCopyright && copyrightLicense && (
+        <CopyrightCard
+          title={post.data.title}
+          pathname={Astro.url.pathname}
+          license={copyrightLicense}
+        />
+      )
+    }
   </Prose>
 
   {

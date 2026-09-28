@@ -99,6 +99,7 @@ const config: Config = {
   theme: 'nayuta',
   since: '2024-01-01',
   postsPerPage: 10,
+  copyright: { enabled: true, license: 'CC BY-NC-SA 4.0' },
   links: [
     {
       text: 'Posts',
@@ -119,6 +120,9 @@ export default config;
 The checked-in default is `nayuta`; all five bundled palettes are dark.
 `site_url` must be an absolute HTTP(S) URL. `postsPerPage` controls post and tag
 archives and defaults to 10 when omitted.
+The checked-in configuration shows a post copyright card using `CC BY-NC-SA 4.0`.
+Set `copyright.enabled` to `false` to hide cards site-wide. When enabled, set
+`copyright.license` to a supported Creative Commons 4.0 license.
 
 ## Content
 
@@ -151,6 +155,21 @@ Article content here...
 
 Set `draft: true` to preview a post in development while excluding it from the
 production site. Tags produce archive links at `/tag/<name>`.
+
+To license an individual post, add `copyright` to its front matter:
+
+```yaml
+copyright:
+  enabled: true
+  license: CC BY-NC-SA 4.0
+```
+
+Post fields override the site settings independently: `enabled: false` hides
+the card, and `license` changes the license while retaining the site visibility
+setting. A post can use `enabled: true` with the site license, or specify its own
+license when the site has none. Enabled posts without a license fail the build.
+Supported values are `CC BY 4.0`, `CC BY-SA 4.0`, `CC BY-ND 4.0`, `CC BY-NC 4.0`,
+`CC BY-NC-SA 4.0`, and `CC BY-NC-ND 4.0`.
 
 ### Homepage and Custom Pages
 

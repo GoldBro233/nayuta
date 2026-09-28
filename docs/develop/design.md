@@ -128,6 +128,8 @@ control respects bottom and right safe-area insets.
   background. Nested quotes remain visually distinct.
 - Images stay within the reading region and retain their aspect ratio. Captions
   are smaller, muted, centered, and italic.
+- Post copyright cards sit after article prose in a quiet bordered surface with
+  compact UI text. Their metadata and links must wrap on narrow viewports.
 - Tables and code blocks scroll horizontally within their own region. Table
   headers use an elevated surface; code uses a container surface and quiet border.
 - Pagination is left-aligned, compact text: `[prev] 1 [2] 3 [next]`. Only the

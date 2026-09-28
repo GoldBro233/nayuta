@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
+import { creativeCommonsLicenses } from '@type/copyright';
 
 const postsCollection = defineCollection({
   loader: glob({
@@ -20,6 +21,12 @@ const postsCollection = defineCollection({
       withLeftSidebar: z.boolean().optional(),
       withProfileCard: z.boolean().optional(),
       withRightSidebar: z.boolean().optional(),
+      copyright: z
+        .object({
+          enabled: z.boolean().optional(),
+          license: z.enum(creativeCommonsLicenses).optional(),
+        })
+        .optional(),
       tags: z
         .array(z.string().trim().min(1, 'Tags must not be empty.'))
         .default([])
