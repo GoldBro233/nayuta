@@ -5,6 +5,7 @@ import { unified } from '@astrojs/markdown-remark';
 import { defineConfig } from 'astro/config';
 import { remarkReadingTime } from './src/assets/utils/reading-time';
 import config from './src/config';
+import { rehypeImages } from './src/assets/utils/rehype-images';
 
 const site = config.site_url;
 if (!site) {
@@ -28,6 +29,9 @@ export default defineConfig({
   site,
   integrations: [mdx(), sitemap()],
   markdown: {
-    processor: unified({ remarkPlugins: [remarkReadingTime] }),
+    processor: unified({
+      remarkPlugins: [remarkReadingTime],
+      rehypePlugins: [rehypeImages],
+    }),
   },
 });

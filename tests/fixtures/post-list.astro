@@ -141,7 +141,12 @@ const page: Page<CollectionEntry<'posts'>> = {
     await pause();
     // Finish the existing link-color transition before comparing theme colors.
     await Promise.allSettled(
-      document.getAnimations().map((animation) => animation.finished),
+      document
+        .getAnimations()
+        .filter(
+          (animation) => animation.effect?.getTiming().iterations !== Infinity,
+        )
+        .map((animation) => animation.finished),
     );
     for (const selector of [
       '.post-title',
@@ -357,12 +362,11 @@ const page: Page<CollectionEntry<'posts'>> = {
     list.style.width = '120px';
     await pause();
     assert(numbers.hidden, 'Narrow selector hides page numbers');
+    list.style.width = '600px';
+    await pause();
+    assert(!numbers.hidden, 'Selector restores numbers when space returns');
     list.style.width = '';
     await pause();
-    assert(
-      !numbers.hidden || list.getBoundingClientRect().width < 300,
-      'Selector restores numbers when space returns',
-    );
 
     // The consuming page owns history. setPage with results must not create a request loop.
     const historyRequests = requests.length;

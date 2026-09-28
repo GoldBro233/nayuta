@@ -10,6 +10,7 @@ const config: Config = {
   theme: 'nayuta',
   since: '2024-01-01',
   postsPerPage: 10,
+  copyright: { enabled: true, license: 'CC BY-NC-SA 4.0' },
   links: [
     {
       text: 'Posts',

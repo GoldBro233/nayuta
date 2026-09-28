@@ -6,12 +6,13 @@ interface Props {
 const { class: className = '' } = Astro.props;
 ---
 
-<div class={`prose ${className}`.trim()}>
+<nayuta-prose class={`prose ${className}`.trim()}>
   <slot />
-</div>
+</nayuta-prose>
 
 <style>
   .prose {
+    display: block;
     font-family: var(--ny-font-prose);
     color: var(--ny-color-text);
     font-size: var(--ny-font-size-prose);
@@ -241,12 +242,16 @@ const { class: className = '' } = Astro.props;
     gap: 8px;
   }
 
-  .prose :global(img) {
+  .prose :global(img:not(nayuta-image img)) {
     max-width: 100%;
     height: auto;
     border-radius: var(--ny-radius-md);
     border: 1px solid var(--ny-color-border);
     background-color: var(--ny-color-surface-container);
+  }
+
+  .prose :global(.ny-image-block) {
+    margin-bottom: 1.125em;
   }
 
   .prose :global(figcaption) {

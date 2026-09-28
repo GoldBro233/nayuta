@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import Image from '@layouts/components/Image.astro';
 import { render } from 'astro:content';
 import { formatReadingTime } from '@assets/utils/reading-time';
 import { getPosts } from '@assets/utils/posts';
@@ -7,6 +7,8 @@ import Badge from '@layouts/components/Badge.astro';
 import Frame from '@layouts/frame.astro';
 import Prose from '@layouts/components/Prose.astro';
 import Tag from '@layouts/components/Tag.astro';
+import CopyrightCard from '@layouts/widgets/CopyrightCard.astro';
+import config from '~/config';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -21,6 +23,15 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post);
 const readingTime = formatReadingTime(
   remarkPluginFrontmatter.readingTimeMinutes,
 );
+const showCopyright =
+  post.data.copyright?.enabled ?? config.copyright?.enabled ?? false;
+const copyrightLicense =
+  post.data.copyright?.license ?? config.copyright?.license;
+if (showCopyright && !copyrightLicense) {
+  throw new Error(
+    `Post "${post.id}" enables the copyright card without a Creative Commons license. Set copyright.license in its front matter or src/config.ts.`,
+  );
+}
 
 const breadcrumbs = [
   { text: 'Home', href: '/' },
@@ -36,24 +47,18 @@ const breadcrumbs = [
   isPost={true}
   breadcrumbs={breadcrumbs}
 >
-  <div data-pagefind-body={post.data.exclude_in_search ? undefined : ''}>
-    <Prose>
+  <Prose>
+    <div data-pagefind-body={post.data.exclude_in_search ? undefined : ''}>
       {
         post.data.cover && (
           <div class="post-cover-container">
-            {typeof post.data.cover === 'string' ? (
-              <img
-                class="post-cover"
-                src={post.data.cover}
-                alt={post.data.title}
-              />
-            ) : (
-              <Image
-                class="post-cover"
-                src={post.data.cover}
-                alt={post.data.title}
-              />
-            )}
+            <Image
+              class="post-cover"
+              src={post.data.cover}
+              alt={post.data.title}
+              ratio="16 / 9"
+              loading="eager"
+            />
           </div>
         )
       }
@@ -73,10 +78,18 @@ const breadcrumbs = [
           readingTime
         }
       </p>
-
       <Content />
-    </Prose>
-  </div>
+    </div>
+    {
+      showCopyright && copyrightLicense && (
+        <CopyrightCard
+          title={post.data.title}
+          pathname={Astro.url.pathname}
+          license={copyrightLicense}
+        />
+      )
+    }
+  </Prose>
 
   {
     post.data.tags.length > 0 && (
@@ -143,6 +156,13 @@ const breadcrumbs = [
     aspect-ratio: 16 / 9;
     background-color: var(--ny-color-surface-container);
     box-shadow: 0 8px 30px var(--ny-color-shadow);
+  }
+
+  .post-cover-container nayuta-image {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 0;
   }
 
   .prose .post-cover {

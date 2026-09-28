@@ -18,6 +18,11 @@ Use `Prose` for authored reading content, `Button` for link/action controls,
 classes. Font Awesome 6.5.1 is loaded by `head-base.astro`. Inline SVGs should use
 `currentColor` when they are intended to follow the surrounding text color.
 
+`CopyrightCard` is the post-only license notice inside `Prose`, after the authored
+body. It uses the site author and URL plus the post's title and effective
+Creative Commons license. The post route controls visibility and
+license inheritance; keep tags outside `Prose` after the card.
+
 Reuse `Pagination` for other lists without requiring post-specific presentation.
 Sidebar `Widget` supplies a section heading and optional “More” link, while
 `Callout` and `TableContainer` are public imports for authored MDX.
@@ -147,10 +152,66 @@ Each `PostSummaryData` item contains `href`, `title`, `publishDate`, and
 Filter production drafts with `getPosts()` before publishing data. Prepare reading
 time through the existing remark pipeline and local cover URLs through
 `astro:assets` at build time. Dynamic summaries use text nodes for text and accept
-HTTP(S) or relative URLs for links and images. Static summaries retain Astro's
-`Image` handling; dynamic clones preserve the same scoped markup and draft badge.
+HTTP(S) or relative URLs for links and images. Static summaries use the theme's `Image` wrapper around Astro's asset handling;
+dynamic clones preserve the same image host, scoped markup, and draft badge.
 
 The tests under `tests/components/` cover page boundaries, updates, DOM
 preservation, history, focus, and style parity using isolated fixtures. Chromium
 setup and the broader validation checklist are in
 [Contributing to Nayuta](../../CONTRIBUTING.md#checks-and-formatting).
+
+## Images and Lightbox
+
+Import `Image` from `@layouts/components/Image.astro` in MDX and Astro content.
+`Frame` installs `ImageController` in the head and `ImageLightbox` in the body;
+both layout enhancements live in `src/layouts/widgets/image/`.
+The image component emits static HTML; its browser behavior is owned by the
+`<nayuta-image>` custom element. `Prose` uses a `<nayuta-prose>` host to enhance
+handwritten images and pictures within its own reading region.
+
+| Prop                   | Contract                                                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `src`                  | Public/remote URL or imported Astro `ImageMetadata`. Internal inert templates may omit it.                            |
+| `alt`                  | Required text alternative; use an empty string for decorative images.                                                 |
+| `width`, `height`      | Optional dimensions. Local metadata supplies omitted dimensions; supplying just one preserves the known source ratio. |
+| `loading`              | `lazy` by default; use `eager` for a critical image in the first viewport.                                            |
+| `ratio`                | Optional fixed CSS aspect ratio, such as `16 / 9`. Crops with `object-fit: cover` and top-center alignment.           |
+| `lightbox`             | Defaults to `true`. Set `false` to exclude this image from the viewer.                                                |
+| `originalSrc`          | Optional full-size image URL for the viewer. Imported assets otherwise use their original asset URL.                  |
+| Other image attributes | Forwarded to the underlying `<img>`, including `class`, `style`, `srcset`, and `sizes`.                               |
+
+Images reserve their known ratio, or 16:9 when dimensions are unavailable. Native
+lazy loading schedules the request. The controller handles cached images,
+`load`/`error`, and source changes; it waits for `decode()` before revealing pixels.
+Successful loads replace unknown proportions with the image's natural dimensions.
+A fixed `ratio` remains fixed. Failed loads retain their reserved space and show a
+red crossed-circle icon with an accessible description. List templates connect
+only after their image attributes have been populated.
+
+A small head bootstrap prevents progressive pixels from flashing before the
+controller loads. It releases the hidden state if the controller fails to arrive.
+Without JavaScript, ordinary image markup stays visible and placeholders are
+hidden. Custom elements release observers and event handlers on disconnection.
+
+The lightbox uses PhotoSwipe 5; its core is imported on the first open. Images
+within the same `Prose` are grouped, including a post's detail cover. List covers
+are excluded. Each eligible image gets a native button; linked images keep their
+original destination and are excluded. Use `data-lightbox="off"` on a handwritten
+image or `data-image-native` to opt out of both loading and lightbox enhancement.
+The latter is useful for interactive third-party content with its own controller.
+
+PhotoSwipe's active-image append hook is delayed until decoding succeeds. It uses
+the same loading pulse, decoded fade, runtime sizing, and failure symbol as page
+images. Controls provide previous/next, zoom, original-image access, and closing.
+`[Original]` is a button matching the other controls and opens the current image
+in a new tab with `noopener,noreferrer`.
+Captions use the enclosing `figcaption`, falling back to `alt`, and are inserted
+as text. The viewer preserves background inert states and scroll state, contains
+keyboard focus, and restores it to the opening control on close. Existing drawer
+inert states are preserved. Reduced-motion preferences disable image and viewer
+animations.
+
+Browser fixtures exercise actual partial responses, build-time remote failure,
+runtime dimensions, decoded reveal, lazy requests, linked/opted-out images,
+source replacement, keyboard and touch navigation, error slides, focus return,
+and all five palettes around both responsive breakpoints.

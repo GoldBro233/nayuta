@@ -4,6 +4,8 @@ import type { CollectionEntry } from 'astro:content';
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import type { PageEntry } from '@type/template';
 import HeadBase from '@layouts/head-base.astro';
+import ImageController from '@layouts/widgets/image/ImageController.astro';
+import ImageLightbox from '@layouts/widgets/image/ImageLightbox.astro';
 import LeftSidebar from '@layouts/left-sidebar.astro';
 import RightSidebar from '@layouts/right-sidebar.astro';
 import SidebarFooter from '@layouts/sidebar-footer.astro';
@@ -65,6 +67,7 @@ const sidebarProps = { entry, headings, pathname: Astro.url.pathname };
 <html lang="en">
   <head>
     <HeadBase title={title} description={description} isHome={isHome} />
+    <ImageController />
     <slot name="head" />
   </head>
   <body>
@@ -260,6 +263,8 @@ const sidebarProps = { entry, headings, pathname: Astro.url.pathname };
         </button>
       )
     }
+
+    <ImageLightbox />
 
     <!-- Pure JS for drawer transitions (Progressive Enhancement) -->
     <script>

@@ -1,4 +1,5 @@
 import type { Icon } from '@type/icon';
+import type { CopyrightOptions } from '@type/copyright';
 
 export interface Link {
   text?: string;
@@ -29,6 +30,9 @@ export interface Config {
 
   // Positive integer; shared by post and tag archives (defaults to 10).
   postsPerPage?: number;
+
+  // Post copyright card; disabled unless explicitly enabled.
+  copyright?: CopyrightOptions;
   // Profile Card links
   links?: Link[];
 }
