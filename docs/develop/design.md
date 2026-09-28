@@ -156,9 +156,11 @@ After full decoding, the image fades from zero to full opacity over 180ms with
 
 The PhotoSwipe viewer is scoped under `.pswp--nayuta`. Its opaque background color
 comes from `--ny-color-bg`, with opacity applied by the library. Controls use the
-UI font with transparent backgrounds, no borders, outline-colored text on hover,
-and visible outline focus rings. Keep `[Original]`, `[Zoom]`, `[Close]`, `[Prev]`, and
-`[Next]` labels consistent with the theme's bracket notation. Mobile controls have
-a minimum 44px height. Captions wrap and scroll within their allotted region;
+UI font with transparent backgrounds and no borders. White text uses `difference`
+blending on the entire top bar (including the counter) and each navigation button
+to invert the pixels underneath, including images during zoom and pan. Hover adds
+an underline; focus rings use the same adaptive color. Keep `[Original]`, `[Zoom]`,
+`[Close]`, `[Prev]`, and `[Next]` labels consistent with the theme's bracket notation.
+Mobile controls have a minimum 44px height. Captions wrap and scroll within their allotted region;
 controls and captions respect safe-area insets. The viewer reserves space above
 and below the image so controls do not cover it.

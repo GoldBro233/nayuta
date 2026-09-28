@@ -342,6 +342,11 @@ import 'photoswipe/style.css';
   .pswp--nayuta .pswp__preloader {
     display: none;
   }
+  /* Blend the entire top bar: its stacking context isolates child buttons. */
+  .pswp--nayuta .pswp__top-bar,
+  .pswp--nayuta .pswp__button--arrow {
+    mix-blend-mode: difference;
+  }
   .pswp--nayuta .pswp__top-bar {
     align-items: center;
     gap: var(--ny-space-2);
@@ -359,7 +364,7 @@ import 'photoswipe/style.css';
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--ny-color-text);
+    color: #fff;
     font: inherit;
     line-height: var(--ny-line-height-ui);
     text-decoration: none;
@@ -367,10 +372,11 @@ import 'photoswipe/style.css';
   }
   .pswp--nayuta .pswp__button:hover {
     background: transparent;
-    color: var(--ny-color-outline);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
   .pswp--nayuta .pswp__button:focus-visible {
-    outline: 2px solid var(--ny-color-outline);
+    outline: 2px solid currentColor;
     outline-offset: 3px;
   }
   .pswp--nayuta .pswp__button:disabled {
@@ -393,6 +399,7 @@ import 'photoswipe/style.css';
     height: auto;
     line-height: var(--ny-line-height-ui);
     font: inherit;
+    color: #fff;
     text-shadow: none;
     opacity: 1;
   }
