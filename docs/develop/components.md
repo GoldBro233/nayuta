@@ -184,6 +184,8 @@ The latter is useful for interactive third-party content with its own controller
 PhotoSwipe's active-image append hook is delayed until decoding succeeds. It uses
 the same loading pulse, decoded fade, runtime sizing, and failure symbol as page
 images. Controls provide previous/next, zoom, original-image access, and closing.
+`[Original]` is a button matching the other controls and opens the current image
+in a new tab with `noopener,noreferrer`.
 Captions use the enclosing `figcaption`, falling back to `alt`, and are inserted
 as text. The viewer preserves background inert states and scroll state, contains
 keyboard focus, and restores it to the opening control on close. Existing drawer

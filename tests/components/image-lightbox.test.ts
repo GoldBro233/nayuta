@@ -128,11 +128,19 @@ for (const width of [390, 768, 769, 1120, 1121, 1440]) {
       }
       async function key(key: string) {
         const windowsVirtualKeyCode =
-          { ArrowDown: 40, ArrowRight: 39, Escape: 27, Tab: 9, z: 90 }[key] ??
-          0;
+          {
+            ArrowDown: 40,
+            ArrowRight: 39,
+            Escape: 27,
+            Tab: 9,
+            Enter: 13,
+            ' ': 32,
+            z: 90,
+          }[key] ?? 0;
         await browser.send('Input.dispatchKeyEvent', {
           type: 'keyDown',
           key,
+          text: key === 'Enter' ? '\r' : key === ' ' ? ' ' : undefined,
           windowsVirtualKeyCode,
         });
         await browser.send('Input.dispatchKeyEvent', {
@@ -140,6 +148,25 @@ for (const width of [390, 768, 769, 1120, 1121, 1440]) {
           key,
           windowsVirtualKeyCode,
         });
+      }
+      async function openOriginal(activationKey: string) {
+        await evaluate(`
+          window.originalImageOpen = { open: window.open, calls: [] };
+          window.open = (...args) => {
+            window.originalImageOpen.calls.push(args);
+            return null;
+          };
+          document.querySelector('.pswp__button--original').focus();
+        `);
+        try {
+          await key(activationKey);
+          return await evaluate('window.originalImageOpen.calls');
+        } finally {
+          await evaluate(`
+            window.open = window.originalImageOpen.open;
+            delete window.originalImageOpen;
+          `);
+        }
       }
       try {
         const before = largeRequests;
@@ -188,10 +215,25 @@ for (const width of [390, 768, 769, 1120, 1121, 1440]) {
           ),
         ).toBe('A quiet landscape');
         expect(
-          await evaluate(
-            `document.querySelector('.pswp__button--original').href`,
-          ),
-        ).toBe(`${server.url}large.svg`);
+          await evaluate(`(() => {
+            const original = document.querySelector('.pswp__button--original');
+            const close = document.querySelector('.pswp__button--close');
+            return {
+              tag: original.tagName,
+              type: original.type,
+              matchingHeight: original.getBoundingClientRect().height === close.getBoundingClientRect().height,
+              matchingLineHeight: getComputedStyle(original).lineHeight === getComputedStyle(close).lineHeight,
+            };
+          })()`),
+        ).toEqual({
+          tag: 'BUTTON',
+          type: 'button',
+          matchingHeight: true,
+          matchingLineHeight: true,
+        });
+        expect(await openOriginal('Enter')).toEqual([
+          ['/large.svg', '_blank', 'noopener,noreferrer'],
+        ]);
         expect(
           await evaluate(
             `document.querySelector('.pswp__counter').textContent`,
@@ -249,6 +291,9 @@ for (const width of [390, 768, 769, 1120, 1121, 1440]) {
         await until(
           `document.querySelector('.pswp img[src$="/slow.svg"]')?.dataset.nyDecoded === 'true'`,
         );
+        expect(await openOriginal(' ')).toEqual([
+          ['/slow.svg', '_blank', 'noopener,noreferrer'],
+        ]);
         expect(
           await evaluate(
             `(() => { const image = document.querySelector('.pswp img[src$="/slow.svg"]'); return Math.abs(image.width / image.height - 0.6) < 0.01; })()`,

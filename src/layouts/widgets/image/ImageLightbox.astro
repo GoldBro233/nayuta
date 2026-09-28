@@ -201,17 +201,12 @@ import 'photoswipe/style.css';
           viewer.ui?.registerElement({
             name: 'original',
             isButton: true,
-            tagName: 'a',
             order: 8,
             html: '[Original]',
             ariaLabel: 'Open original image',
-            onInit: (element) => {
-              const link = element as HTMLAnchorElement;
-              link.target = '_blank';
-              link.rel = 'noopener noreferrer';
-              viewer.on('change', () => {
-                link.href = viewer.currSlide?.data.src ?? '';
-              });
+            onClick: () => {
+              const source = viewer.currSlide?.data.src;
+              if (source) window.open(source, '_blank', 'noopener,noreferrer');
             },
           });
           viewer.ui?.registerElement({
