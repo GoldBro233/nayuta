@@ -29,7 +29,8 @@ Prefer existing dependencies, semantic HTML, and native browser APIs.
 Keep queries, sorting, and display preparation in the consuming `.astro` file.
 Extract a utility only when multiple consumers share the same logic. Current
 shared modules are `pages.ts`, `posts.ts`, `reading-time.ts`, and `pagination.ts`
-under `src/assets/utils/`.
+under `src/assets/utils/`. Image metadata is shared by the image component and
+Markdown processing; `rehype-images.ts` owns the Markdown/MDX image transform.
 
 ## Page Composition
 

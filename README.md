@@ -31,6 +31,8 @@ _A Sister's All You Need_ (妹さえいればいい。).
   navigation with a no-JavaScript fallback.
 - **Five color palettes:** `nayuta`, `nayuta-aqua`, `midnight-blue`, `oled-dark`,
   and `sakura-pink`, selected in the site configuration.
+- **Images and lightbox:** lazy loading, theme-colored placeholders, decoded image
+  reveal, and a keyboard/touch image viewer styled for every palette.
 - **Astro content collections:** Markdown/MDX posts, authored Astro pages, and
   validated metadata.
 - **Automatic reading time:** build-time estimates for CJK and Latin text.
@@ -127,6 +129,7 @@ Set `copyright.enabled` to `false` to hide cards site-wide. When enabled, set
 ## Content
 
 - [Writing posts](#writing-posts)
+- [Images](#images)
 - [Homepage and custom pages](#homepage-and-custom-pages)
 - [Routes and assets](#routes-and-assets)
 - [Page templates](#page-templates)
@@ -170,6 +173,42 @@ setting. A post can use `enabled: true` with the site license, or specify its ow
 license when the site has none. Enabled posts without a license fail the build.
 Supported values are `CC BY 4.0`, `CC BY-SA 4.0`, `CC BY-ND 4.0`, `CC BY-NC 4.0`,
 `CC BY-NC-SA 4.0`, and `CC BY-NC-ND 4.0`.
+
+### Images
+
+Markdown images automatically receive lazy loading and a theme-colored placeholder:
+
+```markdown
+![A notebook](./assets/notebook.png)
+```
+
+Local dimensions are read during the build. Remote size detection is best effort;
+an unavailable remote image never fails the build. Unknown sizes reserve a 16:9
+area until the browser loads the image and determines its real aspect ratio.
+Images appear with a quick fade after decoding. Failed images retain their space
+and show a red crossed-circle symbol.
+
+For MDX or Astro, import the theme's image component:
+
+```mdx
+import Image from '@layouts/components/Image.astro';
+import cover from './assets/cover.png';
+
+<figure>
+  <Image src={cover} alt="A view from the desk" loading="eager" />
+  <figcaption>A quiet afternoon.</figcaption>
+</figure>
+```
+
+Use `loading="eager"` for an important first-screen image; other images default to
+lazy loading. Set `ratio="16 / 9"` for a cropped cover, `lightbox={false}` to exclude
+an image from the viewer, or `originalSrc` to provide a larger original.
+The viewer groups images within the same reading region and supports keyboard
+navigation, touch gestures, and zoom. Existing image links keep their destination.
+Post-list covers use the loading treatment without opening the viewer.
+
+See [the image demo](src/content/pages/demo/images.mdx) and
+[the component contract](docs/develop/components.md#images-and-lightbox) for details.
 
 ### Homepage and Custom Pages
 
@@ -299,12 +338,13 @@ For discovery details and migration from `rightWidgets`, see
 
 Open `/demo` (also linked from the homepage) to explore the examples:
 
-| Route                    | Source                                          | Demonstrates                                                    |
-| ------------------------ | ----------------------------------------------- | --------------------------------------------------------------- |
-| `/demo/markdown`         | `src/content/pages/demo/markdown.md`            | Root left sidebar, no right sidebar                             |
-| `/demo/notes/nested`     | `src/content/pages/demo/notes/nested/index.mdx` | Nested routing, local assets, local right sidebar               |
-| `/demo/studio`           | `src/content/pages/demo/studio/index.astro`     | Astro body and both local sidebars                              |
-| `/posts/typography-test` | `src/content/posts/typography-test/index.mdx`   | Bundled article, local sidebars, TOC before extra right content |
+| Route                    | Source                                          | Demonstrates                                                               |
+| ------------------------ | ----------------------------------------------- | -------------------------------------------------------------------------- |
+| `/demo/images`           | `src/content/pages/demo/images.mdx`             | Image loading, natural and cropped ratios, captions, and the themed viewer |
+| `/demo/markdown`         | `src/content/pages/demo/markdown.md`            | Root left sidebar, no right sidebar                                        |
+| `/demo/notes/nested`     | `src/content/pages/demo/notes/nested/index.mdx` | Nested routing, local assets, local right sidebar                          |
+| `/demo/studio`           | `src/content/pages/demo/studio/index.astro`     | Astro body and both local sidebars                                         |
+| `/posts/typography-test` | `src/content/posts/typography-test/index.mdx`   | Bundled article, local sidebars, TOC before extra right content            |
 
 ## License
 

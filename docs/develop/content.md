@@ -39,6 +39,39 @@ become entries. Put dynamic Astro route declarations in `src/pages/`.
 Use `public/` for stable download URLs; content assets are processed through
 Markdown, MDX, or Astro imports.
 
+## Image Authoring
+
+Markdown image syntax works in posts and pages, including public URLs and images
+relative to the content file. `rehypeImages` in `astro.config.ts` adds dimensions
+and placeholder markup while retaining Astro's local image pipeline. Standalone
+image paragraphs become image blocks; images mixed with text use phrasing markup
+so paragraphs and links remain valid HTML.
+
+Public and relative image sizes are read during compilation. Remote metadata
+requests have a 2.5-second deadline and a 1 MiB read limit, with results cached
+for the build process. Failed remote probes return an unknown size; remote images
+are emitted as ordinary `<img>` elements instead of requiring Astro's remote size
+inference. A 404, timeout, or offline build machine therefore does not prevent
+publishing. A missing imported local asset still follows Astro's normal import
+validation.
+
+Unknown sizes initially use a 16:9 placeholder. The browser loads the image
+normally and reads `naturalWidth`/`naturalHeight` without a separate cross-origin
+fetch. The region adopts the actual ratio when decoding completes; this can cause
+one layout adjustment. Supply accurate `width` and `height` when a remote image
+must reserve the exact space from the start. If loading fails, the reserved area
+shows a red crossed-circle symbol.
+
+For authored MDX/Astro, prefer the shared `Image` component for build-time metadata
+and early lazy-loading attributes. Handwritten `<img>` and `<picture>` inside
+`Prose` also receive runtime enhancement, but their requests may already have
+started by the time the controller runs. Add `loading="lazy"` to handwritten
+markup when deferral matters. Outside `Prose`, use the component explicitly.
+
+Read [Images and lightbox](components.md#images-and-lightbox) for component props,
+caption selection, link preservation, and opt-outs. Explore `/demo/images` for
+working examples.
+
 ## Page Metadata
 
 The common `pageSchema` validates `title`, `description`, `template`, `slug`,

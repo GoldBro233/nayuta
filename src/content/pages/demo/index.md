@@ -7,6 +7,7 @@ These pages show the same theme with different content formats and sidebar compo
 
 | Example                                   | What to look for                                                                                        |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| [Image gallery](/demo/images)             | Responsive images, a portrait illustration, and the themed image viewer.                                |
 | [Plain Markdown](/demo/markdown)          | The default left widgets and no right sidebar.                                                          |
 | [Nested MDX notebook](/demo/notes/nested) | A deeply nested page, a local image, and a custom right sidebar alongside the default left widgets.     |
 | [Astro studio](/demo/studio)              | An Astro body with its own left and right sidebars.                                                     |
