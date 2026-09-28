@@ -127,8 +127,19 @@ for (const width of [390, 768, 769, 1120, 1121, 1440]) {
         throw new Error(`Timed out: ${expression}`);
       }
       async function key(key: string) {
-        await browser.send('Input.dispatchKeyEvent', { type: 'keyDown', key });
-        await browser.send('Input.dispatchKeyEvent', { type: 'keyUp', key });
+        const windowsVirtualKeyCode =
+          { ArrowDown: 40, ArrowRight: 39, Escape: 27, Tab: 9, z: 90 }[key] ??
+          0;
+        await browser.send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key,
+          windowsVirtualKeyCode,
+        });
+        await browser.send('Input.dispatchKeyEvent', {
+          type: 'keyUp',
+          key,
+          windowsVirtualKeyCode,
+        });
       }
       try {
         const before = largeRequests;
@@ -318,6 +329,20 @@ for (const width of [390, 768, 769, 1120, 1121, 1440]) {
         await evaluate(
           `document.querySelector('.pswp__button--close').click()`,
         );
+        await until(`!document.querySelector('.pswp')`);
+        await evaluate(
+          `document.querySelector('#first figcaption').textContent = 'Long description. '.repeat(200); document.querySelector('#first .ny-image-open').click()`,
+        );
+        await until(
+          `document.querySelector('.pswp__caption')?.scrollHeight > document.querySelector('.pswp__caption')?.clientHeight`,
+        );
+        await until(
+          `document.activeElement?.classList.contains('pswp__button--close')`,
+        );
+        await evaluate(`document.querySelector('.pswp__caption').focus()`);
+        await key('ArrowDown');
+        await until(`document.querySelector('.pswp__caption').scrollTop > 0`);
+        await key('Escape');
         await until(`!document.querySelector('.pswp')`);
       } finally {
         releaseSlow();

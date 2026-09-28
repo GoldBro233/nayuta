@@ -80,7 +80,12 @@ import 'photoswipe/style.css';
       const generation = this.generation;
       try {
         const { default: Viewer } = await import('photoswipe');
-        if (!this.isConnected || generation !== this.generation) return;
+        if (
+          !this.isConnected ||
+          !host.isConnected ||
+          generation !== this.generation
+        )
+          return;
         const group = host.closest('nayuta-prose')!;
         const hosts = [
           ...group.querySelectorAll<HTMLElement>('nayuta-image'),
@@ -214,6 +219,9 @@ import 'photoswipe/style.css';
             appendTo: 'root',
             onInit: (element) => {
               element.setAttribute('aria-live', 'polite');
+              element.setAttribute('role', 'region');
+              element.setAttribute('aria-label', 'Image description');
+              element.tabIndex = 0;
               viewer.on('change', () => {
                 element.textContent = viewer.currSlide?.data.caption ?? '';
               });
@@ -244,12 +252,28 @@ import 'photoswipe/style.css';
             ?.focus(),
         );
         viewer.on('keydown', (event) => {
+          if (
+            (event.originalEvent.target as Element)?.closest(
+              '.pswp__caption',
+            ) &&
+            [
+              'ArrowUp',
+              'ArrowDown',
+              'Home',
+              'End',
+              'PageUp',
+              'PageDown',
+            ].includes(event.originalEvent.key)
+          ) {
+            event.preventDefault();
+            return;
+          }
           if (event.originalEvent.key !== 'Tab') return;
           event.preventDefault();
           event.originalEvent.preventDefault();
           const controls = [
             ...viewer.element!.querySelectorAll<HTMLElement>(
-              'button:not(:disabled), a[href]',
+              'button:not(:disabled), a[href], [tabindex="0"]',
             ),
           ].filter((element) => element.getClientRects().length > 0);
           const index = controls.indexOf(document.activeElement as HTMLElement);
@@ -305,12 +329,20 @@ import 'photoswipe/style.css';
     display: none;
   }
   .pswp.pswp--nayuta {
+    touch-action: pan-y;
     --pswp-bg: var(--ny-color-bg);
     --pswp-placeholder-bg: var(--ny-color-surface-container);
     --pswp-icon-color: var(--ny-color-text);
     color: var(--ny-color-text);
     font-family: var(--ny-font-ui);
     font-size: var(--ny-font-size-ui);
+  }
+  .pswp--nayuta .pswp__scroll-wrap {
+    touch-action: none;
+  }
+  .pswp--nayuta .pswp__caption:focus-visible {
+    outline: 2px solid var(--ny-color-outline);
+    outline-offset: 2px;
   }
   .pswp--nayuta .pswp__preloader {
     display: none;
