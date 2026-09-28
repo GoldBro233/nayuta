@@ -116,6 +116,16 @@ labels retain their original text. Post detail renders tags after the body,
 outside prose styling, and omits an empty tag bar. Friend-card tags are unrelated
 to post archives.
 
+Post copyright cards are disabled when no copyright settings are provided; the
+checked-in `src/config.ts` enables them. Site configuration can set
+`copyright.enabled` and `copyright.license`; post front matter accepts the same
+fields. Each post field overrides the corresponding site field. An enabled card
+requires a license from one of those sources, or its build fails. The schema
+accepts the six Creative Commons 4.0 licenses listed in the README. The card
+renders after the article body inside `Prose`, before tags, with the site author,
+canonical permalink, and official license link. It applies only to posts, not
+standalone pages or the site footer.
+
 `sortPosts()` orders by descending publication date, then content ID for ties.
 Filter and sort before pagination. Keep tag grouping and widget queries in their
 consuming `.astro` files. See [Components and pagination](components.md) for archive
