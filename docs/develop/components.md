@@ -144,7 +144,8 @@ setup and the broader validation checklist are in
 ## Images and Lightbox
 
 Import `Image` from `@layouts/components/Image.astro` in MDX and Astro content.
-`Frame` installs `ImageController` in the head and `ImageLightbox` in the body.
+`Frame` installs `ImageController` in the head and `ImageLightbox` in the body;
+both layout enhancements live in `src/layouts/widgets/image/`.
 The image component emits static HTML; its browser behavior is owned by the
 `<nayuta-image>` custom element. `Prose` uses a `<nayuta-prose>` host to enhance
 handwritten images and pictures within its own reading region.
