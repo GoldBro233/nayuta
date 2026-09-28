@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import Image from '@layouts/components/Image.astro';
 import { render } from 'astro:content';
 import { formatReadingTime } from '@assets/utils/reading-time';
 import { getPosts } from '@assets/utils/posts';
@@ -51,19 +51,13 @@ const breadcrumbs = [
     {
       post.data.cover && (
         <div class="post-cover-container">
-          {typeof post.data.cover === 'string' ? (
-            <img
-              class="post-cover"
-              src={post.data.cover}
-              alt={post.data.title}
-            />
-          ) : (
-            <Image
-              class="post-cover"
-              src={post.data.cover}
-              alt={post.data.title}
-            />
-          )}
+          <Image
+            class="post-cover"
+            src={post.data.cover}
+            alt={post.data.title}
+            ratio="16 / 9"
+            loading="eager"
+          />
         </div>
       )
     }
@@ -155,6 +149,13 @@ const breadcrumbs = [
     aspect-ratio: 16 / 9;
     background-color: var(--ny-color-surface-container);
     box-shadow: 0 8px 30px var(--ny-color-shadow);
+  }
+
+  .post-cover-container nayuta-image {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 0;
   }
 
   .prose .post-cover {

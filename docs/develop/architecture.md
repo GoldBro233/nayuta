@@ -13,7 +13,7 @@ Prefer existing dependencies, semantic HTML, and native browser APIs.
 | `src/pages/`              | Astro routes, static path generation, archives, RSS, and the 404 page.        |
 | `src/layouts/`            | Document structure, metadata, page regions, sidebars, and responsive drawers. |
 | `src/layouts/components/` | Small reusable UI such as `Prose`, `Pagination`, `Avatar`, and `Button`.      |
-| `src/layouts/widgets/`    | Composed theme UI such as `ProfileCard` and `post-list/`.                     |
+| `src/layouts/widgets/`    | Composed UI and layout enhancements: `ProfileCard`, `post-list/`, `image/`.   |
 | `src/templates/`          | Template definitions, registration, metadata schemas, and body presentation.  |
 | `src/widgets/sidebar/`    | Sidebar widgets and their composition helpers, also used inside drawers.      |
 | `src/widgets/article/`    | Public MDX components such as `Callout` and `TableContainer`.                 |
@@ -29,7 +29,8 @@ Prefer existing dependencies, semantic HTML, and native browser APIs.
 Keep queries, sorting, and display preparation in the consuming `.astro` file.
 Extract a utility only when multiple consumers share the same logic. Current
 shared modules are `pages.ts`, `posts.ts`, `reading-time.ts`, and `pagination.ts`
-under `src/assets/utils/`.
+under `src/assets/utils/`. Image metadata is shared by the image component and
+Markdown processing; `rehype-images.ts` owns the Markdown/MDX image transform.
 
 ## Page Composition
 

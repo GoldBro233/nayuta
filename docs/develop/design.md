@@ -38,6 +38,7 @@ Each palette defines the same color variables; typography and layout come from `
 | `--ny-color-primary`                                    | Primary accent and selected fills.          |
 | `--ny-color-primary-hover`, `--ny-color-primary-active` | Accent interaction states.                  |
 | `--ny-color-primary-text`                               | Text on primary fills.                      |
+| `--ny-color-danger`                                     | Red image-failure indicators.               |
 | `--ny-color-border`                                     | Quiet boundaries and dividers.              |
 | `--ny-color-outline`                                    | Link hover, focus, and highlighted details. |
 | `--ny-color-shadow`                                     | Theme-specific shadow color.                |
@@ -144,3 +145,22 @@ control respects bottom and right safe-area insets.
 Use the typography sample at `/posts/typography-test`, post summaries, the friends
 page, and `/demo` as visual references. Compare wide desktop, the 1120px and 768px
 transitions, and a narrow phone viewport when adjusting shared styles.
+
+## Image Loading and Viewer
+
+Image placeholders use the surface-container color mixed with the current primary
+color. The mix cycles from 8% to 22% and back over two seconds with `ease-in-out`.
+After full decoding, the image fades from zero to full opacity over 180ms with
+`ease-in`. Error states stop the pulse and center a 32px crossed-circle SVG using
+`--ny-color-danger`. Reduced-motion preferences disable both animations.
+
+The PhotoSwipe viewer is scoped under `.pswp--nayuta`. Its opaque background color
+comes from `--ny-color-bg`, with opacity applied by the library. Controls use the
+UI font with transparent backgrounds and no borders. White text uses `difference`
+blending on the entire top bar (including the counter) and each navigation button
+to invert the pixels underneath, including images during zoom and pan. Hover adds
+an underline; focus rings use the same adaptive color. Keep `[Original]`, `[Zoom]`,
+`[Close]`, `[Prev]`, and `[Next]` labels consistent with the theme's bracket notation.
+Mobile controls have a minimum 44px height. Captions wrap and scroll within their allotted region;
+controls and captions respect safe-area insets. The viewer reserves space above
+and below the image so controls do not cover it.

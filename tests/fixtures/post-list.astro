@@ -141,7 +141,12 @@ const page: Page<CollectionEntry<'posts'>> = {
     await pause();
     // Finish the existing link-color transition before comparing theme colors.
     await Promise.allSettled(
-      document.getAnimations().map((animation) => animation.finished),
+      document
+        .getAnimations()
+        .filter(
+          (animation) => animation.effect?.getTiming().iterations !== Infinity,
+        )
+        .map((animation) => animation.finished),
     );
     for (const selector of [
       '.post-title',
