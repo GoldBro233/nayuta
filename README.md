@@ -158,7 +158,9 @@ Article content here...
 - **MDX components**: Reusable components such as `<Callout />` are available under `src/widgets/article/`.
 
 Set `draft: true` to preview a post in development while excluding it from the
-production site. Tags produce archive links at `/tag/<name>`.
+production site. Set `exclude_in_search: true` to keep a published post and its
+archive links while omitting it from the Pagefind index. Tags produce archive
+links at `/tag/<name>`.
 
 ### Homepage and Custom Pages
 

@@ -101,21 +101,21 @@ those imports into `_right.astro`. Older homepage bodies belong in
 
 The `posts` collection requires `title` and `publishDate`. Optional fields include
 `description`, `cover`, `views`, and sidebar switches. `cover` accepts a public or
-HTTP(S) URL or an image resolved relative to the content file. `draft` defaults
-to `false`, and `tags` defaults to an empty array.
+HTTP(S) URL or an image resolved relative to the content file. `draft` and
+`exclude_in_search` default to `false`, and `tags` defaults to an empty array.
 
 Use `getPosts()` from `@assets/utils/posts` for shared visibility filtering.
 Production builds exclude draft posts from generated routes, archives, tags,
 widgets, RSS, and counters. Development mode includes drafts for author preview
-with a draft badge. New search data or other public listings must use the same
-filter before exposing posts.
+with a draft badge. New public listings must use the same filter.
 
-Production builds run Pagefind after Astro and index only the post detail body
-marked with `data-pagefind-body` in `src/pages/posts/[slug].astro`. The
-sidebar widget loads that generated index on demand and displays ranked results
-in groups of five. Homepages, authored pages, archives, and draft posts are
-not searchable. `astro dev` does not generate the index; use `bun run build`
-and `bun run preview` to check search locally.
+Production builds run Pagefind after Astro. Only published post detail pages with
+`data-pagefind-body` in `src/pages/posts/[slug].astro` are indexed; setting
+`exclude_in_search: true` omits that marker without removing the page from
+archives, tags, RSS or its direct URL. The sidebar search form navigates to
+`/search`, which loads the generated index on demand. Homepages, authored pages,
+archives, and draft posts are not searchable. `astro dev` does not generate the
+index; use `bun run build` and `bun run preview` to check search locally.
 
 Tags are trimmed, nonempty, case-sensitive strings. Duplicate names are removed
 while author order is retained. Tag URLs encode spaces and non-Latin characters;

@@ -36,7 +36,7 @@ const breadcrumbs = [
   isPost={true}
   breadcrumbs={breadcrumbs}
 >
-  <div data-pagefind-body>
+  <div data-pagefind-body={post.data.exclude_in_search ? undefined : ''}>
     <Prose>
       {
         post.data.cover && (

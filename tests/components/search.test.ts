@@ -91,6 +91,10 @@ async function prepare() {
     join(root, 'src/content/posts/draft.md'),
     '---\ntitle: Draft hidden article\npublishDate: "2026-01-01"\ndraft: true\n---\n\nbatchneedle sixneedle.\n',
   );
+  await Bun.write(
+    join(root, 'src/content/posts/excluded.md'),
+    '---\ntitle: Excluded published article\npublishDate: "2026-01-01"\ntags: [ExcludedFromSearch]\nexclude_in_search: true\n---\n\nbatchneedle excludedneedle.\n',
+  );
   return root;
 }
 
@@ -353,6 +357,37 @@ test.skipIf(!chrome)(
       ).toBe('Search: sixneedle');
       await navigate(browser, defaults.server, '/search?q=unmatchedneedle');
       result = await until<SearchState>(
+        browser,
+        pageState,
+        (value) => value?.status === 'No matching articles.',
+      );
+      expect([result.count, result.fallback]).toEqual([0, true]);
+    }, defaults.root);
+  },
+  30_000,
+);
+test.skipIf(!chrome)(
+  'excluded posts remain in routes and tag archives but not Pagefind',
+  async () => {
+    await session(async (browser) => {
+      await navigate(browser, defaults.server, '/posts/excluded');
+      expect(
+        await evaluate<string>(
+          browser,
+          `document.querySelector('h1.page-title').textContent.trim()`,
+        ),
+      ).toBe('Excluded published article');
+
+      await navigate(browser, defaults.server, '/tag/ExcludedFromSearch');
+      expect(
+        await evaluate<string>(
+          browser,
+          `new URL(document.querySelector('.post-list .post-title a').href).pathname`,
+        ),
+      ).toBe('/posts/excluded');
+
+      await navigate(browser, defaults.server, '/search?q=excludedneedle');
+      const result = await until<SearchState>(
         browser,
         pageState,
         (value) => value?.status === 'No matching articles.',
