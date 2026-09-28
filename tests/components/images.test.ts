@@ -25,6 +25,12 @@ let runtime = false;
 let farRequests = 0;
 let releaseRemote: () => void;
 let remoteGate: Promise<void>;
+let releasePartial: () => void;
+let partialGate: Promise<void>;
+let partialStarted = false;
+const partialBytes = new Uint8Array(
+  await Bun.file(join(root, 'public/assets/images/banner.png')).arrayBuffer(),
+);
 
 beforeAll(async () => {
   fixture = await mkdtemp(join(tmpdir(), 'nayuta-images-'));
@@ -46,11 +52,29 @@ beforeAll(async () => {
   remoteGate = new Promise((resolve) => {
     releaseRemote = resolve;
   });
+  partialGate = new Promise((resolve) => {
+    releasePartial = resolve;
+  });
   server = Bun.serve({
     hostname: '127.0.0.1',
     port: 0,
     async fetch(request) {
       const url = new URL(request.url);
+      if (url.pathname === '/partial.png') {
+        const stream = new ReadableStream<Uint8Array>({
+          async start(controller) {
+            const split = Math.floor(partialBytes.length / 2);
+            controller.enqueue(partialBytes.slice(0, split));
+            partialStarted = true;
+            await partialGate;
+            controller.enqueue(partialBytes.slice(split));
+            controller.close();
+          },
+        });
+        return new Response(stream, {
+          headers: { 'content-type': 'image/png' },
+        });
+      }
       if (url.pathname === '/runtime.svg') {
         if (!runtime)
           return new Response('Offline at build time', { status: 503 });
@@ -122,6 +146,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   releaseRemote?.();
+  releasePartial?.();
   server?.stop(true);
   if (fixture) await rm(fixture, { recursive: true, force: true });
 });
@@ -240,6 +265,19 @@ test.skipIf(!chrome)(
           `getComputedStyle(document.querySelector('#broken .ny-image-placeholder')).animationName`,
         ),
       ).toBe('none');
+      expect(partialStarted).toBe(true);
+      expect(
+        await evaluate(`document.querySelector('#partial img').complete`),
+      ).toBe(false);
+      expect(
+        await evaluate(
+          `getComputedStyle(document.querySelector('#partial img')).opacity`,
+        ),
+      ).toBe('0');
+      releasePartial();
+      await until(
+        `document.querySelector('#partial nayuta-image')?.dataset.state === 'ready'`,
+      );
       releaseRemote();
       await until(
         `document.querySelector('#unknown nayuta-image')?.dataset.state === 'ready'`,
