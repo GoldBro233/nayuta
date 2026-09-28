@@ -26,6 +26,20 @@ import Image from '@layouts/components/Image.astro';
         loading="eager"
       />
     </figure>
+    <figure id="raw">
+      <img src="/portrait.svg" alt="Raw Astro image" loading="eager" />
+    </figure>
+    <figure id="picture">
+      <picture
+        ><source srcset="/portrait.svg" type="image/svg+xml" /><img
+          src="/landscape.svg"
+          width="240"
+          height="480"
+          alt="Picture source"
+          loading="eager"
+        /></picture
+      >
+    </figure>
     <div style="height:15000px"></div>
     <figure id="far">
       <Image src="/far.svg" alt="Far away" width="320" height="180" />

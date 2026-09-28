@@ -224,7 +224,9 @@ const summaries = await Promise.all(
         const cover = article.querySelector('.post-cover-container')!;
         if (item.cover) {
           const image = cover.querySelector('img')!;
-          image.src = this.safeUrl(item.cover.src);
+          const host = cover.querySelector<HTMLElement>('nayuta-image')!;
+          host.dataset.originalSrc = this.safeUrl(item.cover.src);
+          image.src = host.dataset.originalSrc;
           image.alt = item.title;
           image.loading = 'lazy';
           image.decoding = 'async';

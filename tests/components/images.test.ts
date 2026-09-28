@@ -94,6 +94,18 @@ beforeAll(async () => {
     const file = Bun.file(join(fixture, path));
     await Bun.write(file, (await file.text()).replace(pattern, ''));
   }
+
+  for (const extension of ['md', 'mdx']) {
+    await Bun.write(
+      join(fixture, `src/content/pages/images-${extension}/index.${extension}`),
+      `---\ntitle: Markdown images\n---\n\n![Public landscape](/landscape.svg)\n\n![Bundled portrait](./portrait.svg)\n\nBefore ![Inline](/landscape.svg) after.\n\n[![Linked](/landscape.svg)](/demo)\n\n![Remote fallback](${server.url}runtime.svg)\n`,
+    );
+    await Bun.write(
+      join(fixture, `src/content/pages/images-${extension}/portrait.svg`),
+      portrait,
+    );
+  }
+
   const build = Bun.spawn(['bun', 'run', 'build'], {
     cwd: fixture,
     stdout: 'pipe',
@@ -132,6 +144,36 @@ test('image sizes respect explicit dimensions, local metadata and remote failure
   ).text();
   expect(html).toContain('width="640" height="360"');
   expect(html).toContain('--ny-image-ratio:16 / 9');
+});
+
+test('Markdown and MDX preserve local assets, dimensions, links and valid paragraphs', async () => {
+  for (const extension of ['md', 'mdx']) {
+    const html = await Bun.file(
+      join(fixture, `dist/images-${extension}/index.html`),
+    ).text();
+    expect(html).toContain('/_astro/portrait.');
+    expect(html).toContain('--ny-image-ratio:240 / 480');
+    expect(html).toContain('--ny-image-ratio:640 / 360');
+    expect(html).toContain(`${server.url}runtime.svg`);
+    let count = 0;
+    let invalid = 0;
+    await new HTMLRewriter()
+      .on('nayuta-image', {
+        element() {
+          count++;
+        },
+      })
+      .on('p div', {
+        element() {
+          invalid++;
+        },
+      })
+      .transform(new Response(html))
+      .text();
+    expect(count).toBe(5);
+    expect(invalid).toBe(0);
+    expect(html).toMatch(/href="\/demo"[^>]*><nayuta-image/);
+  }
 });
 
 test.skipIf(!chrome)(
@@ -222,6 +264,19 @@ test.skipIf(!chrome)(
           `getComputedStyle(document.querySelector('#fixed .ny-image-placeholder')).aspectRatio`,
         ),
       ).toBe('16 / 9');
+      await until(
+        `document.querySelector('#raw nayuta-image')?.dataset.state === 'ready' && document.querySelector('#picture nayuta-image')?.dataset.state === 'ready'`,
+      );
+      expect(
+        await evaluate(
+          `getComputedStyle(document.querySelector('#picture img')).opacity`,
+        ),
+      ).not.toBeUndefined();
+      expect(
+        await evaluate(
+          `document.querySelector('#picture source').srcset.endsWith('/portrait.svg')`,
+        ),
+      ).toBe(true);
       await evaluate(`document.querySelector('#far').scrollIntoView()`);
       await until(
         `document.querySelector('#far nayuta-image')?.dataset.state === 'ready'`,

@@ -29,9 +29,10 @@
       this.image.addEventListener('load', () => void this.reveal(), { signal });
       this.image.addEventListener('error', () => this.fail(), { signal });
       this.observer = new MutationObserver(() => this.reset());
-      this.observer.observe(this.image, {
+      this.observer.observe(this, {
+        subtree: true,
         attributes: true,
-        attributeFilter: ['src', 'srcset', 'sizes'],
+        attributeFilter: ['src', 'srcset', 'sizes', 'media'],
       });
       this.reset();
     }
@@ -113,9 +114,58 @@
 
   if (!customElements.get('nayuta-image'))
     customElements.define('nayuta-image', NayutaImage);
+  class NayutaProse extends HTMLElement {
+    private observer?: MutationObserver;
+    connectedCallback() {
+      this.enhance();
+      this.observer = new MutationObserver(() => this.enhance());
+      this.observer.observe(this, { childList: true, subtree: true });
+    }
+    disconnectedCallback() {
+      this.observer?.disconnect();
+    }
+    private enhance() {
+      this.querySelectorAll<HTMLImageElement>('img').forEach((image) => {
+        if (
+          image.closest('nayuta-image, button') ||
+          image.hasAttribute('data-image-native')
+        )
+          return;
+        const host = document.createElement('nayuta-image');
+        if (image.dataset.lightbox)
+          host.dataset.lightbox = image.dataset.lightbox;
+        const target = image.closest('picture') ?? image;
+        image.loading ||= 'lazy';
+        image.decoding = 'async';
+        const marker = document.createComment('image');
+        target.replaceWith(marker);
+        host.append(target);
+        marker.replaceWith(host);
+      });
+    }
+  }
+  if (!customElements.get('nayuta-prose'))
+    customElements.define('nayuta-prose', NayutaProse);
 </script>
 
 <style is:global>
+  html[data-ny-images]
+    .prose
+    img:not(nayuta-image img):not([data-image-native]) {
+    visibility: hidden;
+  }
+  nayuta-image > picture {
+    display: contents;
+  }
+  nayuta-image[data-fixed-ratio] {
+    aspect-ratio: var(--ny-image-ratio);
+  }
+  nayuta-image[data-fixed-ratio] img {
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
   nayuta-image {
     position: relative;
     display: inline-block;
@@ -131,7 +181,7 @@
   nayuta-image > .ny-image-placeholder {
     display: none;
   }
-  nayuta-image > img {
+  nayuta-image img {
     display: block;
     width: 100%;
     max-width: 100%;
@@ -150,7 +200,7 @@
     );
     animation: ny-image-pulse 2s ease-in-out infinite;
   }
-  html[data-ny-images] nayuta-image > img {
+  html[data-ny-images] nayuta-image img {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -158,11 +208,11 @@
     object-fit: contain;
     opacity: 0;
   }
-  html[data-ny-images] nayuta-image[data-fixed-ratio] > img {
+  html[data-ny-images] nayuta-image[data-fixed-ratio] img {
     object-fit: cover;
     object-position: top center;
   }
-  html[data-ny-images] nayuta-image[data-state='ready'] > img {
+  html[data-ny-images] nayuta-image[data-state='ready'] img {
     opacity: 1;
     transition: opacity 180ms ease-in;
   }
@@ -200,7 +250,7 @@
     html[data-ny-images] nayuta-image > .ny-image-placeholder {
       animation: none;
     }
-    html[data-ny-images] nayuta-image[data-state='ready'] > img {
+    html[data-ny-images] nayuta-image[data-state='ready'] img {
       transition: none;
     }
   }
