@@ -168,6 +168,7 @@ test('image sizes respect explicit dimensions, local metadata and remote failure
     join(fixture, 'dist/image-test/index.html'),
   ).text();
   expect(html).toContain('width="640" height="360"');
+  expect(html).toContain('width="320" height="180"');
   expect(html).toContain('--ny-image-ratio:16 / 9');
 });
 

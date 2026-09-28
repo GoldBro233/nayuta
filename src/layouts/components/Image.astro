@@ -27,8 +27,20 @@ const optimized = metadata ? await getImage({ src: metadata }) : undefined;
 const url = optimized?.src ?? (typeof src === 'string' ? src : undefined);
 const dimensions =
   metadata ?? (url ? await resolveImageDimensions(url, attributes) : undefined);
-const width = attributes.width ?? dimensions?.width;
-const height = attributes.height ?? dimensions?.height;
+const width =
+  attributes.width ??
+  (attributes.height && dimensions
+    ? Math.round(
+        (Number(attributes.height) * dimensions.width) / dimensions.height,
+      )
+    : dimensions?.width);
+const height =
+  attributes.height ??
+  (attributes.width && dimensions
+    ? Math.round(
+        (Number(attributes.width) * dimensions.height) / dimensions.width,
+      )
+    : dimensions?.height);
 const imageRatio =
   ratio ?? (width && height ? `${width} / ${height}` : '16 / 9');
 ---
