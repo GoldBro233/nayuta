@@ -68,11 +68,11 @@ styles without framework hydration or Shadow DOM.
 
 ## Dynamic Post Lists
 
-Use `<PostList mode="dynamic" id="search-results" pageSize={10} />` for a page
-that supplies results in the browser. The default page size comes from
-`config.postsPerPage`, then 10. The component handles result presentation,
-pagination, loading, errors, and focus; the consuming page owns search and data
-retrieval. The component does not fetch or cache the full collection.
+For a browser-supplied post list that needs numbered pagination, use
+`<PostList mode="dynamic" id="dynamic-posts" pageSize={10} />`. The default
+page size comes from `config.postsPerPage`, then 10. The component handles
+summary presentation, pagination, loading, errors, and focus; the consuming page
+owns data retrieval. The component does not fetch or cache the full collection.
 
 The typed API lives in [src/types/post-list.ts](../../src/types/post-list.ts).
 Wait for `customElements.whenDefined('nayuta-post-list')` before calling methods.
@@ -118,6 +118,25 @@ without changing the summary layout. Keyboard pagination focuses the result afte
 delivery. Multiple instances remain independent, and listeners are released on
 disconnection and restored on reconnection. Dynamic search shells include a
 no-JavaScript message and archive link so static articles remain discoverable.
+
+## Search
+
+`SearchWidget` is a native GET form in the desktop sidebar and mobile drawer. It
+does not query Pagefind or render a preview. Submitting a keyword navigates to
+`/search?q=...`; the search icon is also a submit button. The Frame supplies a
+separate compact search entry in its mobile header.
+
+`src/pages/search.astro` renders results inside the normal Frame and displays
+`Home > Search: <query>` in the breadcrumbs after reading `?q=` in the browser.
+The sidebar GET form owns the URL and browser history. The search route has no
+additional field or pagination: it fetches every Pagefind match and displays the
+complete list in relevance order. Post pages index their published date and
+reading minutes as Pagefind metadata. Search results clone the same
+`PostListItem` template as tag archives, fill its metadata using
+`formatReadingTime()`, omit covers and draft badges, and insert Pagefind's
+highlighted excerpt in place of a static description. The result count is
+announced to assistive technology; no matches and failures show an archive link.
+Without JavaScript the post archive remains accessible.
 
 ## Browser Summary Data
 

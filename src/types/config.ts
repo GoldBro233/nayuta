@@ -29,7 +29,6 @@ export interface Config {
 
   // Positive integer; shared by post and tag archives (defaults to 10).
   postsPerPage?: number;
-
   // Profile Card links
   links?: Link[];
 }

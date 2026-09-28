@@ -1,0 +1,224 @@
+---
+import Frame from '@layouts/frame.astro';
+import Prose from '@layouts/components/Prose.astro';
+import PostListItem from '@layouts/widgets/post-list/PostListItem.astro';
+---
+
+<Frame
+  title="Search"
+  breadcrumbs={[
+    { text: 'Home', href: '/' },
+    { text: 'Search', href: '/search' },
+  ]}
+>
+  <Prose>
+    <h1 class="page-title">Search</h1>
+    <nayuta-search-page>
+      <div class="search-ui" hidden>
+        <div
+          class="search-status"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+        </div>
+        <p class="search-fallback" hidden></p>
+        <ul
+          class="search-results post-list"
+          aria-label="Search results"
+          aria-busy="false"
+        >
+        </ul>
+      </div>
+      <noscript
+        ><p class="search-noscript">
+          Search requires JavaScript. <a href="/posts">Browse posts</a>.
+        </p></noscript
+      >
+      <template class="result-template">
+        <li><PostListItem /></li>
+      </template>
+    </nayuta-search-page>
+  </Prose>
+</Frame>
+
+<script>
+  import { searchPosts } from '@assets/utils/search';
+  import { formatReadingTime } from '@assets/utils/reading-time';
+  import type { SearchResultData } from '@assets/utils/search';
+
+  class NayutaSearchPage extends HTMLElement {
+    private sequence = 0;
+    private results!: HTMLUListElement;
+    private status!: HTMLElement;
+    private fallback!: HTMLElement;
+    private template!: HTMLTemplateElement;
+
+    connectedCallback() {
+      this.results = this.querySelector('.search-results')!;
+      this.status = this.querySelector('.search-status')!;
+      this.fallback = this.querySelector('.search-fallback')!;
+      this.template = this.querySelector('.result-template')!;
+      this.querySelector<HTMLElement>('.search-ui')!.hidden = false;
+
+      const query =
+        new URLSearchParams(window.location.search).get('q')?.trim() ?? '';
+      if (!query) return;
+      document
+        .querySelectorAll<HTMLAnchorElement>('.breadcrumbs a[href="/search"]')
+        .forEach((crumb) => {
+          crumb.textContent = `Search: ${query}`;
+        });
+      this.status.textContent = 'Searching...';
+      void this.search(query, ++this.sequence);
+    }
+
+    disconnectedCallback() {
+      this.sequence++;
+    }
+
+    private async search(query: string, sequence: number) {
+      this.results.setAttribute('aria-busy', 'true');
+      try {
+        const matches = await searchPosts(query);
+        if (!this.current(sequence)) return;
+        if (!matches.length) {
+          this.status.textContent = 'No matching articles.';
+          this.showFallback(
+            'No matching articles. Try different keywords or ',
+            'browse all posts',
+            '.',
+          );
+          return;
+        }
+
+        const data = await Promise.all(matches.map((match) => match.data()));
+        if (!this.current(sequence)) return;
+        const fragment = document.createDocumentFragment();
+        for (const match of data) fragment.append(this.render(match));
+        this.results.replaceChildren(fragment);
+        this.status.textContent = `${matches.length} matching articles`;
+      } catch {
+        if (!this.current(sequence)) return;
+        this.results.replaceChildren();
+        this.status.textContent = 'Search is unavailable.';
+        this.showFallback('Search is unavailable. ', 'Browse posts', '.');
+      } finally {
+        if (this.current(sequence))
+          this.results.setAttribute('aria-busy', 'false');
+      }
+    }
+
+    private render(match: SearchResultData): HTMLLIElement {
+      const item = this.template.content.firstElementChild!.cloneNode(
+        true,
+      ) as HTMLLIElement;
+      const link = item.querySelector<HTMLAnchorElement>('.post-title a')!;
+      link.href = match.url;
+      link.textContent = match.meta.title;
+      item.querySelector('[data-published]')!.textContent =
+        `Published: ${match.meta.publishDate}`;
+      item.querySelector('[data-reading]')!.textContent =
+        `Reading: ${formatReadingTime(Number(match.meta.readingTimeMinutes))}`;
+      item.querySelector('.post-cover-container')?.remove();
+      item.querySelector('.badge')?.remove();
+      const excerpt = item.querySelector<HTMLElement>('.post-description')!;
+      excerpt.classList.add('result-excerpt');
+      // Pagefind escapes source text and inserts its own highlighted <mark> tags.
+      excerpt.innerHTML = match.excerpt;
+      return item;
+    }
+
+    private showFallback(before: string, label: string, after: string) {
+      const link = document.createElement('a');
+      link.href = '/posts';
+      link.textContent = label;
+      this.fallback.replaceChildren(before, link, after);
+      this.fallback.hidden = false;
+    }
+
+    private current(sequence: number) {
+      return this.isConnected && sequence === this.sequence;
+    }
+  }
+
+  if (!customElements.get('nayuta-search-page')) {
+    customElements.define('nayuta-search-page', NayutaSearchPage);
+  }
+</script>
+
+<style>
+  nayuta-search-page {
+    display: block;
+    min-width: 0;
+  }
+
+  .search-ui[hidden],
+  .search-fallback[hidden] {
+    display: none;
+  }
+
+  .search-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .search-results :global(a:focus-visible) {
+    outline: 2px solid var(--ny-color-outline);
+    outline-offset: 2px;
+  }
+
+  .search-status,
+  .search-fallback,
+  .search-noscript {
+    color: var(--ny-color-text-muted);
+    font-size: var(--ny-font-size-ui-meta);
+    line-height: var(--ny-line-height-ui);
+  }
+
+  .search-status:empty {
+    display: none;
+  }
+
+  .search-fallback {
+    margin-top: var(--ny-space-3);
+  }
+
+  .search-fallback :global(a) {
+    color: var(--ny-color-outline);
+  }
+
+  .search-results {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--ny-space-4));
+    list-style-type: square;
+    padding-left: 20px;
+    margin: var(--ny-space-6) 0 0;
+  }
+
+  .search-results :global(li) {
+    min-width: 0;
+  }
+  .search-results :global(li::marker) {
+    color: var(--ny-color-outline);
+  }
+
+  .search-results :global(li:not(:last-child) .post-summary) {
+    border-bottom: 1px solid var(--ny-color-border);
+  }
+
+  .search-results :global(.result-excerpt) {
+    overflow-wrap: anywhere;
+  }
+
+  .search-results :global(mark) {
+    background: var(--ny-color-primary);
+    color: var(--ny-color-primary-text);
+  }
+</style>

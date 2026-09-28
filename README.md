@@ -82,10 +82,13 @@ Open [localhost:4321](http://localhost:4321). To contribute to the theme, follow
 | `bun run format`       | Format source and documentation with Prettier.                  |
 | `bun run format:check` | Check formatting without changing files.                        |
 
-The sidebar searches published posts by title and body using Pagefind. Run
-`bun run build` before `bun run preview` to generate the search index; the
-development server alone does not generate one. Search needs JavaScript; the
-sidebar links to the post archive when search is unavailable.
+The sidebar search field submits a keyword to `/search?q=...`; it does not show
+inline results. The search route uses the usual site layout and shows every
+Pagefind match in a continuous Posts-style list with published date and reading
+time. Run `bun run build` before `bun run preview` to generate the index; the
+development server alone does not generate one. The sidebar form works without
+JavaScript, while results require JavaScript and provide a post archive fallback
+when unavailable.
 
 ## Configuration
 

@@ -62,7 +62,13 @@ const breadcrumbs = [
         {post.data.draft && <Badge variant="draft">Draft</Badge>}
         {post.data.title}
       </h1>
-      <p class="post-meta">
+      <p
+        class="post-meta"
+        data-pagefind-ignore
+        data-pagefind-meta="publishDate[data-publish-date], readingTimeMinutes[data-reading-minutes]"
+        data-publish-date={post.data.publishDate}
+        data-reading-minutes={remarkPluginFrontmatter.readingTimeMinutes}
+      >
         Published: {post.data.publishDate} &nbsp;•&nbsp; Reading Time: {
           readingTime
         }

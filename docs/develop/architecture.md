@@ -27,9 +27,10 @@ Prefer existing dependencies, semantic HTML, and native browser APIs.
 | `tests/`                  | Bun tests and isolated site/browser fixtures.                                 |
 
 Keep queries, sorting, and display preparation in the consuming `.astro` file.
-Extract a utility only when multiple consumers share the same logic. Current
-shared modules are `pages.ts`, `posts.ts`, `reading-time.ts`, and `pagination.ts`
-under `src/assets/utils/`.
+Extract a utility when it centralizes a shared contract or isolates a browser
+dependency. Shared modules under `src/assets/utils/` include `pages.ts`,
+`posts.ts`, `reading-time.ts`, and `pagination.ts`; `search.ts` wraps the
+generated Pagefind browser module.
 
 ## Page Composition
 

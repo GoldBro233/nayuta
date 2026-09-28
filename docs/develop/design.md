@@ -142,3 +142,15 @@ control respects bottom and right safe-area insets.
 Use the typography sample at `/posts/typography-test`, post summaries, the friends
 page, and `/demo` as visual references. Compare wide desktop, the 1120px and 768px
 transitions, and a narrow phone viewport when adjusting shared styles.
+
+## Search Page
+
+`/search` uses the standard Frame, profile/sidebar, theme and breadcrumb layout.
+The sidebar search form is the only input; it never displays a preview or a
+secondary link. The route shows every Pagefind result directly under the
+heading, without a second field, visible match count, or pagination. Each result
+reuses the tag archive's `PostListItem` presentation: bold linked title, subtle
+published date and reading time, muted excerpt, generous spacing, and a thin
+separator. The square outline-colored marker and Pagefind keyword highlights
+remain visible; covers are omitted. On small screens the Frame moves the sidebar
+entry to its drawer and puts the keyword breadcrumb in the sticky header.
