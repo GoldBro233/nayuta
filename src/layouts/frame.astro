@@ -103,7 +103,7 @@ const sidebarProps = { entry, headings, pathname: Astro.url.pathname };
             breadcrumbs.map((crumb, idx) => (
               <Fragment key={crumb.href}>
                 <a href={crumb.href}>{crumb.text}</a>
-                {idx < breadcrumbs.length - 1 && ' > '}
+                {idx < breadcrumbs.length && ' > '}
               </Fragment>
             ))
           }
@@ -135,7 +135,7 @@ const sidebarProps = { entry, headings, pathname: Astro.url.pathname };
             breadcrumbs.map((crumb, idx) => (
               <Fragment key={crumb.href}>
                 <a href={crumb.href}>{crumb.text}</a>
-                {idx < breadcrumbs.length - 1 && ' > '}
+                {idx < breadcrumbs.length && ' > '}
               </Fragment>
             ))
           }
