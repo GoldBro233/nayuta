@@ -1,69 +1,19 @@
 ---
 import Input from '@layouts/components/Input.astro';
-import Widget from '@widgets/sidebar/Widget.astro';
 ---
 
-<Widget title="Search Site">
-  <form class="search-form" role="search" action="/search" method="get">
-    <label class="search-field">
-      <span class="visually-hidden">Search articles</span>
-      <Input type="search" name="q" placeholder="Search articles..." />
-    </label>
-    <button class="search-submit" type="submit" aria-label="Search articles">
-      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-    </button>
-  </form>
-</Widget>
-
-<script>
-  document.querySelectorAll<HTMLFormElement>('.search-form').forEach((form) => {
-    form.addEventListener('submit', (event) => {
-      const input = form.elements.namedItem('q') as HTMLInputElement;
-      input.value = input.value.trim();
-      if (!input.value) {
-        event.preventDefault();
-        window.location.assign('/search');
-      }
-    });
-  });
-</script>
+<form class="search-form" role="search" action="/search" method="get">
+  <label>
+    <span class="visually-hidden">Search articles</span>
+    <Input type="search" name="q" placeholder="Search articles..." />
+  </label>
+</form>
 
 <style>
   .search-form {
-    position: relative;
     min-width: 0;
   }
-  .search-field {
-    position: relative;
-    display: block;
-  }
 
-  .search-field :global(.search-input) {
-    padding-left: calc(var(--ny-space-2) * 2 + var(--ny-font-size-icon));
-  }
-
-  .search-submit {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
-    display: grid;
-    place-items: center;
-    width: calc(var(--ny-space-2) * 2 + var(--ny-font-size-icon));
-    border: 0;
-    background: none;
-    color: var(--ny-color-text-subtle);
-    cursor: pointer;
-  }
-
-  .search-submit:hover,
-  .search-submit:focus-visible {
-    color: var(--ny-color-outline);
-  }
-
-  .search-submit:focus-visible {
-    outline: 2px solid var(--ny-color-outline);
-    outline-offset: -2px;
-  }
   .visually-hidden {
     position: absolute;
     width: 1px;
@@ -71,8 +21,7 @@ import Widget from '@widgets/sidebar/Widget.astro';
     padding: 0;
     margin: -1px;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
     white-space: nowrap;
-    border: 0;
   }
 </style>

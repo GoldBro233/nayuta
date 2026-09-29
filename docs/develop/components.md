@@ -26,6 +26,9 @@ license inheritance; keep tags outside `Prose` after the card.
 Reuse `Pagination` for other lists without requiring post-specific presentation.
 Sidebar `Widget` supplies a section heading and optional “More” link, while
 `Callout` and `TableContainer` are public imports for authored MDX.
+`SearchWidget` is a native GET form containing one accessible search input. It
+uses `Input` directly and has no section heading. Compose it through authored
+sidebars so desktop and drawer instances follow the same resolution rules.
 
 ## Static Archives
 
@@ -73,11 +76,11 @@ styles without framework hydration or Shadow DOM.
 
 ## Dynamic Post Lists
 
-For a browser-supplied post list that needs numbered pagination, use
-`<PostList mode="dynamic" id="dynamic-posts" pageSize={10} />`. The default
-page size comes from `config.postsPerPage`, then 10. The component handles
-summary presentation, pagination, loading, errors, and focus; the consuming page
-owns data retrieval. The component does not fetch or cache the full collection.
+Use `<PostList mode="dynamic" id="search-results" pageSize={10} />` for a page
+that supplies results in the browser. The default page size comes from
+`config.postsPerPage`, then 10. The component handles result presentation,
+pagination, loading, errors, and focus; the consuming page owns search and data
+retrieval. The component does not fetch or cache the full collection.
 
 The typed API lives in [src/types/post-list.ts](../../src/types/post-list.ts).
 Wait for `customElements.whenDefined('nayuta-post-list')` before calling methods.
@@ -114,6 +117,8 @@ Metadata-only updates preserve item nodes; `{}` only refreshes links if the
 surrounding URL changed.
 
 Dynamic URLs use `?page=<number>` and retain other query parameters and fragments.
+The search route uses `?q=<keywords>&page=<number>` and validates bounds before
+delivering results; an invalid or out-of-range search page goes to `/404.html`.
 The consuming page owns initial query parsing, history updates, and `popstate`.
 For a new search or history navigation, deliver `items`, `total`, and `currentPage`
 together to avoid request loops. Cancel or ignore stale asynchronous results.
@@ -124,29 +129,10 @@ delivery. Multiple instances remain independent, and listeners are released on
 disconnection and restored on reconnection. Dynamic search shells include a
 no-JavaScript message and archive link so static articles remain discoverable.
 
-## Search
-
-`SearchWidget` is a native GET form in the desktop sidebar and mobile drawer. It
-does not query Pagefind or render a preview. Submitting a keyword navigates to
-`/search?q=...`; the search icon is also a submit button. The Frame supplies a
-separate compact search entry in its mobile header.
-
-`src/pages/search.astro` renders results inside the normal Frame and displays
-`Home > Search: <query>` in the breadcrumbs after reading `?q=` in the browser.
-The sidebar GET form owns the URL and browser history. The search route has no
-additional field or pagination: it fetches every Pagefind match and displays the
-complete list in relevance order. Post pages index their published date and
-reading minutes as Pagefind metadata. Search results clone the same
-`PostListItem` template as tag archives, fill its metadata using
-`formatReadingTime()`, omit covers and draft badges, and insert Pagefind's
-highlighted excerpt in place of a static description. The result count is
-announced to assistive technology; no matches and failures show an archive link.
-Without JavaScript the post archive remains accessible.
-
 ## Browser Summary Data
 
 Each `PostSummaryData` item contains `href`, `title`, `publishDate`, and
-`readingTimeMinutes`, plus optional `description`, `draft`, and
+`readingTimeMinutes`, plus optional `description`, `draft`, `highlights`, and
 `cover: { src, width?, height?, srcset?, sizes? }`.
 
 Filter production drafts with `getPosts()` before publishing data. Prepare reading
@@ -154,6 +140,40 @@ time through the existing remark pipeline and local cover URLs through
 `astro:assets` at build time. Dynamic summaries use text nodes for text and accept
 HTTP(S) or relative URLs for links and images. Static summaries use the theme's `Image` wrapper around Astro's asset handling;
 dynamic clones preserve the same image host, scoped markup, and draft badge.
+
+### Text Highlights
+
+Dynamic summaries accept `highlights.title` and `highlights.description`, arrays
+of `{ start, end }` ranges in the corresponding plain text. Offsets count UTF-16
+code units, with an inclusive start and exclusive end. Ranges must be ordered,
+non-overlapping, nonempty, and within the text. Invalid ranges reject the update
+before replacing existing results.
+
+```ts
+list?.setPage({
+  items: [
+    {
+      href: '/posts/hello',
+      title: 'Writing with Astro',
+      publishDate: '2026-09-30',
+      readingTimeMinutes: 3,
+      description: 'Astro renders static pages.',
+      highlights: {
+        title: [{ start: 13, end: 18 }],
+        description: [{ start: 0, end: 5 }],
+      },
+    },
+  ],
+  total: 1,
+  currentPage: 1,
+});
+```
+
+`PostList` creates text nodes and `<mark>` elements. It never treats summary text
+as HTML. `PostListItem` owns the mark colors using the current palette's primary
+fill and primary text tokens. Search converts Pagefind excerpts into plain text
+and description ranges before calling `setPage()`; the list has no Pagefind
+dependency. Static archive summaries keep their ordinary text presentation.
 
 The tests under `tests/components/` cover page boundaries, updates, DOM
 preservation, history, focus, and style parity using isolated fixtures. Chromium

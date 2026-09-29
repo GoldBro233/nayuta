@@ -1,11 +1,11 @@
 {
   "name": "nayuta-theme",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check && tsc -p tsconfig.json --noEmit",

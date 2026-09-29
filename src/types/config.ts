@@ -33,6 +33,7 @@ export interface Config {
 
   // Post copyright card; disabled unless explicitly enabled.
   copyright?: CopyrightOptions;
+
   // Profile Card links
   links?: Link[];
 }
